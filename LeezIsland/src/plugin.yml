@@ -1,0 +1,12 @@
+name: LeezIsland
+author: Izmoqwy
+version: 1.0.0
+depend: [LeezCore]
+main: lz.izmoqwy.leezisland.LeezIsland
+commands:
+  island:
+    aliases: [is]
+    description: Island command
+  isadmin:
+    aliases: [iadmin, islandadmin, isa]
+    description: Administrate islands

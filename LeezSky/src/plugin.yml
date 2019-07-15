@@ -1,0 +1,40 @@
+name: LeezSky
+author: Izmoqwy
+version: 1.0.0
+depend: [LeezCore, LeezPermissions]
+softdepend: [LeezIsland]
+main: me.izmoqwy.leezsky.LeezSky
+commands:
+  help:
+    aliases: [serverhelp, sh, ?]
+    description: Get help about LeezSky
+  announce:
+    description: Make an announce broadcast
+  worlds:
+    aliases: [listworlds]
+    description: Get a list of worlds
+  invest:
+    aliases: [investment, moneyinvest]
+    description: Invest money and earn by leaving it in the bank
+  challenges:
+    aliases: [c, challenge, chall, challs]
+    description: Feel like a Challenger? Try to fill up all these challenges!
+  balancetop:
+    aliases: [baltop, moneytop]
+    description: Show the 10 richest players on the server
+  leezop:
+    description: Overriden op command
+  leezdeop:
+    description: Overriden deop command
+permissions:
+  leezsky.*:
+    children:
+      leezsky.admin.*:
+        default: op
+        children:
+          leezsky.admin.announce: true
+          leezsky.admin.worlds: true
+      leezsky.chat.*:
+        children:
+          leezsky.chat.color: true
+          leezsky.chat.nolevel: true

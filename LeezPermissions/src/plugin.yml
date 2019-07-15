@@ -1,0 +1,28 @@
+name: LeezPermissions
+author: Izmoqwy
+version: 2.2.0
+
+main: me.izmoqwy.hardpermissions.LeezPermissions
+depend: [LeezCore]
+
+commands:
+  leezpermissions:
+    aliases: [leezperm, lperm]
+    description: Main command of LeezPermissions
+permissions:
+  leezpermissions.*:
+    description: Permission for all sub-commands in HardPerms
+    default: op
+    children:
+      leezpermissions.command.*:
+        children:
+          leezpermissions.command:
+            description: Access to the main command (/leezpermissions)
+          leezpermissions.command.reload:
+            description: Allow player to reload configuration
+          leezpermissions.command.groups:
+            description: Allow player to manage groups in-game
+          leezpermissions.command.players:
+            description: Allow player to manage players in-game
+      leezpermissions.notified:
+        description: Notify player when a player's group is changed

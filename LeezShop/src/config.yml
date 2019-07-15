@@ -1,0 +1,40 @@
+config-version: 1
+gui-size: 5
+
+# Configuration du shop
+shop:
+
+  #  Nom attitré (Non visibile) de la catégorie
+  blocks:
+  
+    # Nom visible de la catégorie (16 caractères max. recommandés)
+    display-name: 'Blocs'
+    
+    # Slot d'affichage dans le menu principal
+    slot: 10
+    
+    # Représentation de la catégorie dans le menu (ID:DATA)
+    type: 45
+    
+    # Description de la catégorie dans le menu (Utilisez \n pour revenir à la ligne)
+    description: ''
+    
+    # Contenu de la catégorie
+    content:
+      
+      #  Nom attitré (Non visibble) de l'item -> N'importe quoi peut passer
+      1:
+        
+        # Nom affiché dans le menu de la catégorie
+        name: 'Pierre'
+        type: 1
+        price:
+          
+          # Prix d'achat de l'item, ne pas insérer pour ne pas laisser acheter
+          buy: 1
+          
+          # Prix de vente de l'item, ne pas insérer pour ne pas laisser vendre
+          sell: 0.3
+        
+      
+      

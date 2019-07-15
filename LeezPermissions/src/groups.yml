@@ -1,0 +1,16 @@
+Default:
+  default: true
+  permissions:
+  - essentiels.message
+  inheritance: []
+  info:
+    prefix: '&8 '
+    suffix: ''
+Admin:
+  power: 10
+  permissions:
+  - '*'
+  inheritance: []
+  info:
+    prefix: '&cAdministrateur '
+    suffix: ''

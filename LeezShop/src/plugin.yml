@@ -1,0 +1,9 @@
+name: LeezShop
+author: Izmoqwy
+version: 1.0.1
+main: lz.izmoqwy.leezshop.LeezShop
+depend: [LeezCore]
+commands: 
+  shop:
+    description: Open server's shop
+    aliases: [servershop, shops, sshop, ss]
