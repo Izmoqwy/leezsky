@@ -1,10 +1,3 @@
-/*
- * That file is a part of [Leezsky] LeezSky
- * Copyright Izmoqwy
- * You can edit for your personal use.
- * You're not allowed to redistribute it at your own.
- */
-
 package me.izmoqwy.leezsky;
 
 import com.google.common.collect.Maps;
@@ -12,6 +5,7 @@ import lz.izmoqwy.core.LeezCore;
 import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.api.database.SQLite;
 import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.nms.NmsAPI;
 import lz.izmoqwy.core.world.WorldsManager;
 import me.izmoqwy.leezsky.challenges.ChallengePlugin;
 import me.izmoqwy.leezsky.commands.*;
@@ -21,6 +15,7 @@ import me.izmoqwy.leezsky.listeners.PlayersListener;
 import me.izmoqwy.leezsky.listeners.SpawnListener;
 import me.izmoqwy.leezsky.managers.InvestManager;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -35,17 +30,20 @@ public class LeezSky extends JavaPlugin {
 	private boolean reboot = false;
 	
 	public static final String PREFIX = LeezCore.PREFIX;
+	public static final String TAB_HEADER = "§8┅⊰ §6PLAY.LEEZSKY.FR §8⊱┅\n",
+		TAB_FOOTER = "\n§8┅⊰ §ediscord.gg/X78wMsE §8⊱┅";
+
 	public static SQLDatabase DB;
-	static SQLDatabase.Table USERS;
 	
 	@Override
 	public void onEnable() {
 		instance = this;
-//		DB = new MySQL("LeezSky - Main", this, "sql.livehost.fr", "leezsky_3tcd", "leezsky_3tcd", "jLkGmA22556");
-//		DB.connect();
-//		USERS = DB.getTable("Users");
 
 		WorldsManager.registerPersistentVoidWorld("Spawn");
+		World world = Bukkit.getWorld("Spawn");
+		if (world != null) {
+			PluginHelper.loadListener(this, new SpawnListener(world));
+		}
 
 		DB = new SQLite("LeezSky", this, new File(getDataFolder(), "storage.db"));
 
@@ -81,9 +79,12 @@ public class LeezSky extends JavaPlugin {
 		PluginHelper.loadListener(this, new PlayersListener());
 		PluginHelper.loadListener(this, new CommandsListener());
 		PluginHelper.loadListener(this, new MotdListener());
-		PluginHelper.loadListener(this, new SpawnListener());
 
 		ChallengePlugin.load(this);
+
+		if (Bukkit.getOnlinePlayers().size() >= 1) {
+			NmsAPI.packet.sendTablist(TAB_HEADER, TAB_FOOTER);
+		}
 		
 		//new Rebooter().start();
 		//new AutoMessage();

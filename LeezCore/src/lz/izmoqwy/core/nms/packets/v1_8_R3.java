@@ -1,21 +1,21 @@
 package lz.izmoqwy.core.nms.packets;
 
-import java.lang.reflect.Field;
-import java.util.Collection;
-
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
+import lz.izmoqwy.core.helpers.ReflectorHelper;
 import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
+import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
+import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.properties.Property;
-
-import net.minecraft.server.v1_8_R3.IChatBaseComponent.ChatSerializer;
-import net.minecraft.server.v1_8_R3.PacketPlayOutTitle.EnumTitleAction;
-import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
+import java.lang.reflect.Field;
+import java.util.Collection;
+import java.util.Objects;
 
 public class v1_8_R3 implements NMSPacket {
 
@@ -59,6 +59,38 @@ public class v1_8_R3 implements NMSPacket {
 	public void sendActionbar(Player player, String message) {
 		PacketPlayOutChat packet = new PacketPlayOutChat(ChatSerializer.a("{\"text\": \"" + message + "\"}"), (byte) 2);
 		sendPacket(player, packet);
+	}
+
+	private PacketPlayOutPlayerListHeaderFooter getTablistPacket(String header, String footer) {
+		PacketPlayOutPlayerListHeaderFooter packet = new PacketPlayOutPlayerListHeaderFooter();
+
+		try {
+			if (header != null) {
+				Field headerField = ReflectorHelper.getField(packet.getClass(), "a");
+				Objects.requireNonNull(headerField).set(packet, ChatSerializer.a("{\"text\": \"" + header + "\"}"));
+				headerField.setAccessible(!headerField.isAccessible());
+			}
+			if (footer != null) {
+				Field footerField = ReflectorHelper.getField(packet.getClass(), "b");
+				Objects.requireNonNull(footerField).set(packet, ChatSerializer.a("{\"text\": \"" + footer + "\"}"));
+				footerField.setAccessible(!footerField.isAccessible());
+			}
+		}
+		catch (IllegalAccessException e) {
+			e.printStackTrace();
+		}
+
+		return packet;
+	}
+
+	@Override
+	public void sendTablist(Player player, String header, String footer) {
+		sendPacket(player, getTablistPacket(header, footer));
+	}
+
+	@Override
+	public void sendTablist(String header, String footer) {
+		sendPacket(getTablistPacket(header, footer));
 	}
 
 	private void sendTime(Player player, int duration, int fadein, int fadeout) {

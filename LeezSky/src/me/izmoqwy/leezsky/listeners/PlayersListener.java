@@ -4,7 +4,9 @@ import lz.izmoqwy.core.crosshooks.CrosshooksManager;
 import lz.izmoqwy.core.crosshooks.interfaces.Group;
 import lz.izmoqwy.core.crosshooks.interfaces.LeezIslandCH;
 import lz.izmoqwy.core.crosshooks.interfaces.LeezPermissionsCH;
+import lz.izmoqwy.core.nms.NmsAPI;
 import lz.izmoqwy.core.utils.TitleUtil;
+import me.izmoqwy.leezsky.LeezSky;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -21,6 +23,8 @@ public class PlayersListener implements Listener {
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+
+		NmsAPI.packet.sendTablist(player, LeezSky.TAB_HEADER, LeezSky.TAB_FOOTER);
 		if (player.hasPlayedBefore())
 			TitleUtil.sendTitle(player, "§aBon retour", "§2parmi nous ;)", 5);
 		else {
