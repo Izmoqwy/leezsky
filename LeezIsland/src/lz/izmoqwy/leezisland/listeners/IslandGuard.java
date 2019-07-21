@@ -11,12 +11,11 @@ import lz.izmoqwy.leezisland.island.VisitorPermission;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.SpawnerSpawnEvent;
 import org.bukkit.event.player.*;
@@ -248,6 +247,7 @@ public class IslandGuard implements Listener {
 			return;
 		canDo(event.getPlayer(), event.getPlayer().getLocation(), event, VisitorPermission.DROP, null);
 	}
+
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onInteract(final PlayerInteractEvent event) {
 		if (event.getPlayer().getWorld() != GridManager.getWorld())
@@ -265,7 +265,7 @@ public class IslandGuard implements Listener {
 					case IRON_PLATE:
 					case STONE_PLATE:
 					case WOOD_PLATE:
-						canDo(player, player.getLocation(), event,VisitorPermission.PLATES, CoopPermission.ACTIONNERS);
+						canDo(player, player.getLocation(), event, VisitorPermission.PLATES, CoopPermission.ACTIONNERS);
 						return;
 				}
 			}
@@ -274,7 +274,7 @@ public class IslandGuard implements Listener {
 		if (event.hasItem()) {
 			ItemStack item = event.getItem();
 			Location location = player.getLocation();
-			switch(item.getType()) {
+			switch (item.getType()) {
 				case FIREBALL:
 				case FLINT_AND_STEEL:
 					if (!event.hasBlock())
@@ -353,6 +353,72 @@ public class IslandGuard implements Listener {
 			}
 		}
 
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onHit(final EntityDamageByEntityEvent event) {
+		if (event.getDamager().getType() != EntityType.PLAYER || event.getDamager().getWorld() != GridManager.getWorld())
+			return;
+
+		Player damager = (Player) event.getDamager();
+		Entity victim = event.getEntity();
+		Location location = victim.getLocation();
+		if (victim.getType() == EntityType.PLAYER) {
+			// No setting for PvP for the moment
+			event.setCancelled(true);
+			damager.sendMessage(Locale.PREFIX + "§cLe PvP est désactivé dans ce monde !");
+		}
+		else if (victim instanceof Monster || victim.getType() == EntityType.SLIME) {
+			if (!canDo(damager, location, event, VisitorPermission.HITMOBS, null)) {
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les animaux sur cette île !");
+			}
+		}
+		else if (victim instanceof Animals || victim.getType() == EntityType.SQUID) {
+			if (!canDo(damager, location, event, VisitorPermission.HITANIMALS, null)) {
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les animaux sur cette île !");
+			}
+		}
+		else if (victim instanceof Golem) {
+			if (!canDo(damager, location, event, VisitorPermission.HITGOLEMS, null)) {
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les Golems sur cette île !");
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onRod(final PlayerFishEvent event) {
+		if (event.getCaught() == null || event.getCaught().getWorld() != GridManager.getWorld())
+			return;
+
+		Player damager = event.getPlayer();
+		Entity victim = event.getCaught();
+		if (victim.getType() == EntityType.PLAYER) {
+			if (victim.equals(damager))
+				return;
+
+			event.setCancelled(true);
+
+			event.getHook().remove();
+			damager.sendMessage(Locale.PREFIX + "§cLe PvP est désactivé dans ce monde !");
+		}
+		else if (victim.getType() == EntityType.ARMOR_STAND || victim.getType() == EntityType.ENDER_CRYSTAL) {
+			canDo(damager, victim.getLocation(), event, null, CoopPermission.BREAK);
+		}
+		else if (victim instanceof Monster || victim.getType() == EntityType.SLIME) {
+			if (!canDo(damager, victim.getLocation(), event, VisitorPermission.HITMOBS, null)) {
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les animaux sur cette île !");
+			}
+		}
+		else if (victim instanceof Animals || victim.getType() == EntityType.SQUID) {
+			if (!canDo(damager, victim.getLocation(), event, VisitorPermission.HITANIMALS, null)) {
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les animaux sur cette île !");
+			}
+		}
+		else if (victim instanceof Golem) {
+			if (!canDo(damager, victim.getLocation(), event, VisitorPermission.HITGOLEMS, null)) {
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les Golems sur cette île !");
+			}
+		}
 	}
 
 	private static boolean isShulker(Material material) {

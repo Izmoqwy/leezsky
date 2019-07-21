@@ -42,57 +42,72 @@ public class SettingsMenuListener implements Listener {
 		GENERAL_GUI = Bukkit.createInventory(null, 3 * 9, GENERAL_GUI_NAME);
 		GENERAL_GUI.setItem(26, BACK);
 
-		VISITORS_GUI = Bukkit.createInventory(null, 5 * 9, VISITORS_GUI_NAME);
-		VISITORS_GUI.setItem(44, BACK);
+		VISITORS_GUI = Bukkit.createInventory(null, 6 * 9, VISITORS_GUI_NAME);
+		VISITORS_GUI.setItem(53, BACK);
 
 		COOP_GUI = Bukkit.createInventory(null, 4 * 9, COOP_GUI_NAME);
 		COOP_GUI.setItem(35, BACK);
 
 		VISITORS_SLOTMAP = new HashMap<Integer, VisitorPermission>() {
 			{
-				put(12, VisitorPermission.FLY);
-				put(14, VisitorPermission.SETHOME);
+				// First row
+				put(10, VisitorPermission.DOORS); // DONE
+				put(11, VisitorPermission.GATES); // DONE
 
-				put(19, VisitorPermission.DOORS);
-				put(20, VisitorPermission.GATES);
+				put(13, VisitorPermission.VILLAGERS);
 
-				put(22, VisitorPermission.VILLAGERS);
+				put(15, VisitorPermission.DROP); // DONE
+				put(16, VisitorPermission.PICKUP); // DONE
 
-				put(24, VisitorPermission.DROP);
-				put(25, VisitorPermission.PICKUP);
+				// Second row
+				put(20, VisitorPermission.REDSTONE); // DONE
+				put(21, VisitorPermission.PLATES); // DONE
 
-				put(29, VisitorPermission.REDSTONE);
-				put(30, VisitorPermission.PLATES);
+				put(23, VisitorPermission.BUTTONS); // DONE
+				put(24, VisitorPermission.LEVERS); // DONE
 
-				put(32, VisitorPermission.BUTTONS);
-				put(33, VisitorPermission.LEVERS);
+				// Third row
+				put(28, VisitorPermission.HITMOBS); // DONE
+				put(29, VisitorPermission.HITGOLEMS); // DONE
+
+				put(31, VisitorPermission.RIDING);
+
+				put(33, VisitorPermission.HITANIMALS); // DONE
+				put(34, VisitorPermission.USE_LEASH);
+
+				// Fourth row
+				put(38, VisitorPermission.USE_BOW);
+				put(39, VisitorPermission.FISH);
+
+				put(41, VisitorPermission.FLY); // DONE
+				put(42, VisitorPermission.SETHOME); // DONE
 			}
 		};
 
 		GENERAL_SLOTMAP = new HashMap<Integer, GeneralPermission>() {
 			{
-				put(10, GeneralPermission.SPAWNERS);
-				put(11, GeneralPermission.MOBSPAWNING);
+				put(10, GeneralPermission.SPAWNERS); // DONE
+				put(11, GeneralPermission.MOBSPAWNING); // DONE
 
-				put(15, GeneralPermission.FLUIDFLOWING);
-				put(16, GeneralPermission.GENENABLED);
+				put(15, GeneralPermission.FLUIDFLOWING); // DONE
+				put(16, GeneralPermission.GENENABLED); // DONE
 			}
 		};
 		COOP_SLOTMAP = new HashMap<Integer, CoopPermission>() {
 			{
-				put(10, CoopPermission.PLACE);
-				put(11, CoopPermission.BREAK);
+				put(10, CoopPermission.PLACE); // DONE
+				put(11, CoopPermission.BREAK); // DONE
 
-				put(13, CoopPermission.CHEST);
+				put(13, CoopPermission.CHEST); // DONE
 
-				put(15, CoopPermission.SHULKER_BOX);
-				put(16, CoopPermission.CONTAINERS);
+				put(15, CoopPermission.SHULKER_BOX); // DONE
+				put(16, CoopPermission.CONTAINERS); // DONE
 
-				put(20, CoopPermission.BUCKETS);
-				put(21, CoopPermission.FIRE);
+				put(20, CoopPermission.BUCKETS); // DONE
+				put(21, CoopPermission.FIRE); // DONE
 
-				put(23, CoopPermission.REDSTONE);
-				put(24, CoopPermission.ACTIONNERS);
+				put(23, CoopPermission.REDSTONE); // DONE
+				put(24, CoopPermission.ACTIONNERS); // DONE
 			}
 		};
 	}

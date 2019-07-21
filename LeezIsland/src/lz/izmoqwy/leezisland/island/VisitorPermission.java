@@ -18,7 +18,15 @@ public enum VisitorPermission {
 	DROP('d', Material.STICK, "Jeter des objets"),
 	PICKUP('p', Material.GOLD_NUGGET, "Ramasser des objets"),
 	FLY('F', Material.FEATHER, "Voler"),
-	SETHOME('S', Material.SPIDER_EYE, "Définir un home");
+	SETHOME('S', Material.SPIDER_EYE, "Définir un home"),
+
+	HITMOBS('H', new MaterialData(Material.MONSTER_EGG, (byte) 54), "Taper les monstres"),
+	HITANIMALS('h', new MaterialData(Material.MONSTER_EGG, (byte) 90), "Taper les animaux"),
+	HITGOLEMS('g', new MaterialData(Material.MONSTER_EGG), "Taper les golems"),
+	RIDING('r', Material.SADDLE, "Utiliser les selles"),
+	USE_LEASH('U', Material.LEASH, "Utiliser les laisses"),
+	USE_BOW('b', Material.BOW, "Envoyer des flèches"),
+	FISH('f', Material.FISHING_ROD, "Pêcher");
 
 	public char val;
 	@Getter
