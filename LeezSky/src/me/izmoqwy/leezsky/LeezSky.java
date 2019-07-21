@@ -14,6 +14,8 @@ import me.izmoqwy.leezsky.listeners.MotdListener;
 import me.izmoqwy.leezsky.listeners.PlayersListener;
 import me.izmoqwy.leezsky.listeners.SpawnListener;
 import me.izmoqwy.leezsky.managers.InvestManager;
+import me.izmoqwy.leezsky.tasks.AutoMessage;
+import me.izmoqwy.leezsky.tasks.Rebooter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,8 +29,9 @@ import java.util.UUID;
 public class LeezSky extends JavaPlugin {
 	
 	private static LeezSky instance;
-	private boolean reboot = false;
-	
+	public boolean reboot = false;
+
+	public static final boolean CLUSTER_HOST = false;
 	public static final String PREFIX = LeezCore.PREFIX;
 	public static final String TAB_HEADER = "§8┅⊰ §6PLAY.LEEZSKY.FR §8⊱┅\n",
 		TAB_FOOTER = "\n§8┅⊰ §ediscord.gg/X78wMsE §8⊱┅";
@@ -85,9 +88,10 @@ public class LeezSky extends JavaPlugin {
 		if (Bukkit.getOnlinePlayers().size() >= 1) {
 			NmsAPI.packet.sendTablist(TAB_HEADER, TAB_FOOTER);
 		}
-		
-		//new Rebooter().start();
-		//new AutoMessage();
+
+		new AutoMessage();
+		if (CLUSTER_HOST)
+			new Rebooter().start();
 	}
 	
 	public static LeezSky getInstance() {
