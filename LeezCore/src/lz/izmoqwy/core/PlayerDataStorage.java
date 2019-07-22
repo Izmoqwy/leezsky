@@ -37,8 +37,11 @@ public class PlayerDataStorage {
 			}
 			return yaml;
 		}
-		else
-			return YamlConfiguration.loadConfiguration(getFile(player));
+		else {
+			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(getFile(player));
+			yamls.put(player.getUniqueId(), yaml);
+			return yaml;
+		}
 	}
 
 	public static YamlConfiguration yamlNoThrow(OfflinePlayer player) {
