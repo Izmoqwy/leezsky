@@ -78,7 +78,7 @@ public class PlayerDataStorage {
 
 	public static <T> T get(OfflinePlayer player, String path, T def) {
 		final Object obj = getObject(player, path, def);
-		return obj != null ? (T) obj : null;
+		return obj != null ? (T) obj : def;
 	}
 
 	public static <T> void set(OfflinePlayer player, String path, T value) {
