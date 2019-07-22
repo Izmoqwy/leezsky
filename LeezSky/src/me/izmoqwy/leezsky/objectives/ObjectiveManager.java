@@ -8,6 +8,7 @@ import lz.izmoqwy.core.utils.StoreUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.Sound;
 import org.bukkit.boss.BarColor;
 import org.bukkit.boss.BarStyle;
 import org.bukkit.boss.BossBar;
@@ -208,6 +209,8 @@ public class ObjectiveManager {
 		else
 			player.sendMessage(LeezSky.PREFIX + "§2Vous avez terminé tous les objectifs acutellement disponibles, d'autres arriveront très prochainement !");
 		player.sendMessage(" ");
+
+		player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
 
 		if (newObjective != null)
 			addToBB(player);
