@@ -27,6 +27,7 @@ public class SettingsMenuListener implements Listener {
 			VISITORS_GUI_NAME = "§6Île §8» §eVisiteurs",
 			COOP_GUI_NAME = "§6Île §8» §eCoopérants";
 	public static final Inventory GUI, GENERAL_GUI, VISITORS_GUI, COOP_GUI;
+	private static final List<String> PROTECTED_NAMES = Arrays.asList(GUI_NAME, GENERAL_GUI_NAME, VISITORS_GUI_NAME, COOP_GUI_NAME);
 
 	static final Map<Integer, VisitorPermission> VISITORS_SLOTMAP;
 	static final Map<Integer, GeneralPermission> GENERAL_SLOTMAP;
@@ -122,10 +123,18 @@ public class SettingsMenuListener implements Listener {
 		return ItemUtil.createItem(icon, "§e" + name, lore);
 	}
 
-	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onClick(final InventoryClickEvent event) {
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onClick(InventoryClickEvent event) {
 		if (event.getClickedInventory() == null || event.getWhoClicked() == null)
 			return;
+
+		if (event.getClickedInventory().equals(event.getWhoClicked().getInventory())) {
+			Player player = (Player) event.getWhoClicked();
+			if (player.getOpenInventory() != null && PROTECTED_NAMES.contains(player.getOpenInventory().getTitle())) {
+				event.setCancelled(true);
+			}
+			return;
+		}
 
 		final String inventoryName = event.getClickedInventory().getName();
 		final int slot = event.getSlot();
