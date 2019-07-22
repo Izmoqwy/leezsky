@@ -20,7 +20,7 @@ import java.util.UUID;
 public class ObjectiveManager {
 
 	private static final int OBJECTIVES_SIZE;
-	private static final String PATH = "objectives.";
+	public static final String PATH = "objectives.";
 
 	static {
 		OBJECTIVES_SIZE = LeezObjective.values().length;

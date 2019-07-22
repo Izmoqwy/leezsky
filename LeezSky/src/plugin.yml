@@ -26,6 +26,8 @@ commands:
     description: Overriden op command
   leezdeop:
     description: Overriden deop command
+  objective:
+    aliases: [objectif, obj]
 permissions:
   leezsky.*:
     children:

@@ -84,6 +84,7 @@ public class LeezSky extends JavaPlugin {
 		InvestManager.TABLE = DB.getTable("Invests");
 		InvestManager.load();
 		PluginHelper.loadCommand("invest", new InvestCommand());
+		PluginHelper.loadCommand("objective", new ObjectiveCommand());
 
 		/*
 			Internal staff security
