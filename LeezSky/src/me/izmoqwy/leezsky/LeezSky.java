@@ -14,10 +14,12 @@ import me.izmoqwy.leezsky.listeners.MotdListener;
 import me.izmoqwy.leezsky.listeners.PlayersListener;
 import me.izmoqwy.leezsky.listeners.SpawnListener;
 import me.izmoqwy.leezsky.managers.InvestManager;
+import me.izmoqwy.leezsky.objectives.ObjectiveManager;
 import me.izmoqwy.leezsky.tasks.AutoMessage;
 import me.izmoqwy.leezsky.tasks.Rebooter;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -27,20 +29,34 @@ import java.sql.SQLException;
 import java.util.UUID;
 
 public class LeezSky extends JavaPlugin {
-	
+
 	private static LeezSky instance;
 	public boolean reboot = false;
 
 	public static final boolean CLUSTER_HOST = false;
 	public static final String PREFIX = LeezCore.PREFIX;
 	public static final String TAB_HEADER = "§8┅⊰ §6PLAY.LEEZSKY.FR §8⊱┅\n",
-		TAB_FOOTER = "\n§8┅⊰ §ediscord.gg/X78wMsE §8⊱┅";
+			TAB_FOOTER = "\n§8┅⊰ §ediscord.gg/X78wMsE §8⊱┅";
 
 	public static SQLDatabase DB;
-	
+
 	@Override
 	public void onEnable() {
 		instance = this;
+
+		final String initMessage =
+				"  _                                  _            \n" +
+						" | |                                | |           \n" +
+						" | |        ___    ___   ____  ___  | | __  _   _ \n" +
+						" | |       / _ \\  / _ \\ |_  / / __| | |/ / | | | |\n" +
+						" | |____  |  __/ |  __/  / /  \\__ \\ |   <  | |_| |\n" +
+						" |______|  \\___|  \\___| /___| |___/ |_|\\_\\  \\__, |\n" +
+						"                                             __/ |\n" +
+						"                                            |___/ ";
+		final String[] lines = initMessage.split("\n");
+		for (String line : lines) {
+			Bukkit.getConsoleSender().sendMessage("§6» " + line);
+		}
 
 		WorldsManager.registerPersistentVoidWorld("Spawn");
 		World world = Bukkit.getWorld("Spawn");
@@ -57,7 +73,7 @@ public class LeezSky extends JavaPlugin {
 			PreparedStatement prepared = DB.prepare("SELECT uuid, invested, at FROM Invests WHERE invested != -1");
 			ResultSet rs = prepared.executeQuery();
 
-			while(rs.next())
+			while (rs.next())
 				InvestManager.map.put(UUID.fromString(rs.getString("uuid")), Maps.immutableEntry(rs.getLong("at"), rs.getDouble("invested")));
 
 			prepared.close();
@@ -78,7 +94,7 @@ public class LeezSky extends JavaPlugin {
 		PluginHelper.loadCommand("help", new HelpCommand());
 		PluginHelper.loadCommand("announce", new AnnounceCommand());
 		PluginHelper.loadCommand("worlds", new WorldsCommand());
-		
+
 		PluginHelper.loadListener(this, new PlayersListener());
 		PluginHelper.loadListener(this, new CommandsListener());
 		PluginHelper.loadListener(this, new MotdListener());
@@ -92,16 +108,26 @@ public class LeezSky extends JavaPlugin {
 		new AutoMessage();
 		if (CLUSTER_HOST)
 			new Rebooter().start();
+
+		ObjectiveManager.load(this);
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			ObjectiveManager.loadPlayer(player);
+			ObjectiveManager.addToBB(player);
+		}
 	}
-	
+
 	public static LeezSky getInstance() {
 		return LeezSky.instance;
 	}
-	
+
 	@Override
 	public void onDisable() {
-		if(!reboot)
-			Bukkit.broadcastMessage( PREFIX + "§4Un élément majeur du serveur vient d'être désactivé.. Merci de contacter un administrateur au plus vite !" );
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			ObjectiveManager.removeFromBB(player);
+		}
+
+		if (!reboot)
+			Bukkit.broadcastMessage(PREFIX + "§4Un élément majeur du serveur vient d'être désactivé.. Merci de contacter un administrateur au plus vite !");
 	}
-	
+
 }
