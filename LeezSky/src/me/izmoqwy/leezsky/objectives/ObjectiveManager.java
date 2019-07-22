@@ -63,9 +63,12 @@ public class ObjectiveManager {
 	}
 
 	public static void loadPlayer(OfflinePlayer player) {
-		int index = PlayerDataStorage.get(player, PATH + "current", 0);
+		//int index = PlayerDataStorage.get(player, PATH + "current", 0);
+
+		// TODO: Dev only
+		int index = 0;
 		indexes.put(player.getUniqueId(), index);
-		nextObjective(player, true,false);
+		nextObjective(player,true);
 	}
 
 	public static LeezObjective getCurrentObjective(OfflinePlayer player) {
@@ -84,7 +87,7 @@ public class ObjectiveManager {
 		if (players.containsKey(player.getUniqueId())) {
 			Map.Entry<LeezObjective, BossBar> entry = players.get(player.getUniqueId());
 			if (entry == null) {
-				return nextObjective(player,false, false);
+				return nextObjective(player,false);
 			}
 
 			if (entry.getValue() != null)
@@ -93,13 +96,13 @@ public class ObjectiveManager {
 				return bossBarMap.get(entry.getKey());
 		}
 		return
-				nextObjective(player, false,false);
+				nextObjective(player, false);
 	}
 
-	protected static BossBar nextObjective(OfflinePlayer player, boolean fromload, boolean sendMessage) {
+	protected static BossBar nextObjective(OfflinePlayer player, boolean fromload) {
 		final int index = indexes.getOrDefault(player.getUniqueId(), -1) + (fromload ? 0 : 1);
 
-		LeezObjective objective = OBJECTIVES_SIZE > index ? LeezObjective.values()[index > -1 ? index : 0] : null;
+		LeezObjective objective = OBJECTIVES_SIZE > index ? LeezObjective.values()[index >= 0 ? index : 0] : null;
 
 		indexes.put(player.getUniqueId(), index);
 		if (!fromload && index > 0) {
@@ -110,9 +113,6 @@ public class ObjectiveManager {
 
 		if (objective == null) {
 			players.remove(player.getUniqueId());
-			if (sendMessage && player.isOnline()) {
-				player.getPlayer().sendMessage(LeezSky.PREFIX + "§aVous avez terminé tous les objectifs actuellement disponible. D'autre seront ajoutés très bientôt !");
-			}
 			return null;
 		}
 		else {
@@ -124,6 +124,16 @@ public class ObjectiveManager {
 				int done = PlayerDataStorage.get(player, PATH + "progress", 0);
 				bossBar.setTitle(getName(objective, done));
 				bossBar.setProgress(StoreUtil.mapValue(done, 0, objective.getDue(), 0, 1));
+			}
+			else if (fromload && PlayerDataStorage.get(player, PATH + "progress", 0) > 0) {
+				if (player.isOnline()) {
+					player.getPlayer().sendMessage(LeezSky.PREFIX + "§cVos objectifs semblaient corrompu, nous les avons remis à zéro.");
+				}
+				indexes.remove(player.getUniqueId());
+				PlayerDataStorage.set(player, PATH + "current", 0);
+				PlayerDataStorage.set(player, PATH + "progress", 0);
+				PlayerDataStorage.saveNoThrow(player);
+				return nextObjective(player, false);
 			}
 			Map.Entry<LeezObjective, BossBar> entry = Maps.immutableEntry(objective, bossBar);
 			players.put(player.getUniqueId(), entry);
@@ -178,7 +188,28 @@ public class ObjectiveManager {
 		}
 
 		removeFromBB(player);
-		nextObjective(player, false,true);
-		addToBB(player);
+
+		nextObjective(player,false);
+		LeezObjective newObjective = getCurrentObjective(player);
+
+		double xp = Math.pow(objective.ordinal() + 5, 2);
+		xp /= 1.9D;
+		int realXp = (int) Math.floor(xp * 3);
+		realXp = realXp - (realXp % 25);
+		if (realXp == 0)
+			realXp = 10;
+
+		player.giveExp(realXp);
+
+		player.sendMessage(" ");
+		player.sendMessage(LeezSky.PREFIX + "§aObjectif accomplit, vous avez gagné §2" + realXp + "xp §a!" );
+		if (newObjective != null)
+			player.sendMessage(LeezSky.PREFIX + "§6Nouvel objectif: §e" + newObjective.getName() );
+		else
+			player.sendMessage(LeezSky.PREFIX + "§2Vous avez terminé tous les objectifs acutellement disponibles, d'autres arriveront très prochainement !");
+		player.sendMessage(" ");
+
+		if (newObjective != null)
+			addToBB(player);
 	}
 }
