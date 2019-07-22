@@ -11,10 +11,12 @@ import java.util.List;
 public enum LeezObjective {
 
 	BREAK_LOG("Couper une bûche", ObjectiveAction.BREAK, Material.LOG, Material.LOG_2),
+	CRAFTING_TABLE("Fabriquer un établi", ObjectiveAction.CRAFT, Material.WORKBENCH),
 	PLACE_WATER("Poser une source d'eau", ObjectiveAction.BUCKET, Material.WATER_BUCKET),
 	BREAK_COBBLE("Casser une pierre", ObjectiveAction.BREAK, Material.COBBLESTONE),
-	FIRST_MOBS("Tuer 10 monstres hostiles", 10, ObjectiveAction.KILL, MobType.HOSTILE),
-	TEST("Tuer 250 monstrers (Test)", 250, ObjectiveAction.KILL, MobType.HOSTILE);
+	FURNACE("Fabriquer un four", ObjectiveAction.CRAFT, Material.FURNACE),
+	SMELT_IRON("Faire cuir 3 minerais de fer", 3, ObjectiveAction.SMELT, Material.IRON_INGOT),
+	FIRST_MOBS("Tuer 10 monstres hostiles", 10, ObjectiveAction.KILL, MobType.HOSTILE);
 
 	@Getter
 	final String name;

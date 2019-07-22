@@ -172,14 +172,16 @@ public class ObjectiveManager {
 	}
 
 	public static void complete(LeezObjective objective, Player player) {
+		complete(objective, player, 1);
+	}
+
+	public static void complete(LeezObjective objective, Player player, int amount) {
 		if (objective.getDue() > 1) {
 			BossBar bossBar = getPlayerObjectiveBB(player);
 
-			// Todo: Manage things with stuff like kill 1000 mobs
-			// In fact, just map the value
-			int progress = PlayerDataStorage.get(player, PATH + "progress", 0) + 1;
+			int progress = PlayerDataStorage.get(player, PATH + "progress", 0) + amount;
 			if (progress < objective.getDue()) {
-				bossBar.setProgress(bossBar.getProgress() + StoreUtil.mapValue(1, 0, objective.getDue(), 0, 1));
+				bossBar.setProgress(bossBar.getProgress() + StoreUtil.mapValue(amount, 0, objective.getDue(), 0, 1));
 				bossBar.setTitle(getName(objective, progress));
 
 				PlayerDataStorage.set(player, PATH + "progress", progress);

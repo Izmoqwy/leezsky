@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.FurnaceExtractEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -74,6 +75,18 @@ public class ObjectiveListener implements Listener {
 		if (objective != null && objective.getAction() == ObjectiveAction.CRAFT) {
 			if (objective.toBreak.contains(event.getRecipe().getResult().getData())) {
 				ObjectiveManager.complete(objective, player);
+			}
+		}
+	}
+
+	@EventHandler
+	public void onSmelt(final FurnaceExtractEvent event) {
+		Player player = event.getPlayer();
+
+		LeezObjective objective = ObjectiveManager.getCurrentObjective(player);
+		if (objective != null && objective.getAction() == ObjectiveAction.SMELT) {
+			if (objective.toBreak.contains(new MaterialData(event.getItemType()))) {
+				ObjectiveManager.complete(objective, player, event.getItemAmount());
 			}
 		}
 	}
