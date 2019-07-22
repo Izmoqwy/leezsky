@@ -9,6 +9,7 @@ import lz.izmoqwy.leezisland.players.Wrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -215,6 +216,7 @@ public class SettingsMenuListener implements Listener {
 				island.updatePermissions();
 
 				event.getClickedInventory().setItem(slot, boolVal(permission.getIcon(), permission.getTitle(), permission.getDescription(), island.hasVisitorPermission(permission)));
+				event.setResult(Event.Result.DENY);
 				break;
 			}
 			case GENERAL_GUI_NAME: {
@@ -259,6 +261,7 @@ public class SettingsMenuListener implements Listener {
 					if (island.hasGeneralPermission(GeneralPermission.FLUIDFLOWING))
 						IslandManager.broadcast(island, "§6L'écoulement des fluides à été réactivé sur votre île. les liquides déjà présents ne sont pas mis à jour automatiquement. Si vous voulez faire coulez un liquide déjà présent, posez un bloc à côté ou casser en un pour mettre à jour le liquide.");
 				}
+				event.setResult(Event.Result.DENY);
 				break;
 			}
 			case COOP_GUI_NAME: {
@@ -299,6 +302,7 @@ public class SettingsMenuListener implements Listener {
 				island.updatePermissions();
 
 				event.getClickedInventory().setItem(slot, boolVal(permission.getIcon(), permission.getTitle(), permission.getDescription(), island.hasCoopPermission(permission)));
+				event.setResult(Event.Result.DENY);
 				break;
 			}
 		}
