@@ -17,7 +17,7 @@ public class AutoMessage extends BukkitRunnable {
 		}
 	};
 	public static String[] MESSAGES = new String[]{
-			"Si tu n'es pas encore sur discord, rejoins le vite : §2discord.gg/mVgduAg §3!",
+			"Rejoins notre discord : §bdiscord.gg/mVgduAg §3!",
 	};
 
 	public static String[] TIPS = new String[]{
