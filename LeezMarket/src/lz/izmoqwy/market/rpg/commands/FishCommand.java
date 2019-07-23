@@ -1,5 +1,6 @@
 package lz.izmoqwy.market.rpg.commands;
 
+import lz.izmoqwy.core.CorePrinter;
 import lz.izmoqwy.core.api.CommandOptions;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.market.Locale;
@@ -14,22 +15,17 @@ import static lz.izmoqwy.market.rpg.RPGStorage.PLAYERS;
 
 public class FishCommand extends RPGCommand {
 
-	private final Random random = new Random();
-	private final int cooldown = 120 * 1000;
+	private static final Random random = new Random();
+	private static final int cooldown = 120 * 1000;
 
 	public FishCommand(String commandName) {
-		super(commandName, new CommandOptions().playerOnly());
+		super(commandName, new CommandOptions().playerOnly(), true);
 	}
 
 	@Override
 	protected void execute(RPGPlayer player, String usedCommand, String[] args) {
 		long elasped = System.currentTimeMillis() - player.getLast_fish();
 		if (player.getLast_fish() == 0 || elasped >= cooldown) {
-			if (player.getEnergy() <= 0) {
-				player.sendMessage(Locale.PREFIX + "§cVous n'avez plus d'énergie, patientez un peu puis revenez.");
-				return;
-			}
-
 			final String uuid = player.getBase().getUniqueId().toString();
 			try {
 				PLAYERS.decrease("energy", 1, "uuid", uuid);
@@ -45,7 +41,7 @@ public class FishCommand extends RPGCommand {
 			Bukkit.getScheduler().runTaskLater(MarketPlugin.getInstance(), () -> {
 				int amount = 1;
 				FishType type = FishType.WASTE;
-				switch(random.nextInt(7)) {
+				switch (random.nextInt(7)) {
 					case 0:
 					case 1:
 					case 2:
@@ -67,28 +63,49 @@ public class FishCommand extends RPGCommand {
 						break;
 				}
 
+				boolean online = player.getBase().isOnline();
+				if (!online)
+					CorePrinter.print("[RPG] Player {0} disconnected before catching a fish! Giving it to him anyway.", player.getBase().getName());
+
 				switch (type) {
 					case COMMON:
 						try {
 							PLAYERS.increase("fish_common", amount, "uuid", uuid);
+							PLAYERS.increase("exp", 15 * (online ? 2 : 1) * amount, "uuid", uuid);
 						}
 						catch (SQLActionImpossibleException e) {
 							e.printStackTrace();
 						}
-						player.sendMessage(Locale.PREFIX + "§bVous avez attrapé " + (amount == 2 ? "deux poissons" : "un poisson") + " de rareté §2❀ Commune§b.");
+						if (online) {
+							player.sendMessage(Locale.PREFIX + "§bVous avez attrapé " + (amount == 2 ? "deux poissons" : "un poisson") + " de rareté §2❀ Commune§b.");
+							calcLevelUp(player, 30 * amount);
+						}
 						break;
 					case UNCOMMON:
 						try {
 							PLAYERS.increase("fish_uncommon", amount, "uuid", uuid);
 							PLAYERS.increase("energy", 2, "uuid", uuid);
+							PLAYERS.increase("exp", online ? 100 : 50, "uuid", uuid);
 						}
 						catch (SQLActionImpossibleException e) {
 							e.printStackTrace();
 						}
-						player.sendMessage(Locale.PREFIX + "§bVous avez attrapé un poisson de rareté §e✮ Rare§b, vous regagnez également §e2⚡§b.");
+						if (online) {
+							player.sendMessage(Locale.PREFIX + "§bVous avez attrapé un poisson de rareté §e✮ Rare§b, vous regagnez également §e2⚡§b.");
+							calcLevelUp(player, 100);
+						}
 						break;
 					case WASTE:
-						player.sendMessage(Locale.PREFIX + "§bVous avez pêché un déchet, vous l'avez jeté à la poubelle, vous n'avez donc rien gagné.");
+						try {
+							PLAYERS.increase("exp", online ? 15 : 5, "uuid", uuid);
+						}
+						catch (SQLActionImpossibleException e) {
+							e.printStackTrace();
+						}
+						if (online) {
+							player.sendMessage(Locale.PREFIX + "§bVous avez pêché un déchet, vous l'avez jeté à la poubelle, vous n'avez donc rien gagné.");
+							calcLevelUp(player, 15);
+						}
 						break;
 				}
 			}, (random.nextInt(15) + 5) * 20);

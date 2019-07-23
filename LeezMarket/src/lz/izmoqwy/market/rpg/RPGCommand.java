@@ -16,8 +16,19 @@ import java.util.UUID;
 
 public abstract class RPGCommand extends CoreCommand {
 
-	public RPGCommand(String name, CommandOptions options) {
+	// static for the moment, will be per player in the future
+	private static final int ENERGY_REGEN_TIME = 1;
+	private static final int ENERGY_MAX = 500;
+
+	private final boolean needsEnergy;
+
+	public RPGCommand(String name, CommandOptions options, boolean needsEnergy) {
 		super(name, options);
+		this.needsEnergy = needsEnergy;
+	}
+
+	public RPGCommand(String name, CommandOptions options) {
+		this(name, options, false);
 	}
 
 	@Override
@@ -48,9 +59,18 @@ public abstract class RPGCommand extends CoreCommand {
 		if (rs.next()) {
 			int exp = rs.getInt("exp");
 			int points = rs.getInt("points");
-			int energy = rs.getInt("energy");
 
+			int energy = rs.getInt("energy");
 			long last_get = rs.getLong("last_get");
+			if (energy < ENERGY_MAX && last_get != 0) {
+				int toRegen = (int) Math.floor((System.currentTimeMillis() - last_get) / (ENERGY_REGEN_TIME * 1000));
+				if (toRegen > (ENERGY_MAX - energy))
+					toRegen = ENERGY_MAX - energy;
+				RPGStorage.PLAYERS.increase("energy", toRegen, "uuid", uuid.toString());
+				energy += toRegen;
+			}
+			RPGStorage.PLAYERS.setLong("last_get", System.currentTimeMillis() - (last_get % (ENERGY_REGEN_TIME * 1000)), "uuid", uuid.toString());
+
 			int res_darkmatter = rs.getInt("res_darkmatter");
 			int res_uranium = rs.getInt("res_uranium");
 			int res_titane = rs.getInt("res_titane");
@@ -60,17 +80,17 @@ public abstract class RPGCommand extends CoreCommand {
 			int fish_common = rs.getInt("fish_common");
 			int fish_uncommon = rs.getInt("fish_uncommon");
 
-			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), exp, points, energy, last_get, res_darkmatter, res_uranium, res_titane, res_copper, last_fish, fish_common, fish_uncommon);
+			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), exp, points, energy, ENERGY_MAX, last_get, res_darkmatter, res_uranium, res_titane, res_copper, last_fish, fish_common, fish_uncommon);
 		}
 		statement.close();
 
-		if (player == null ) {
+		if (player == null) {
 			PreparedStatement statement1 = RPGStorage.DB.prepare("INSERT INTO \"Players\"(\"uuid\") VALUES (?)");
 			statement1.setString(1, uuid.toString());
 			statement1.execute();
 			statement1.close();
 
-			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), 0, 0, 10, 0, 0, 0, 0, 0, 0, 0, 0);
+			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), 0, 0, ENERGY_MAX, ENERGY_MAX, 0, 0, 0, 0, 0, 0, 0, 0);
 			newPlayer = true;
 		}
 
