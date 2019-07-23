@@ -230,6 +230,42 @@ public abstract class SQLDatabase implements Database {
 			}
 		}
 
+		public void increase(String key, int i, String where, String whereequals)
+			throws SQLActionImpossibleException {
+
+			if (key == null)
+				throw new SQLActionImpossibleException("Key cannot be null", ImpossibleExceptionType.KEYISNULL);
+
+			try {
+				PreparedStatement executor = prepare("UPDATE " + name + " SET " + key + "=" + key + "+? WHERE " + where + " = ?");
+				executor.setInt(1, i);
+				executor.setString(2, whereequals);
+				executor.executeUpdate();
+				executor.close();
+			}
+			catch (SQLException ex) {
+				throw new SQLActionImpossibleException(ex.getMessage(), ImpossibleExceptionType.SQLERROR);
+			}
+		}
+
+		public void decrease(String key, int i, String where, String whereequals)
+			throws SQLActionImpossibleException {
+
+			if (key == null)
+				throw new SQLActionImpossibleException("Key cannot be null", ImpossibleExceptionType.KEYISNULL);
+
+			try {
+				PreparedStatement executor = prepare("UPDATE " + name + " SET " + key + "=" + key + "-? WHERE " + where + " = ?");
+				executor.setInt(1, i);
+				executor.setString(2, whereequals);
+				executor.executeUpdate();
+				executor.close();
+			}
+			catch (SQLException ex) {
+				throw new SQLActionImpossibleException(ex.getMessage(), ImpossibleExceptionType.SQLERROR);
+			}
+		}
+
 		public void delete(String where, String whereequals) throws SQLException {
 			PreparedStatement executor = prepare("DELETE FROM " + name + " WHERE " + where + " = ?");
 			executor.setString(1, whereequals);
