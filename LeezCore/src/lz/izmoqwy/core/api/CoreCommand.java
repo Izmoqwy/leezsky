@@ -44,19 +44,19 @@ public abstract class CoreCommand implements CommandExecutor {
 							commandSender.sendMessage(LeezCore.PREFIX + "§cVeuillez attendre encore §e" + (Math.floor(remaining / 100) / 10) + "s §cavant de faire cette commande à nouveau.");
 						}
 						else {
-							execute(commandSender, usedCommand, args);
+							run(commandSender, usedCommand, args);
 							cooldowns.replace(uuid, System.currentTimeMillis());
 						}
 					}
 					else {
-						execute(commandSender, usedCommand, args);
+						run(commandSender, usedCommand, args);
 						cooldowns.put(uuid, System.currentTimeMillis());
 					}
 				}
 			}
 			else {
 				if (!playerOnly)
-					execute(commandSender, usedCommand, args);
+					run(commandSender, usedCommand, args);
 				else
 					commandSender.sendMessage("§cCommande reservée aux joueurs !");
 			}
@@ -64,7 +64,27 @@ public abstract class CoreCommand implements CommandExecutor {
 		return false;
 	}
 
-	protected abstract void execute(CommandSender commandSender, String usedCommand, String[] args);
+	private void run(CommandSender commandSender, String usedCommand, String[] args) {
+		try {
+			execute(commandSender, usedCommand, args);
+		}
+		catch (CommandNoPermissionException ex) {
+			commandSender.sendMessage(PREFIX + "§cVous n'avez pas la permission de faire cette commande !");
+		}
+	}
+
+	protected abstract void execute(CommandSender commandSender, String usedCommand, String[] args) throws CommandNoPermissionException;
+
+	protected void permCheck(Player player, String permission) throws CommandNoPermissionException {
+		permCheck(player, permission, false);
+	}
+
+	protected void permCheck(Player player, String permission, boolean full) throws CommandNoPermissionException {
+		if (!full)
+			permission = name.toLowerCase() + "." + permission;
+		if(!player.hasPermission(permission))
+			throw new CommandNoPermissionException();
+	}
 
 	protected static boolean c(String arg, String... possibilites) {
 		for (String s : possibilites) {
