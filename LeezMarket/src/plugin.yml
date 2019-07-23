@@ -1,0 +1,14 @@
+name: LeezMarket
+version: 1.0.0
+author: Izmoqwy
+
+main: lz.izmoqwy.market.MarketPlugin
+depend: [LeezCore]
+
+commands:
+  rpginventory:
+    aliases: [rinventory, rinv]
+    description: Show your resources
+  rpgfish:
+    aliases: [rfish]
+    description: Catch a fish.. or something you don't like
