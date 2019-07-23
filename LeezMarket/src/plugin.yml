@@ -6,6 +6,9 @@ main: lz.izmoqwy.market.MarketPlugin
 depend: [LeezCore]
 
 commands:
+  blackmarket:
+    aliases: [bm]
+    description: Nothing to see, go away
   rpgstats:
     aliases: [rstats, rstat]
     description: Show your stats
