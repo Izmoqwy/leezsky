@@ -3,6 +3,7 @@ package lz.izmoqwy.market.rpg.commands;
 import lz.izmoqwy.core.api.CommandOptions;
 import lz.izmoqwy.market.Locale;
 import lz.izmoqwy.market.rpg.RPGCommand;
+import lz.izmoqwy.market.rpg.RPGManager;
 import lz.izmoqwy.market.rpg.RPGPlayer;
 
 import static lz.izmoqwy.market.rpg.RPGResource.*;
@@ -17,7 +18,7 @@ public class InventoryCommand extends RPGCommand {
 	protected void execute(RPGPlayer player, String usedCommand, String[] args) {
 		player.sendMessage(" ");
 		player.sendMessage(Locale.PREFIX + "§3Ressources:");
-		player.sendMessage("§8➥ §6⚡ Énergie: §e" + player.getEnergy() + "/" + player.getMax_energy());
+		player.sendMessage("§8➥ §6⚡ Énergie: §e" + player.getEnergy() + "/" + player.getMax_energy() + " §b[+1/" + RPGManager.ENERGY_REGEN_TIME + "s]");
 		player.sendMessage("§8➥ §6✦ Points: §e" + player.getPoints());
 		player.sendMessage(" ");
 		player.sendMessage("§8➥ " + DARKMATTER.getFullName() + ": §f" + player.getRes_darkmatter());

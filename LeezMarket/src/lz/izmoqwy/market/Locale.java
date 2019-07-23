@@ -11,7 +11,8 @@ import java.text.MessageFormat;
 
 public enum Locale implements i18nLocale {
 
-	PREFIX("§3RPG " + LeezCore.PREFIX, false),
+	PREFIX(LeezCore.PREFIX, false),
+	RPG_PREFIX("§3RPG §8» ", false),
 
 	RPG_NO_ENERGY("§cVous n'avez plus d'énergie, revenez dans quelques temps.")
 

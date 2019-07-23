@@ -1,6 +1,7 @@
 package lz.izmoqwy.market.blackmarket;
 
 import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.PlayerDataStorage;
 import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.market.MarketPlugin;
 import lz.izmoqwy.market.npc.NPC_v1_12_R1;
@@ -13,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -45,21 +47,22 @@ public class BlackMarket implements Listener {
 	public static void loadAll() {
 		PluginHelper.loadCommand("blackmarket", new BlackMarketCommand());
 		PluginHelper.loadListener(MarketPlugin.getInstance(), new BlackMarket());
+		PluginHelper.loadListener(MarketPlugin.getInstance(), new BlackMarketGUI());
 		loadRPG();
 
 		loadNPC();
 	}
-	private static void loadNPC() {
 
+	private static void loadNPC() {
 		if (file.exists()) {
 			// todo
 			CorePrinter.print("Loading BM NPC from file...");
 			config = YamlConfiguration.loadConfiguration(file);
 			NPC_NAME = config.getString("npc.name", "§6§lMarché noir");
 
-			String[] all_paths = new String[] { "world", "x", "y", "z", "yaw", "pitch" };
+			String[] all_paths = new String[]{"world", "x", "y", "z", "yaw", "pitch"};
 			for (String path : all_paths) {
-				if(!config.isSet("npc." + path))
+				if (!config.isSet("npc." + path))
 					return;
 			}
 
@@ -98,6 +101,7 @@ public class BlackMarket implements Listener {
 			Integer[] ids = new Integer[4];
 			for (int i = 0; i < 4; i++) {
 				ArmorStand armorStand = location.getWorld().spawn(locations[i], ArmorStand.class);
+				armorStand.setInvulnerable(true);
 				armorStand.setGravity(false);
 				armorStand.setCanPickupItems(false);
 				armorStand.setVisible(false);
@@ -111,7 +115,8 @@ public class BlackMarket implements Listener {
 	}
 
 	private static Location[] spawnArmorStands(Location middle) {
-		return new Location[] { add(middle, 0.25, 0.25), add(middle, -0.25, 0.25), add(middle, 0.25, -0.25), add(middle, -0.25, -0.25)};
+		return new Location[]{add(middle, 0.25, 0.25), add(middle, -0.25, 0.25), add(middle, 0.25, -0.25), add(middle, -0.25, -0.25)};
+				//add(middle, 0.25, 0), add(middle, -0.25, 0), add(middle, 0, 0.25), add(middle, 0, -0.25)};
 	}
 
 	private static Location add(Location base, double x, double z) {
@@ -137,14 +142,21 @@ public class BlackMarket implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInteract(PlayerInteractAtEntityEvent event) {
-		if (NPC == null)
+		if (NPC == null || armorStandsIds == null)
 			return;
 
 		if (event.getRightClicked().getType() == EntityType.ARMOR_STAND) {
 			if (armorStandsIds.contains(event.getRightClicked().getEntityId())) {
 				event.setCancelled(true);
 				NPC.updateSkin(event.getPlayer());
-				event.getPlayer().openInventory(BlackMarketGUI.GUI_MENU);
+
+				Player player = event.getPlayer();
+				if (PlayerDataStorage.get(player, "blackmarket.access", false)) {
+					player.openInventory(BlackMarketGUI.GUI_MENU);
+				}
+				else {
+					BlackMarketGUI.openAccessInventory(player);
+				}
 			}
 		}
 	}

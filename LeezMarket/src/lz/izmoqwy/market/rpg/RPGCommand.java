@@ -1,26 +1,19 @@
 package lz.izmoqwy.market.rpg;
 
-import com.google.common.collect.Maps;
 import lz.izmoqwy.core.api.CommandOptions;
 import lz.izmoqwy.core.api.CoreCommand;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.market.Locale;
-import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import java.util.UUID;
+
+import static lz.izmoqwy.market.rpg.RPGManager.loadRPGPlayer;
 
 public abstract class RPGCommand extends CoreCommand {
-
-	// static for the moment, will be per player in the future
-	private static final int ENERGY_REGEN_TIME = 1;
-	private static final int ENERGY_MAX = 500;
 
 	private final boolean needsEnergy;
 
@@ -36,7 +29,7 @@ public abstract class RPGCommand extends CoreCommand {
 	@Override
 	protected void execute(CommandSender commandSender, String usedCommand, String[] args) {
 		try {
-			Map.Entry<RPGPlayer, Boolean> loaded = loadRPGPlayer(((Player) commandSender).getUniqueId());
+			Map.Entry<RPGPlayer, Boolean> loaded = loadRPGPlayer(((Player) commandSender).getUniqueId(), true);
 			if (loaded.getValue()) {
 				commandSender.sendMessage(Locale.PREFIX + "§aNous venons de créer votre tout nouveau compte, nous vous offrons §e10⚡ §apour commencer.");
 			}
@@ -115,51 +108,4 @@ public abstract class RPGCommand extends CoreCommand {
 		}
 	}
 
-	protected static Map.Entry<RPGPlayer, Boolean> loadRPGPlayer(UUID uuid) throws SQLException, SQLActionImpossibleException {
-		PreparedStatement statement = RPGStorage.DB.prepare("SELECT * FROM " + RPGStorage.PLAYERS + " WHERE uuid = ?");
-		statement.setString(1, uuid.toString());
-		ResultSet rs = statement.executeQuery();
-
-		RPGPlayer player = null;
-		boolean newPlayer = false;
-		if (rs.next()) {
-			int exp = rs.getInt("exp");
-			int points = rs.getInt("points");
-
-			int energy = rs.getInt("energy");
-			long last_get = rs.getLong("last_get");
-			if (energy < ENERGY_MAX && last_get != 0) {
-				int toRegen = (int) Math.floor((System.currentTimeMillis() - last_get) / (ENERGY_REGEN_TIME * 1000));
-				if (toRegen > (ENERGY_MAX - energy))
-					toRegen = ENERGY_MAX - energy;
-				RPGStorage.PLAYERS.increase("energy", toRegen, "uuid", uuid.toString());
-				energy += toRegen;
-			}
-			RPGStorage.PLAYERS.setLong("last_get", System.currentTimeMillis() - (last_get % (ENERGY_REGEN_TIME * 1000)), "uuid", uuid.toString());
-
-			int res_darkmatter = rs.getInt("res_darkmatter");
-			int res_uranium = rs.getInt("res_uranium");
-			int res_titane = rs.getInt("res_titane");
-			int res_copper = rs.getInt("res_copper");
-
-			long last_fish = rs.getLong("last_fish");
-			int fish_common = rs.getInt("fish_common");
-			int fish_uncommon = rs.getInt("fish_uncommon");
-
-			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), exp, points, energy, ENERGY_MAX, last_get, res_darkmatter, res_uranium, res_titane, res_copper, last_fish, fish_common, fish_uncommon);
-		}
-		statement.close();
-
-		if (player == null) {
-			PreparedStatement statement1 = RPGStorage.DB.prepare("INSERT INTO \"Players\"(\"uuid\") VALUES (?)");
-			statement1.setString(1, uuid.toString());
-			statement1.execute();
-			statement1.close();
-
-			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), 0, 0, ENERGY_MAX, ENERGY_MAX, 0, 0, 0, 0, 0, 0, 0, 0);
-			newPlayer = true;
-		}
-
-		return Maps.immutableEntry(player, newPlayer);
-	}
 }
