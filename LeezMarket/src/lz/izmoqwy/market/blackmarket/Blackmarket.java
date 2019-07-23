@@ -11,16 +11,24 @@ import lz.izmoqwy.market.rpg.commands.StatsCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 public class BlackMarket implements Listener {
 
 	protected static NPC_v1_12_R1 NPC = null;
+	protected static List<ArmorStand> armorStands;
+	protected static List<Integer> armorStandsIds;
 	protected static File file = new File(MarketPlugin.getInstance().getDataFolder(), "blackmarket.yml");
 
 	protected static YamlConfiguration config;
@@ -61,6 +69,8 @@ public class BlackMarket implements Listener {
 			Location location = new Location(Bukkit.getWorld(config.getString("npc.world")), x, y, z, (float) yaw, (float) pitch);
 			NPC = new NPC_v1_12_R1(NPC_NAME, location, config.getString("skin.texture"), config.getString("skin.signature"));
 			NPC.spawn();
+
+			spawnArmorStand(location);
 		}
 		else {
 			if (!file.getParentFile().exists())
@@ -76,14 +86,66 @@ public class BlackMarket implements Listener {
 		}
 	}
 
+	protected static void spawnArmorStand(Location location) {
+		Location[] locations = spawnArmorStands(location);
+		if (armorStands != null) {
+			for (int i = 0; i < 4; i++) {
+				armorStands.get(i).teleport(locations[i]);
+			}
+		}
+		else {
+			ArmorStand[] armorStands = new ArmorStand[4];
+			Integer[] ids = new Integer[4];
+			for (int i = 0; i < 4; i++) {
+				ArmorStand armorStand = location.getWorld().spawn(locations[i], ArmorStand.class);
+				armorStand.setGravity(false);
+				armorStand.setCanPickupItems(false);
+				armorStand.setVisible(false);
+
+				armorStands[i] = armorStand;
+				ids[i] = armorStand.getEntityId();
+			}
+			BlackMarket.armorStands = Arrays.asList(armorStands);
+			BlackMarket.armorStandsIds = Arrays.asList(ids);
+		}
+	}
+
+	private static Location[] spawnArmorStands(Location middle) {
+		return new Location[] { add(middle, 0.25, 0.25), add(middle, -0.25, 0.25), add(middle, 0.25, -0.25), add(middle, -0.25, -0.25)};
+	}
+
+	private static Location add(Location base, double x, double z) {
+		return new Location(base.getWorld(), base.getX() + x, base.getY(), base.getZ() + z, base.getYaw(), base.getPitch());
+	}
+
 	public static void unload() {
 		if (NPC != null)
 			NPC.despawn();
+
+		if (armorStands != null) {
+			for (ArmorStand as : armorStands) {
+				as.remove();
+			}
+		}
 	}
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
 		if (NPC != null)
 			NPC.spawn(event.getPlayer());
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onInteract(PlayerInteractAtEntityEvent event) {
+		if (NPC == null)
+			return;
+
+		if (event.getRightClicked().getType() == EntityType.ARMOR_STAND) {
+			if (armorStandsIds.contains(event.getRightClicked().getEntityId())) {
+				event.setCancelled(true);
+				NPC.updateSkin(event.getPlayer());
+				event.getPlayer().openInventory(BlackMarketGUI.GUI_MENU);
+			}
+		}
 	}
 }

@@ -39,6 +39,7 @@ public class BlackMarketCommand extends CoreCommand {
 					BlackMarket.NPC.move(player.getLocation());
 				}
 				Location location = player.getLocation();
+				BlackMarket.spawnArmorStand(location);
 
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(BlackMarket.file);
 				config.set("npc.world", location.getWorld().getName());

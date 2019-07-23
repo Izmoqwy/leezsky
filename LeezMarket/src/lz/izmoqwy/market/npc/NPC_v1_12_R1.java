@@ -34,7 +34,7 @@ public class NPC_v1_12_R1 {
 
 	public void createEntity() {
 		MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-		WorldServer world = ((CraftWorld) Bukkit.getWorlds().get(0)).getHandle();
+		WorldServer world = ((CraftWorld) location.getWorld()).getHandle();
 
 		GameProfile profile = new GameProfile(UUID.randomUUID(), displayName);
 		profile.getProperties().put("textures", new Property("textures", url != null ? url : "none=", signature != null ? signature : "none="));
@@ -60,7 +60,7 @@ public class NPC_v1_12_R1 {
 		connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
 		connection.sendPacket(new PacketPlayOutNamedEntitySpawn(entityPlayer));
 		connection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) ((location.getYaw() * 256.0F) / 360.0F)));
-		connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer));
+		Bukkit.getScheduler().scheduleSyncDelayedTask(MarketPlugin.getInstance(), () -> connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer)), 5);
 	}
 
 	public void updateSkin(Player player) {
@@ -91,6 +91,10 @@ public class NPC_v1_12_R1 {
 		despawn();
 		entityPlayer = null;
 		Bukkit.getScheduler().runTaskLater(MarketPlugin.getInstance(), this::spawn, 5);
+	}
+
+	public int getEntityId() {
+		return entityPlayer != null ? entityPlayer.getId() : -1;
 	}
 
 }
