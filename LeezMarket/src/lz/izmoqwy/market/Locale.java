@@ -4,13 +4,16 @@ import lz.izmoqwy.core.CorePrinter;
 import lz.izmoqwy.core.LeezCore;
 import lz.izmoqwy.core.i18n.Locales;
 import lz.izmoqwy.core.i18n.i18nLocale;
+import lz.izmoqwy.market.rpg.RPGPlayer;
 import org.bukkit.command.CommandSender;
 
 import java.text.MessageFormat;
 
 public enum Locale implements i18nLocale {
 
-	PREFIX(LeezCore.PREFIX, false),
+	PREFIX("§3RPG " + LeezCore.PREFIX, false),
+
+	RPG_NO_ENERGY("§cVous n'avez plus d'énergie, revenez dans quelques temps.")
 
 	;
 
@@ -45,6 +48,12 @@ public enum Locale implements i18nLocale {
 		if (neededArgs != arguments.length)
 			CorePrinter.warn("Missing arguments on message {0}", getEnumName());
 		sender.sendMessage(MessageFormat.format(message, arguments));
+	}
+
+	public void send(RPGPlayer player, Object... arguments) {
+		if (!player.getBase().isOnline())
+			return;
+		send(player.getBase().getPlayer(), arguments);
 	}
 
 	@Override

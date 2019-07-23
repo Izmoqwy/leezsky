@@ -6,9 +6,15 @@ main: lz.izmoqwy.market.MarketPlugin
 depend: [LeezCore]
 
 commands:
+  rpgstats:
+    aliases: [rstats, rstat]
+    description: Show your stats
   rpginventory:
     aliases: [rinventory, rinv]
     description: Show your resources
+  rpgmine:
+    aliases: [rmine]
+    description: Mine virtual resources
   rpgfish:
     aliases: [rfish]
     description: Catch a fish.. or something you don't like

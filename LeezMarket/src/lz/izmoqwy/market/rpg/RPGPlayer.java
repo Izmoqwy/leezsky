@@ -1,6 +1,7 @@
 package lz.izmoqwy.market.rpg;
 
 import lombok.Getter;
+import lombok.Setter;
 import lz.izmoqwy.core.CorePrinter;
 import org.bukkit.OfflinePlayer;
 
@@ -9,12 +10,14 @@ public class RPGPlayer {
 	@Getter
 	private OfflinePlayer base;
 
-	@Getter
+	@Getter @Setter
 	private int exp;
 	@Getter
 	private int points;
 	@Getter
 	private int energy;
+	@Getter
+	private int max_energy;
 
 	@Getter
 	private long last_get;
@@ -55,6 +58,22 @@ public class RPGPlayer {
 			base.getPlayer().sendMessage(message);
 		else
 			CorePrinter.warn("Trying to send message to an offline player! ({0} -> {1})", base.getName(), message);
+	}
+
+	public int calcLevel() {
+		int xp = this.exp, needed = 0;
+		int level = 0;
+		while(xp >= needed) {
+			level++;
+			if (level > 1e3)
+				break;
+			needed = nextLevel(level);
+		}
+		return level;
+	}
+
+	private int nextLevel(int level) {
+		return (250 * (int) Math.pow(level, 2)) - (250 * level);
 	}
 
 }

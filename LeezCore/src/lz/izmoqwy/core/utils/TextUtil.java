@@ -25,4 +25,15 @@ public class TextUtil {
 		}
 		return builder.toString();
 	}
+
+	public static <T> String iterate(List<T> objects, FireAction.ObjToStr<T> objToStr, String objPrefix, String objSeparation, String lastSeparation) {
+		String string = iterate(objects, objToStr, objPrefix, objSeparation);
+
+		final int index = string.lastIndexOf(objSeparation);
+		if (index == -1)
+			return string;
+		return string.substring(0, index) +
+				lastSeparation +
+				string.substring(index + objSeparation.length());
+	}
 }
