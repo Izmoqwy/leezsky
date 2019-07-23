@@ -5,6 +5,8 @@ import lz.izmoqwy.market.Locale;
 import lz.izmoqwy.market.rpg.RPGCommand;
 import lz.izmoqwy.market.rpg.RPGPlayer;
 
+import static lz.izmoqwy.market.rpg.RPGResource.*;
+
 public class InventoryCommand extends RPGCommand {
 
 	public InventoryCommand(String commandName) {
@@ -15,13 +17,13 @@ public class InventoryCommand extends RPGCommand {
 	protected void execute(RPGPlayer player, String usedCommand, String[] args) {
 		player.sendMessage(" ");
 		player.sendMessage(Locale.PREFIX + "§3Ressources:");
-		player.sendMessage("§8➥ §6⚡ Énergie: §e" + player.getEnergy() + "/10");
+		player.sendMessage("§8➥ §6⚡ Énergie: §e" + player.getEnergy() + "/" + player.getMax_energy());
 		player.sendMessage("§8➥ §6✦ Points: §e" + player.getPoints());
 		player.sendMessage(" ");
-		player.sendMessage("§8➥ §8✺ Matière noire: §f" + player.getRes_darkmatter());
-		player.sendMessage("§8➥ §a☢ Uranium: §f" + player.getRes_uranium());
-		player.sendMessage("§8➥ §7❆ Titane: §f" + player.getRes_titane());
-		player.sendMessage("§8➥ §c✻ Cuivre: §f" + player.getRes_copper());
+		player.sendMessage("§8➥ " + DARKMATTER.getFullName() + ": §f" + player.getRes_darkmatter());
+		player.sendMessage("§8➥ " + URANIUM.getFullName() + ": §f" + player.getRes_uranium());
+		player.sendMessage("§8➥ " + TITANE.getFullName() + ": §f" + player.getRes_titane());
+		player.sendMessage("§8➥ " + COPPER.getFullName() + ": §f" + player.getRes_copper());
 
 		player.sendMessage(" ");
 		player.sendMessage(Locale.PREFIX + "§3Poissons:");
