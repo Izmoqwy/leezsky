@@ -54,6 +54,7 @@ public class BlackMarketGUI implements Listener {
 		GUI_FORGE.setItem(12, BMStuff.TITANE_LEGGINGS.getPresentationItem());
 		GUI_FORGE.setItem(13, BMStuff.TITANE_BOOTS.getPresentationItem());
 
+		GUI_FORGE.setItem(15, BMStuff.TITANE_SWORD.getPresentationItem());
 		GUI_FORGE.setItem(16, BMStuff.TITANE_SHIELD.getPresentationItem());
 
 		GUI_FORGE.setItem(4 * 9 - 1, ITEM_BACK);
@@ -187,6 +188,9 @@ public class BlackMarketGUI implements Listener {
 							openConfirmGUI(player, BMStuff.TITANE_BOOTS);
 							break;
 
+						case 15:
+							openConfirmGUI(player, BMStuff.TITANE_SWORD);
+							break;
 						case 16:
 							openConfirmGUI(player, BMStuff.TITANE_SHIELD);
 							break;

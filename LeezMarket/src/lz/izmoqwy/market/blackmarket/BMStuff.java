@@ -8,6 +8,7 @@ public class BMStuff {
 	public static final TitaneChestplate TITANE_CHESTPLATE;
 	public static final TitaneLeggings TITANE_LEGGINGS;
 	public static final TitaneBoots TITANE_BOOTS;
+	public static final TitaneSword TITANE_SWORD;
 	public static final TitaneShield TITANE_SHIELD;
 
 	static {
@@ -16,6 +17,7 @@ public class BMStuff {
 		TITANE_CHESTPLATE = new TitaneChestplate((int) 4e3);
 		TITANE_LEGGINGS = new TitaneLeggings((int) 2e3);
 		TITANE_BOOTS = new TitaneBoots((int) 3e3);
+		TITANE_SWORD = new TitaneSword((int) 5e3);
 		TITANE_SHIELD = new TitaneShield((int) 3e3);
 	}
 

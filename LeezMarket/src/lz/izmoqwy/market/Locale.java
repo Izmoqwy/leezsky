@@ -60,7 +60,7 @@ public enum Locale implements i18nLocale {
 	@Override
 	public void set(String newMessage) {
 		this.saveable = newMessage;
-		this.message = ((needPrefix ? PREFIX : "") + newMessage).replace("'", "''");
+		this.message = ((needPrefix ? (name().startsWith("RPG_") ? RPG_PREFIX : PREFIX) : "") + newMessage).replace("'", "''");
 	}
 
 	@Override

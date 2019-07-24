@@ -7,11 +7,10 @@ import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.market.MarketPlugin;
 import lz.izmoqwy.market.npc.NPC_v1_12_R1;
-import lz.izmoqwy.market.rpg.commands.FishCommand;
-import lz.izmoqwy.market.rpg.commands.InventoryCommand;
-import lz.izmoqwy.market.rpg.commands.MineCommand;
-import lz.izmoqwy.market.rpg.commands.StatsCommand;
+import lz.izmoqwy.market.rpg.commands.*;
 import org.bukkit.Location;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -45,6 +44,7 @@ public class BlackMarket implements Listener {
 		CorePrinter.print("Loading RPG (BlackMarket) commands...");
 		PluginHelper.loadCommand("rpgstats", new StatsCommand("rpgstats"));
 		PluginHelper.loadCommand("rpginventory", new InventoryCommand("rpginventory"));
+		PluginHelper.loadCommand("rpgitems", new ItemsCommand("rpgitems"));
 		PluginHelper.loadCommand("rpgmine", new MineCommand("rpgmine"));
 		PluginHelper.loadCommand("rpgfish", new FishCommand("rpgfish"));
 	}
@@ -199,6 +199,7 @@ public class BlackMarket implements Listener {
 
 				Player player = event.getPlayer();
 				if (PlayerDataStorage.get(player, "blackmarket.access", false)) {
+					player.playSound(player.getLocation(), Sound.BLOCK_NOTE_CHIME, SoundCategory.AMBIENT, 1, 10);
 					player.openInventory(BlackMarketGUI.GUI_MENU);
 				}
 				else {

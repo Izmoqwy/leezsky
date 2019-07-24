@@ -10,6 +10,9 @@ import java.sql.SQLException;
 import java.util.Map;
 import java.util.UUID;
 
+import static lz.izmoqwy.market.rpg.RPGItem.*;
+import static lz.izmoqwy.market.rpg.RPGResource.*;
+
 public class RPGManager {
 
 	// static for the moment, will be per player in the future
@@ -38,16 +41,20 @@ public class RPGManager {
 			}
 			RPGStorage.PLAYERS.setLong("last_get", System.currentTimeMillis() - (last_get % (ENERGY_REGEN_TIME * 1000)), "uuid", uuid.toString());
 
-			int res_darkmatter = rs.getInt("res_darkmatter");
-			int res_uranium = rs.getInt("res_uranium");
-			int res_titane = rs.getInt("res_titane");
-			int res_copper = rs.getInt("res_copper");
+			int res_darkmatter = rs.getInt(DARKMATTER.dbCol());
+			int res_uranium = rs.getInt(URANIUM.dbCol());
+			int res_titane = rs.getInt(TITANE.dbCol());
+			int res_copper = rs.getInt(COPPER.dbCol());
 
 			long last_fish = rs.getLong("last_fish");
 			int fish_common = rs.getInt("fish_common");
 			int fish_uncommon = rs.getInt("fish_uncommon");
 
-			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), exp, points, energy, ENERGY_MAX, last_get, res_darkmatter, res_uranium, res_titane, res_copper, last_fish, fish_common, fish_uncommon);
+			int item_pickaxe = rs.getInt(PICKAXE.dbCol());
+			int item_fishrod = rs.getInt(FISHROD.dbCol());
+			int item_stockage = rs.getInt(HANGAR.dbCol());
+
+			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), exp, points, energy, ENERGY_MAX, last_get, res_darkmatter, res_uranium, res_titane, res_copper, last_fish, fish_common, fish_uncommon, item_pickaxe, item_fishrod, item_stockage);
 		}
 		statement.close();
 
@@ -58,7 +65,7 @@ public class RPGManager {
 				statement1.execute();
 				statement1.close();
 			}
-			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), 0, 0, ENERGY_MAX, ENERGY_MAX, 0, 0, 0, 0, 0, 0, 0, 0);
+			player = new RPGPlayer(Bukkit.getOfflinePlayer(uuid), 0, 0, ENERGY_MAX, ENERGY_MAX, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 			newPlayer = true;
 		}
 

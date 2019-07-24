@@ -77,7 +77,7 @@ public class MineCommand extends RPGCommand {
 		int xp = 0, needed = 1;
 		while (exp >= needed) {
 			xp += 1;
-			needed += xp % 2 == 0 ? xp / 2 : xp;
+			needed += xp % 2 == 0 ? xp * 2 : xp;
 		}
 
 		try {
@@ -93,7 +93,7 @@ public class MineCommand extends RPGCommand {
 			player.sendMessage(Locale.PREFIX + "§4Une erreur est survenue ! §cImpossible de miner dans ces conditions.");
 			return;
 		}
-		player.sendMessage(Locale.PREFIX + "§3Vous avez miné " +
+		player.sendMessage(Locale.RPG_PREFIX + "§3Vous avez miné " +
 				TextUtil.iterate(ress, entry -> entry.getKey().getFullName(readbleNumber(entry.getValue())), "", "§3, ", " §3et ") +
 				" §3en utilisant §e" + used + "⚡§3. §6(§e+" + readbleNumber(exp) + "xp§6)");
 		calcLevelUp(player, exp);

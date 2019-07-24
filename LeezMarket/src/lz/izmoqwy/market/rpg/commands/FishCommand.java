@@ -37,7 +37,7 @@ public class FishCommand extends RPGCommand {
 				return;
 			}
 
-			player.sendMessage(Locale.PREFIX + "§aUn poisson est dans les environs, attendez qu'il morde..");
+			player.sendMessage(Locale.RPG_PREFIX + "§aUn poisson est dans les environs, attendez qu'il morde..");
 			Bukkit.getScheduler().runTaskLater(MarketPlugin.getInstance(), () -> {
 				int amount = 1;
 				FishType type = FishType.WASTE;
@@ -77,7 +77,7 @@ public class FishCommand extends RPGCommand {
 							e.printStackTrace();
 						}
 						if (online) {
-							player.sendMessage(Locale.PREFIX + "§bVous avez attrapé " + (amount == 2 ? "deux poissons" : "un poisson") + " de rareté §2❀ Commune§b.");
+							player.sendMessage(Locale.RPG_PREFIX + "§bVous avez attrapé " + (amount == 2 ? "deux poissons" : "un poisson") + " de rareté §2❀ Commune§b.");
 							calcLevelUp(player, 30 * amount);
 						}
 						break;
@@ -91,7 +91,7 @@ public class FishCommand extends RPGCommand {
 							e.printStackTrace();
 						}
 						if (online) {
-							player.sendMessage(Locale.PREFIX + "§bVous avez attrapé un poisson de rareté §e✮ Rare§b, vous regagnez également §e2⚡§b.");
+							player.sendMessage(Locale.RPG_PREFIX + "§bVous avez attrapé un poisson de rareté §e✮ Rare§b, vous regagnez également §e2⚡§b.");
 							calcLevelUp(player, 100);
 						}
 						break;
@@ -103,7 +103,7 @@ public class FishCommand extends RPGCommand {
 							e.printStackTrace();
 						}
 						if (online) {
-							player.sendMessage(Locale.PREFIX + "§bVous avez pêché un déchet, vous l'avez jeté à la poubelle, vous n'avez donc rien gagné.");
+							player.sendMessage(Locale.RPG_PREFIX + "§bVous avez pêché un déchet, vous l'avez jeté à la poubelle, vous n'avez donc rien gagné.");
 							calcLevelUp(player, 15);
 						}
 						break;
@@ -111,7 +111,7 @@ public class FishCommand extends RPGCommand {
 			}, (random.nextInt(15) + 5) * 20);
 		}
 		else {
-			player.sendMessage(Locale.PREFIX + "§6Votre canne à pêche ne sera prête que dans §e" + (Math.floor((cooldown - elasped) / 100) / 10) + " secondes§6.");
+			player.sendMessage(Locale.RPG_PREFIX + "§6Votre canne à pêche ne sera prête que dans §e" + (Math.floor((cooldown - elasped) / 100) / 10) + " secondes§6.");
 		}
 	}
 

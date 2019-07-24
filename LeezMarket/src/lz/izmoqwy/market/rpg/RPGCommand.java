@@ -32,7 +32,7 @@ public abstract class RPGCommand extends CoreCommand {
 		try {
 			Map.Entry<RPGPlayer, Boolean> loaded = loadRPGPlayer(((Player) commandSender).getUniqueId(), true);
 			if (loaded.getValue()) {
-				commandSender.sendMessage(Locale.PREFIX + "§aNous venons de créer votre tout nouveau compte, nous vous offrons §e10⚡ §apour commencer.");
+				commandSender.sendMessage(Locale.RPG_PREFIX + "§aNous venons de créer votre tout nouveau compte, nous vous offrons §e10⚡ §apour commencer.");
 			}
 
 			RPGPlayer player = loaded.getKey();
@@ -71,12 +71,12 @@ public abstract class RPGCommand extends CoreCommand {
 
 			int diff = newLevel - level;
 			if (diff > 1) {
-				player.sendMessage(Locale.PREFIX + "§aVous avez monté de §2" + diff + " §aniveaux !");
+				player.sendMessage(Locale.RPG_PREFIX + "§aVous avez monté de §2" + diff + " §aniveaux !");
 			}
 			else {
-				player.sendMessage(Locale.PREFIX + "§aVous avez monté de niveau !");
+				player.sendMessage(Locale.RPG_PREFIX + "§aVous avez monté de niveau !");
 			}
-			bukkit.playSound(bukkit.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1, 1);
+			bukkit.playSound(bukkit.getLocation(), Sound.BLOCK_NOTE_BELL, 1, 15);
 			player.sendMessage(" ");
 		}
 	}

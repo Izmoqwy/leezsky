@@ -6,6 +6,8 @@ import lz.izmoqwy.market.MarketPlugin;
 
 import java.io.File;
 import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
 public class RPGStorage {
 
@@ -16,9 +18,15 @@ public class RPGStorage {
 		File file = new File(MarketPlugin.getInstance().getDataFolder(), "rpg.db");
 		DB = new SQLite("Market-RPG", MarketPlugin.getInstance(), file);
 
+		List<String> cols = Arrays.asList("\"uuid\" VARCHAR(36) NOT NULL UNIQUE", "\"joined_pos\" INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE",
+				"\"exp\" BIGINT DEFAULT 0", "\"energy\" INTEGER DEFAULT " + RPGManager.ENERGY_MAX, "\"points\" INTEGER DEFAULT 0", "\"last_get\" BIGINT(13) DEFAULT 0",
+				"\"res_darkmatter\" INTEGER DEFAULT 0", "\"res_uranium\" INTEGER DEFAULT 0", "\"res_titane\" INTEGER DEFAULT 0", "\"res_copper\" INTEGER DEFAULT 0",
+				"\"last_fish\" BIGINT(13) DEFAULT 0", "\"fish_common\" INTEGER(5) DEFAULT 0", "\"fish_uncommon\" INTEGER(5) DEFAULT 0",
+				"\"item_pickaxe\" INTEGER(3) DEFAULT 0", "\"item_fishrod\" INTEGER(3) DEFAULT 0", "\"item_hangar\" INTEGER(3) DEFAULT 0");
+
 		try {
 			DB.connect();
-			DB.execute("CREATE TABLE IF NOT EXISTS \"Players\" ( \"uuid\" VARCHAR(36) NOT NULL UNIQUE, \"joined_pos\" INTEGER PRIMARY KEY AUTOINCREMENT UNIQUE, \"exp\" BIGINT DEFAULT 0, \"energy\" INTEGER DEFAULT 10, \"points\" INTEGER DEFAULT 0, \"last_get\" BIGINT(13) DEFAULT 0, \"res_darkmatter\" INTEGER DEFAULT 0, \"res_uranium\" INTEGER DEFAULT 0, \"res_titane\" INTEGER DEFAULT 0, \"res_copper\" INTEGER DEFAULT 0, \"last_fish\" BIGINT(13) DEFAULT 0, \"fish_common\" INTEGER(5) DEFAULT 0, \"fish_uncommon\" INTEGER(5) DEFAULT 0 )");
+			DB.execute("CREATE TABLE IF NOT EXISTS \"Players\" (  " + String.join(", ", cols) + " )");
 		}
 		catch (SQLException e) {
 			e.printStackTrace();

@@ -15,7 +15,7 @@ public class StatsCommand extends RPGCommand {
 	protected void execute(RPGPlayer player, String usedCommand, String[] args) {
 		player.sendMessage(" ");
 
-		player.sendMessage(Locale.PREFIX + "§3Statistiques:");
+		player.sendMessage(Locale.RPG_PREFIX + "§3Statistiques:");
 		player.sendMessage("§8➥ §6Niveau: §e" + player.calcLevel());
 		player.sendMessage("§8➥ §6Éxpérience: §e" + readbleNumber(player.getExp()));
 

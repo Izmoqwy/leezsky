@@ -15,6 +15,9 @@ commands:
   rpginventory:
     aliases: [rinventory, rinv]
     description: Show your resources
+  rpgitems:
+    aliases: [ritems]
+    description: Show your items
   rpgmine:
     aliases: [rmine]
     description: Mine virtual resources

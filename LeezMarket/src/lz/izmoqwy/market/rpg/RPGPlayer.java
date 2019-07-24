@@ -37,7 +37,14 @@ public class RPGPlayer {
 	@Getter
 	private int fish_uncommon;
 
-	public RPGPlayer(OfflinePlayer base, int exp, int points, int energy, int max_energy, long last_get, int res_darkmatter, int res_uranium, int res_titane, int res_copper, long last_fish, int fish_common, int fish_uncommon) {
+	@Getter
+	private int item_pickaxe;
+	@Getter
+	private int item_fishrod;
+	@Getter
+	private int item_storage;
+
+	public RPGPlayer(OfflinePlayer base, int exp, int points, int energy, int max_energy, long last_get, int res_darkmatter, int res_uranium, int res_titane, int res_copper, long last_fish, int fish_common, int fish_uncommon, int item_pickaxe, int item_fishrod, int item_stockage) {
 		this.base = base;
 		this.exp = exp;
 		this.points = points;
@@ -51,6 +58,9 @@ public class RPGPlayer {
 		this.last_fish = last_fish;
 		this.fish_common = fish_common;
 		this.fish_uncommon = fish_uncommon;
+		this.item_pickaxe = item_pickaxe;
+		this.item_fishrod = item_fishrod;
+		this.item_storage = item_stockage;
 	}
 
 	public void sendMessage(String message) {
