@@ -22,7 +22,7 @@ public class RPGStorage {
 				"\"exp\" BIGINT DEFAULT 0", "\"energy\" INTEGER DEFAULT " + RPGManager.ENERGY_MAX, "\"points\" INTEGER DEFAULT 0", "\"last_get\" BIGINT(13) DEFAULT 0",
 				"\"res_darkmatter\" INTEGER DEFAULT 0", "\"res_uranium\" INTEGER DEFAULT 0", "\"res_titane\" INTEGER DEFAULT 0", "\"res_copper\" INTEGER DEFAULT 0",
 				"\"last_fish\" BIGINT(13) DEFAULT 0", "\"fish_common\" INTEGER(5) DEFAULT 0", "\"fish_uncommon\" INTEGER(5) DEFAULT 0",
-				"\"item_pickaxe\" INTEGER(3) DEFAULT 0", "\"item_fishrod\" INTEGER(3) DEFAULT 0", "\"item_hangar\" INTEGER(3) DEFAULT 0");
+				"\"item_pickaxe\" INTEGER(3) DEFAULT 1", "\"item_fishrod\" INTEGER(3) DEFAULT 1", "\"item_hangar\" INTEGER(3) DEFAULT 1");
 
 		try {
 			DB.connect();

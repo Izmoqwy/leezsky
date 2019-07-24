@@ -21,7 +21,7 @@ public class TitaneShield extends TitaneStuffBase {
 	@Getter
 	private ItemStack item;
 
-	public TitaneShield(int cost) {
+	public TitaneShield(long cost) {
 		super(cost);
 
 		ItemStack item = ItemUtil.createItem(Material.SHIELD, prefix() + "Bouclier en titane", new HashMap<>(), ItemFlag.HIDE_POTION_EFFECTS, ItemFlag.HIDE_ATTRIBUTES);

@@ -50,12 +50,13 @@ public class BlackMarket implements Listener {
 	}
 
 	public static void loadAll() {
+		loadConfig();
+		BMStuff.init(config.getConfigurationSection("prices"));
+
 		PluginHelper.loadCommand("blackmarket", new BlackMarketCommand());
 		PluginHelper.loadListener(MarketPlugin.getInstance(), new BlackMarket());
 		PluginHelper.loadListener(MarketPlugin.getInstance(), new BlackMarketGUI());
 		loadRPG();
-
-		loadConfig();
 	}
 
 	private static boolean loadConfig() {

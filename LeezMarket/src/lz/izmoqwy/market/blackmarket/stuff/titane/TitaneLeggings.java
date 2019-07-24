@@ -11,7 +11,7 @@ public class TitaneLeggings extends TitaneStuffBase {
 	@Getter
 	private ItemStack item;
 
-	public TitaneLeggings(int cost) {
+	public TitaneLeggings(long cost) {
 		super(cost);
 
 		this.item = ItemUtil.createItem(Material.IRON_LEGGINGS, prefix() + "Jambières en titane", defaultEnchants, ItemFlag.HIDE_ATTRIBUTES);

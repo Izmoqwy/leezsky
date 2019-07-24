@@ -57,6 +57,10 @@ public class BlackMarketGUI implements Listener {
 		GUI_FORGE.setItem(15, BMStuff.TITANE_SWORD.getPresentationItem());
 		GUI_FORGE.setItem(16, BMStuff.TITANE_SHIELD.getPresentationItem());
 
+		GUI_FORGE.setItem(21, BMStuff.TITANE_PICKAXE.getPresentationItem());
+		GUI_FORGE.setItem(22, BMStuff.TITANE_AXE.getPresentationItem());
+		GUI_FORGE.setItem(23, BMStuff.TITANE_SHOVEL.getPresentationItem());
+
 		GUI_FORGE.setItem(4 * 9 - 1, ITEM_BACK);
 	}
 
@@ -156,14 +160,15 @@ public class BlackMarketGUI implements Listener {
 							case 11:
 								// Todo: Check if still has resources, remove ress and give item
 								ItemUtil.giveItems(player, awaitConfirm.get(player).getItem());
+								awaitConfirm.remove(player);
 								player.closeInventory();
 								break;
 							case 15:
 								// Todo: Go back to actual previous menu
+								awaitConfirm.remove(player);
 								player.openInventory(GUI_MENU);
 								break;
 						}
-						awaitConfirm.remove(player);
 					}
 					break;
 				case GUI_MENU_NAME:
@@ -193,6 +198,16 @@ public class BlackMarketGUI implements Listener {
 							break;
 						case 16:
 							openConfirmGUI(player, BMStuff.TITANE_SHIELD);
+							break;
+
+						case 21:
+							openConfirmGUI(player, BMStuff.TITANE_PICKAXE);
+							break;
+						case 22:
+							openConfirmGUI(player, BMStuff.TITANE_AXE);
+							break;
+						case 23:
+							openConfirmGUI(player, BMStuff.TITANE_SHOVEL);
 							break;
 					}
 					break;

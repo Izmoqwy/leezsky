@@ -14,9 +14,9 @@ public abstract class StuffBase {
 	@Getter
 	private RPGResource costRes;
 	@Getter
-	private int cost;
+	private long cost;
 
-	protected StuffBase(RPGResource costRes, int cost) {
+	protected StuffBase(RPGResource costRes, long cost) {
 		this.costRes = costRes;
 		this.cost = cost;
 	}

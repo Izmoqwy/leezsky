@@ -6,15 +6,15 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 
-public class TitaneChestplate extends TitaneStuffBase {
+public class TitanePickaxe extends TitaneStuffBase {
 
 	@Getter
 	private ItemStack item;
 
-	public TitaneChestplate(long cost) {
+	public TitanePickaxe(long cost) {
 		super(cost);
 
-		this.item = ItemUtil.createItem(Material.IRON_CHESTPLATE, prefix() + "Plastron en titane", defaultEnchants, ItemFlag.HIDE_ATTRIBUTES);
+		this.item = ItemUtil.createItem(Material.IRON_PICKAXE, prefix() + "Pioche en titane", defaultEnchants, ItemFlag.HIDE_ATTRIBUTES);
 	}
 
 }

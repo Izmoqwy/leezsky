@@ -11,7 +11,7 @@ public class TitaneHelmet extends TitaneStuffBase {
 	@Getter
 	private ItemStack item;
 
-	public TitaneHelmet(int cost) {
+	public TitaneHelmet(long cost) {
 		super(cost);
 
 		this.item = ItemUtil.createItem(Material.IRON_HELMET, prefix() + "Casque en titane", defaultEnchants, ItemFlag.HIDE_ATTRIBUTES);

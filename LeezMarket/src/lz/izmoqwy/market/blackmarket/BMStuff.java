@@ -1,24 +1,42 @@
 package lz.izmoqwy.market.blackmarket;
 
 import lz.izmoqwy.market.blackmarket.stuff.titane.*;
+import org.bukkit.configuration.ConfigurationSection;
 
 public class BMStuff {
 
-	public static final TitaneHelmet TITANE_HELMET;
-	public static final TitaneChestplate TITANE_CHESTPLATE;
-	public static final TitaneLeggings TITANE_LEGGINGS;
-	public static final TitaneBoots TITANE_BOOTS;
-	public static final TitaneSword TITANE_SWORD;
-	public static final TitaneShield TITANE_SHIELD;
+	public static TitaneHelmet TITANE_HELMET;
+	public static TitaneChestplate TITANE_CHESTPLATE;
+	public static TitaneLeggings TITANE_LEGGINGS;
+	public static TitaneBoots TITANE_BOOTS;
+	public static TitaneSword TITANE_SWORD;
+	public static TitaneShield TITANE_SHIELD;
 
-	static {
-		// Todo: Load prices dynamicly
-		TITANE_HELMET = new TitaneHelmet((int) 1.5e3);
-		TITANE_CHESTPLATE = new TitaneChestplate((int) 4e3);
-		TITANE_LEGGINGS = new TitaneLeggings((int) 2e3);
-		TITANE_BOOTS = new TitaneBoots((int) 3e3);
-		TITANE_SWORD = new TitaneSword((int) 5e3);
-		TITANE_SHIELD = new TitaneShield((int) 3e3);
+	public static TitanePickaxe TITANE_PICKAXE;
+	public static TitaneAxe TITANE_AXE;
+	public static TitaneShovel TITANE_SHOVEL;
+
+	protected static void init(ConfigurationSection prices) {
+		// Try todo: adjust prices to the current EXR of each res
+
+		ConfigurationSection titane = prices != null ? prices.getConfigurationSection("titane") : null;
+		TITANE_HELMET = new TitaneHelmet(i(titane, "helmet"));
+		TITANE_CHESTPLATE = new TitaneChestplate(i(titane, "chestplate"));
+		TITANE_LEGGINGS = new TitaneLeggings(i(titane, "leggings"));
+		TITANE_BOOTS = new TitaneBoots(i(titane, "boots"));
+		TITANE_SWORD = new TitaneSword(i(titane, "sword"));
+		TITANE_SHIELD = new TitaneShield(i(titane, "shield"));
+
+		TITANE_PICKAXE = new TitanePickaxe(i(titane, "pickaxe"));
+		TITANE_AXE = new TitaneAxe(i(titane, "axe"));
+		TITANE_SHOVEL = new TitaneShovel(i(titane, "shovel"));
+	}
+
+	private static long i(ConfigurationSection section, String key) {
+		if (section == null)
+			return (long) 1e12;
+
+		return (long) Double.parseDouble(section.getString(key, "1e12"));
 	}
 
 }

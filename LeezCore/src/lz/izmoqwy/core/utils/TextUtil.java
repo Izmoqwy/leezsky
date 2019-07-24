@@ -43,7 +43,7 @@ public class TextUtil {
 
 		String letter = null;
 		long divider = 1;
-		if (amount > 1e12) {
+		if (amount >= 1e12) {
 			letter = "T";
 			divider = (long) 1e12;
 		}

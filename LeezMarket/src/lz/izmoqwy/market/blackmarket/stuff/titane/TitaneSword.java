@@ -11,7 +11,7 @@ public class TitaneSword extends TitaneStuffBase {
 	@Getter
 	private ItemStack item;
 
-	public TitaneSword(int cost) {
+	public TitaneSword(long cost) {
 		super(cost);
 
 		this.item = ItemUtil.createItem(Material.IRON_SWORD, prefix() + "Épée en titane", defaultEnchants, ItemFlag.HIDE_ATTRIBUTES);
