@@ -39,7 +39,7 @@ public class BlackMarketCommand extends CoreCommand {
 					BlackMarket.NPC.move(player.getLocation());
 				}
 				Location location = player.getLocation();
-				BlackMarket.spawnArmorStand(location);
+				BlackMarket.spawnArmorStands(location);
 
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(BlackMarket.file);
 				config.set("npc.world", location.getWorld().getName());
@@ -56,6 +56,21 @@ public class BlackMarketCommand extends CoreCommand {
 					e.printStackTrace();
 					player.sendMessage(Locale.PREFIX + "§cImpossible de sauvegarder la nouvelle position du PNJ !");
 				}
+				break;
+			case "fix":
+				permCheck(player, "command.fix");
+				if (BlackMarket.NPC == null ){
+					player.sendMessage(Locale.PREFIX + "§cLe PNJ du marché noir n'est pas présent.");
+					return;
+				}
+
+				location = BlackMarket.NPC.getLocation();
+				BlackMarket.forceRemoveArmorStands(location);
+				BlackMarket.armorStands = null;
+				BlackMarket.armorStandsIds = null;
+				BlackMarket.spawnArmorStands(location);
+
+				player.sendMessage(Locale.PREFIX + "§eLe PNJ devrait désormais être cliquable à nouveau.");
 				break;
 			case "update":
 				permCheck(player, "command.update");

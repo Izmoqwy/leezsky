@@ -1,5 +1,6 @@
 package lz.izmoqwy.market.blackmarket;
 
+import com.sun.istack.internal.NotNull;
 import lz.izmoqwy.core.CorePrinter;
 import lz.izmoqwy.core.PlayerDataStorage;
 import lz.izmoqwy.core.helpers.PluginHelper;
@@ -13,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +22,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 
 import java.io.File;
 import java.io.IOException;
@@ -73,7 +76,7 @@ public class BlackMarket implements Listener {
 			NPC = new NPC_v1_12_R1(NPC_NAME, location, config.getString("skin.texture"), config.getString("skin.signature"));
 			NPC.spawn();
 
-			spawnArmorStand(location);
+			spawnArmorStands(location);
 		}
 		else {
 			if (!file.getParentFile().exists())
@@ -89,17 +92,42 @@ public class BlackMarket implements Listener {
 		}
 	}
 
-	protected static void spawnArmorStand(Location location) {
-		Location[] locations = spawnArmorStands(location);
+	private static boolean forceLoadChunks(@NotNull Location from) {
+		for (Location location : getASLocations(from)) {
+			if (location.getWorld().getChunkAt(location) == null)
+				return false;
+		}
+		return true;
+	}
+
+	protected static void forceRemoveArmorStands(@NotNull Location from) {
+		if (!forceLoadChunks(from))
+			return;
+
+		for (Entity nearby : from.getWorld().getNearbyEntities(from, 3, 2, 3)) {
+			if (nearby.getType() == EntityType.ARMOR_STAND) {
+				ArmorStand as = (ArmorStand) nearby;
+				if (!as.isVisible() && !as.isCustomNameVisible()) {
+					as.remove();
+				}
+			}
+		}
+	}
+
+	protected static void spawnArmorStands(@NotNull Location location) {
+		Location[] locations = getASLocations(location);
 		if (armorStands != null) {
 			for (int i = 0; i < 4; i++) {
 				armorStands.get(i).teleport(locations[i]);
 			}
 		}
 		else {
+			forceRemoveArmorStands(location);
+
 			ArmorStand[] armorStands = new ArmorStand[4];
 			Integer[] ids = new Integer[4];
 			for (int i = 0; i < 4; i++) {
+				location.getWorld().getChunkAt(locations[i]);
 				ArmorStand armorStand = location.getWorld().spawn(locations[i], ArmorStand.class);
 				armorStand.setInvulnerable(true);
 				armorStand.setGravity(false);
@@ -114,9 +142,8 @@ public class BlackMarket implements Listener {
 		}
 	}
 
-	private static Location[] spawnArmorStands(Location middle) {
+	private static Location[] getASLocations(@NotNull Location middle) {
 		return new Location[]{add(middle, 0.25, 0.25), add(middle, -0.25, 0.25), add(middle, 0.25, -0.25), add(middle, -0.25, -0.25)};
-				//add(middle, 0.25, 0), add(middle, -0.25, 0), add(middle, 0, 0.25), add(middle, 0, -0.25)};
 	}
 
 	private static Location add(Location base, double x, double z) {
@@ -136,8 +163,20 @@ public class BlackMarket implements Listener {
 
 	@EventHandler
 	public void onJoin(PlayerJoinEvent event) {
-		if (NPC != null)
-			NPC.spawn(event.getPlayer());
+		if (NPC != null && NPC.getWorld() == event.getPlayer().getWorld()) {
+			if (NPC.getLocation().distance(event.getPlayer().getLocation()) < 1000) {
+				NPC.spawn(event.getPlayer());
+			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	public void onTeleport(PlayerTeleportEvent event) {
+		if (NPC != null && NPC.getWorld() == event.getTo().getWorld()) {
+			if (NPC.getLocation().distance(event.getTo()) < 1000) {
+				NPC.spawn(event.getPlayer());
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)

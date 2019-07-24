@@ -105,7 +105,7 @@ public class BlackMarketGUI implements Listener {
 								RPGStorage.PLAYERS.decrease("res_darkmatter", 100, "uuid", player.getUniqueId().toString());
 								PlayerDataStorage.set(player, "blackmarket.access", true);
 								PlayerDataStorage.save(player);
-								player.sendMessage(Locale.RPG_PREFIX + "§aVous avez débloqué l'accès du PNJ du marché noir. Attention à ne pas vous faire remarquer dans le coin !"); 
+								player.sendMessage(Locale.RPG_PREFIX + "§aVous avez débloqué l'accès du PNJ du marché noir. Attention à ne pas vous faire remarquer dans le coin !");
 							}
 							catch (SQLActionImpossibleException | IOException e) {
 								e.printStackTrace();

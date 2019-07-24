@@ -97,4 +97,8 @@ public class NPC_v1_12_R1 {
 		return entityPlayer != null ? entityPlayer.getId() : -1;
 	}
 
+	public org.bukkit.World getWorld() {
+		return entityPlayer != null ? Bukkit.getWorld(entityPlayer.getWorld().worldData.getName()) : null;
+	}
+
 }
