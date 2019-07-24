@@ -20,7 +20,7 @@ import java.util.Random;
 public class MineCommand extends RPGCommand {
 
 	public MineCommand(String commandName) {
-		super(commandName, new CommandOptions().playerOnly(), false);
+		super(commandName, new CommandOptions().playerOnly(), true);
 	}
 
 	@Override
