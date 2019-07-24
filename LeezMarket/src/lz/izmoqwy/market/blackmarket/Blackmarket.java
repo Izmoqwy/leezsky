@@ -68,7 +68,9 @@ public class BlackMarket implements Listener {
 			if (location == null)
 				return false;
 
-			NPC = new NPC_v1_12_R1(NPC_NAME, location, config.getString("skin.texture"), config.getString("skin.signature"));
+			String useSkin = config.getString("skin.current", "default");
+			CorePrinter.print("Using skin {0} for BlackMarket NPC.", useSkin);
+			NPC = new NPC_v1_12_R1(NPC_NAME, location, config.getString("skins." + useSkin + ".texture"), config.getString("skins." + useSkin + ".signature"));
 			NPC.spawn();
 			spawnArmorStands(location);
 

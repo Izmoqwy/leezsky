@@ -33,8 +33,10 @@ public class BlackMarketCommand extends CoreCommand {
 			case "tphere":
 				permCheck(player, "command.movehere");
 
+				YamlConfiguration config = YamlConfiguration.loadConfiguration(BlackMarket.file);
 				if (BlackMarket.NPC == null) {
-					BlackMarket.NPC = new NPC_v1_12_R1(BlackMarket.NPC_NAME, player.getLocation(), BlackMarket.config.getString("skin.texture"), BlackMarket.config.getString("skin.signature"));
+					String useSkin = config.getString("skin.current", "default");
+					BlackMarket.NPC = new NPC_v1_12_R1(BlackMarket.NPC_NAME, player.getLocation(), config.getString("skins." + useSkin + ".texture"), config.getString("skins." + useSkin + ".signature"));
 					BlackMarket.NPC.spawn();
 				}
 				else {
@@ -43,7 +45,6 @@ public class BlackMarketCommand extends CoreCommand {
 				Location location = player.getLocation();
 				BlackMarket.spawnArmorStands(location);
 
-				YamlConfiguration config = YamlConfiguration.loadConfiguration(BlackMarket.file);
 				LocationUtil.yamlFullSave(config, location, "npc");
 				try {
 					config.save(BlackMarket.file);
@@ -99,6 +100,9 @@ public class BlackMarketCommand extends CoreCommand {
 			case "reload":
 				permCheck(player, "command.reload");
 
+				if (BlackMarket.NPC != null) {
+					BlackMarket.NPC.despawn();
+				}
 				if (BlackMarket.reload()) {
 					player.sendMessage(Locale.PREFIX + "§aLa configuration du marché noir a été rechargée.");
 				}
