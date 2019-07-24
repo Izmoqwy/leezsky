@@ -33,7 +33,7 @@ public class BlackMarket implements Listener {
 
 	protected static NPC_v1_12_R1 NPC = null;
 	protected static List<ArmorStand> armorStands;
-	protected static List<Integer> armorStandsIds;
+	protected static List<String> armorStandsIds;
 	protected static File file = new File(MarketPlugin.getInstance().getDataFolder(), "blackmarket.yml");
 
 	protected static YamlConfiguration config;
@@ -129,7 +129,7 @@ public class BlackMarket implements Listener {
 			forceRemoveArmorStands(location);
 
 			ArmorStand[] armorStands = new ArmorStand[4];
-			Integer[] ids = new Integer[4];
+			String[] ids = new String[4];
 			for (int i = 0; i < 4; i++) {
 				location.getWorld().getChunkAt(locations[i]);
 				ArmorStand armorStand = location.getWorld().spawn(locations[i], ArmorStand.class);
@@ -138,8 +138,10 @@ public class BlackMarket implements Listener {
 				armorStand.setCanPickupItems(false);
 				armorStand.setVisible(false);
 
+				ids[i] = "NPC-AS(" + i + ")|" + armorStand.getEntityId();
+				armorStand.setCustomName(ids[i]);
+
 				armorStands[i] = armorStand;
-				ids[i] = armorStand.getEntityId();
 			}
 			BlackMarket.armorStands = Arrays.asList(armorStands);
 			BlackMarket.armorStandsIds = Arrays.asList(ids);
@@ -189,7 +191,7 @@ public class BlackMarket implements Listener {
 			return;
 
 		if (event.getRightClicked().getType() == EntityType.ARMOR_STAND) {
-			if (armorStandsIds.contains(event.getRightClicked().getEntityId())) {
+			if (armorStandsIds.contains(event.getRightClicked().getCustomName())) {
 				event.setCancelled(true);
 				NPC.updateSkin(event.getPlayer());
 
