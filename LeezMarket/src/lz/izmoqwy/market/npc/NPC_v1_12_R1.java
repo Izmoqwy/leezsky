@@ -24,6 +24,7 @@ public class NPC_v1_12_R1 {
 	private String url, signature;
 
 	private EntityPlayer entityPlayer;
+	private DataWatcher watcher;
 
 	public NPC_v1_12_R1(String displayName, Location location, String url, String signature) {
 		this.displayName = displayName;
@@ -42,6 +43,10 @@ public class NPC_v1_12_R1 {
 		EntityPlayer npc = new EntityPlayer(server, world, profile, new PlayerInteractManager(world));
 		npc.setPositionRotation(location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 		this.entityPlayer = npc;
+
+		DataWatcher watcher = entityPlayer.getDataWatcher();
+		watcher.set(DataWatcherRegistry.a.a(13), (byte) 127);
+		this.watcher = watcher;
 	}
 
 	public void spawn() {
@@ -60,6 +65,8 @@ public class NPC_v1_12_R1 {
 		connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, entityPlayer));
 		connection.sendPacket(new PacketPlayOutNamedEntitySpawn(entityPlayer));
 		connection.sendPacket(new PacketPlayOutEntityHeadRotation(entityPlayer, (byte) ((location.getYaw() * 256.0F) / 360.0F)));
+		connection.sendPacket(new PacketPlayOutEntityMetadata(getEntityId(), watcher, true));
+
 		Bukkit.getScheduler().scheduleSyncDelayedTask(MarketPlugin.getInstance(), () -> connection.sendPacket(new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, entityPlayer)), 5);
 	}
 
