@@ -19,6 +19,10 @@ public enum RPGResource {
 		this.symbol = symbol;
 	}
 
+	public String dbCol() {
+		return "res_" + name().toLowerCase();
+	}
+
 	public String getFullName() {
 		return ChatColor.COLOR_CHAR + "" + color + toString();
 	}

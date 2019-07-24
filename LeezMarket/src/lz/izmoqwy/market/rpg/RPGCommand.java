@@ -3,6 +3,7 @@ package lz.izmoqwy.market.rpg;
 import lz.izmoqwy.core.api.CommandOptions;
 import lz.izmoqwy.core.api.CoreCommand;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
+import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.market.Locale;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -53,35 +54,7 @@ public abstract class RPGCommand extends CoreCommand {
 	protected abstract void execute(RPGPlayer player, String usedCommand, String[] args);
 
 	protected static String readbleNumber(long amount) {
-		if (amount < 1e3)
-			return Long.toString(amount);
-
-		String letter = null;
-		long divider = 1;
-		if (amount > 1e12) {
-			letter = "T";
-			divider = (long) 1e12;
-		}
-		else if (amount >= 1e9) {
-			letter = "G";
-			divider = (long) 1e9;
-		}
-		else if (amount >= 1e6) {
-			letter = "M";
-			divider = (long) 1e6;
-		}
-		else if (amount >= 1e3) {
-			letter = "K";
-			divider = (long) 1e3;
-		}
-		String str = Double.toString(Math.floor(amount / (divider / 100)) / 100);
-		if (str.endsWith(".00"))
-			str = str.substring(0, str.length() - 3);
-		if (str.endsWith(".0"))
-			str = str.substring(0, str.length() - 2);
-		if (str.endsWith("0"))
-			str = str.substring(0, str.length() - 1);
-		return str + letter;
+		return TextUtil.readbleNumber(amount);
 	}
 
 	protected static void calcLevelUp(RPGPlayer player, int amount) {

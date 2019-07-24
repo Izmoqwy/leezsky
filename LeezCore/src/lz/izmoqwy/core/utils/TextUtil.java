@@ -36,4 +36,36 @@ public class TextUtil {
 				lastSeparation +
 				string.substring(index + objSeparation.length());
 	}
+
+	public static String readbleNumber(long amount) {
+		if (amount < 1e3)
+			return Long.toString(amount);
+
+		String letter = null;
+		long divider = 1;
+		if (amount > 1e12) {
+			letter = "T";
+			divider = (long) 1e12;
+		}
+		else if (amount >= 1e9) {
+			letter = "G";
+			divider = (long) 1e9;
+		}
+		else if (amount >= 1e6) {
+			letter = "M";
+			divider = (long) 1e6;
+		}
+		else if (amount >= 1e3) {
+			letter = "K";
+			divider = (long) 1e3;
+		}
+		String str = Double.toString(Math.floor(amount / (divider / 100)) / 100);
+		if (str.endsWith(".00"))
+			str = str.substring(0, str.length() - 3);
+		if (str.endsWith(".0"))
+			str = str.substring(0, str.length() - 2);
+		if (str.endsWith("0"))
+			str = str.substring(0, str.length() - 1);
+		return str + letter;
+	}
 }
