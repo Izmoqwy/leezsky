@@ -4,13 +4,13 @@ import com.sun.istack.internal.NotNull;
 import lz.izmoqwy.core.CorePrinter;
 import lz.izmoqwy.core.PlayerDataStorage;
 import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.market.MarketPlugin;
 import lz.izmoqwy.market.npc.NPC_v1_12_R1;
 import lz.izmoqwy.market.rpg.commands.FishCommand;
 import lz.izmoqwy.market.rpg.commands.InventoryCommand;
 import lz.izmoqwy.market.rpg.commands.MineCommand;
 import lz.izmoqwy.market.rpg.commands.StatsCommand;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
@@ -39,6 +39,8 @@ public class BlackMarket implements Listener {
 	protected static YamlConfiguration config;
 	protected static String NPC_NAME;
 
+	protected static Location TELEPORT_POINT;
+
 	public static void loadRPG() {
 		CorePrinter.print("Loading RPG (BlackMarket) commands...");
 		PluginHelper.loadCommand("rpgstats", new StatsCommand("rpgstats"));
@@ -53,30 +55,25 @@ public class BlackMarket implements Listener {
 		PluginHelper.loadListener(MarketPlugin.getInstance(), new BlackMarketGUI());
 		loadRPG();
 
-		loadNPC();
+		loadConfig();
 	}
 
-	private static void loadNPC() {
+	private static boolean loadConfig() {
 		if (file.exists()) {
-			// todo
-			CorePrinter.print("Loading BM NPC from file...");
+			CorePrinter.print("Loading BM config from yaml..");
 			config = YamlConfiguration.loadConfiguration(file);
 			NPC_NAME = config.getString("npc.name", "§6§lMarché noir");
 
-			String[] all_paths = new String[]{"world", "x", "y", "z", "yaw", "pitch"};
-			for (String path : all_paths) {
-				if (!config.isSet("npc." + path))
-					return;
-			}
+			Location location = LocationUtil.yamlFullLoad(config, "npc");
+			if (location == null)
+				return false;
 
-			double x = config.getDouble("npc.x"), y = config.getDouble("npc.y"), z = config.getDouble("npc.z");
-			double yaw = config.getDouble("npc.yaw"), pitch = config.getDouble("npc.pitch");
-
-			Location location = new Location(Bukkit.getWorld(config.getString("npc.world")), x, y, z, (float) yaw, (float) pitch);
 			NPC = new NPC_v1_12_R1(NPC_NAME, location, config.getString("skin.texture"), config.getString("skin.signature"));
 			NPC.spawn();
-
 			spawnArmorStands(location);
+
+			TELEPORT_POINT = LocationUtil.yamlFullLoad(config, "warp");
+			return true;
 		}
 		else {
 			if (!file.getParentFile().exists())
@@ -84,12 +81,19 @@ public class BlackMarket implements Listener {
 				file.getParentFile().mkdirs();
 			try {
 				if (file.createNewFile())
-					loadNPC();
+					loadConfig();
 			}
 			catch (IOException e) {
 				e.printStackTrace();
 			}
 		}
+		return false;
+	}
+
+	protected static boolean reload() {
+		if (file.exists())
+			return loadConfig();
+		return false;
 	}
 
 	private static boolean forceLoadChunks(@NotNull Location from) {
