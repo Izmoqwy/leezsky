@@ -47,6 +47,7 @@ public class LeezCore extends JavaPlugin implements Listener {
 		PluginHelper.loadListener(this, new GUIManager());
 
 		TopManager.load(this);
+		PlayerSaveManager.load();
 
 		long ms = System.currentTimeMillis() - startsLoading;
 		CorePrinter.write("The Core took {0}ms to load.", ms > 200 ? Level.WARNING : Level.INFO, ms);

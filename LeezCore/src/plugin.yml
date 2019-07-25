@@ -11,11 +11,11 @@ commands:
     description: Overrided tellraw command
     permission: minecraft.tellraw
   leezcore:
+    aliases: [leez]
     description: Manage low-level LeezSky settings
     permission: leezsky.core.command
 permissions:
   leezsky.core.*:
     children:
-      leezsky.core.test:
-        description: Command to test CoreCommand's options
       leezsky.core.command: true
+      leezsky.core.command.reload: false

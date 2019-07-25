@@ -17,15 +17,17 @@ public abstract class CoreCommand implements CommandExecutor {
 	private String name;
 	private String permission;
 	private boolean playerOnly;
+	private boolean needArg;
 
 	private int cooldown;
 	private Map<UUID, Long> cooldowns = Maps.newHashMap();
 
 	public CoreCommand(String name, CommandOptions options) {
 		this.name = name;
-		this.playerOnly = options.playerOnly;
-
 		this.permission = options.permission;
+		this.playerOnly = options.playerOnly;
+		this.needArg = options.needsArg;
+
 		this.cooldown = options.cooldown;
 	}
 
@@ -65,6 +67,10 @@ public abstract class CoreCommand implements CommandExecutor {
 	}
 
 	private void run(CommandSender commandSender, String usedCommand, String[] args) {
+		if (needArg && args.length < 1) {
+			commandSender.sendMessage(PREFIX + "§cArgument manquant. Essayez l'argument 'help' si vous ne connaissez pas les arguments possibles.");
+			return;
+		}
 		try {
 			execute(commandSender, usedCommand, args);
 		}
@@ -75,14 +81,17 @@ public abstract class CoreCommand implements CommandExecutor {
 
 	protected abstract void execute(CommandSender commandSender, String usedCommand, String[] args) throws CommandNoPermissionException;
 
-	protected void permCheck(Player player, String permission) throws CommandNoPermissionException {
-		permCheck(player, permission, false);
+	protected void permCheck(CommandSender commandSender, String permission) throws CommandNoPermissionException {
+		permCheck(commandSender, permission, false);
 	}
 
-	protected void permCheck(Player player, String permission, boolean full) throws CommandNoPermissionException {
+	protected void permCheck(CommandSender commandSender, String permission, boolean full) throws CommandNoPermissionException {
+		if (!(commandSender instanceof Player))
+			return;
+
 		if (!full)
-			permission = name.toLowerCase() + "." + permission;
-		if(!player.hasPermission(permission))
+			permission = (this.permission != null ? this.permission : name.toLowerCase()) + "." + permission;
+		if(!commandSender.hasPermission(permission))
 			throw new CommandNoPermissionException();
 	}
 

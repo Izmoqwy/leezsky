@@ -4,6 +4,7 @@ public class CommandOptions {
 
 	String permission;
 	boolean playerOnly = false;
+	boolean needsArg = false;
 
 	int cooldown = 0;
 
@@ -13,6 +14,12 @@ public class CommandOptions {
 	}
 
 	public CommandOptions playerOnly() {
+		this.playerOnly = true;
+		return this;
+	}
+
+	public CommandOptions needArg() {
+		this.needsArg = true;
 		return this;
 	}
 
