@@ -3,6 +3,7 @@ package lz.izmoqwy.market;
 import lombok.Getter;
 import lz.izmoqwy.core.i18n.LocaleManager;
 import lz.izmoqwy.market.blackmarket.BlackMarket;
+import lz.izmoqwy.market.blackmarket.illegal.ForbiddenArena;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class MarketPlugin extends JavaPlugin {
@@ -21,6 +22,7 @@ public class MarketPlugin extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		ForbiddenArena.forceEnd();
 		BlackMarket.unload();
 	}
 

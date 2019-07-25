@@ -1,37 +1,40 @@
 package lz.izmoqwy.market.blackmarket;
 
+import com.google.common.collect.Lists;
 import lz.izmoqwy.core.api.CommandNoPermissionException;
 import lz.izmoqwy.core.api.CommandOptions;
 import lz.izmoqwy.core.api.CoreCommand;
 import lz.izmoqwy.core.utils.LocationUtil;
+import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.market.Locale;
+import lz.izmoqwy.market.blackmarket.illegal.ForbiddenArena;
 import lz.izmoqwy.market.npc.NPC_v1_12_R1;
+import lz.izmoqwy.market.rpg.RPGManager;
+import lz.izmoqwy.market.rpg.RPGResource;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.IOException;
+import java.util.List;
 
 public class BlackMarketCommand extends CoreCommand {
 
 	protected BlackMarketCommand() {
-		super("blackmarket", new CommandOptions().playerOnly());
+		super("blackmarket", new CommandOptions().withPermission("blackmarket.command").playerOnly().needArg());
 	}
 
 	@Override
 	protected void execute(CommandSender commandSender, String usedCommand, String[] args) throws CommandNoPermissionException {
 		Player player = (Player) commandSender;
 
-		if (args.length < 1) {
-			player.sendMessage(Locale.PREFIX + "§cArgument manquant !");
-			return;
-		}
-
 		switch (args[0].toLowerCase()) {
 			case "movehere":
 			case "tphere":
-				permCheck(player, "command.movehere");
+				permCheck(player, "movehere");
 
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(BlackMarket.file);
 				if (BlackMarket.NPC == null) {
@@ -56,7 +59,7 @@ public class BlackMarketCommand extends CoreCommand {
 				}
 				break;
 			case "setwarp":
-				permCheck(player, "command.setspawn");
+				permCheck(player, "setwarp");
 
 				location = player.getLocation();
 				config = YamlConfiguration.loadConfiguration(BlackMarket.file);
@@ -71,9 +74,104 @@ public class BlackMarketCommand extends CoreCommand {
 					player.sendMessage(Locale.PREFIX + "§cImpossible de sauvegarder la nouvelle position du warp !");
 				}
 				break;
+			case "arena":
+				permCheck(player, "arena");
+
+				if (args.length < 2) {
+					player.sendMessage(Locale.PREFIX + "§cArguments manquants ! §7[jon, setspawn, setpoint, removepoint, listpoints]");
+					return;
+				}
+
+				final String path = "forbiddenarena.";
+				switch (args[1].toLowerCase()) {
+					case "join":
+						permCheck(player, "arena.join");
+
+						if (ForbiddenArena.join(player, true)) {
+							RPGManager.take(player, RPGResource.DARKMATTER, 1000);
+						}
+						break;
+					case "setspawn":
+						permCheck(player, "arena.setspawn");
+
+						location = player.getLocation();
+						config = YamlConfiguration.loadConfiguration(BlackMarket.file);
+						LocationUtil.yamlFullSave(config, location, path + "spawn");
+						try {
+							config.save(BlackMarket.file);
+							BlackMarket.refreshForbiddenArena();
+							player.sendMessage(Locale.PREFIX + "§aLe spawnn de l'arène interdite vient d'être défini à votre position.");
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+							player.sendMessage(Locale.PREFIX + "§cImpossible de sauvegarder la nouvelle position de l'arène interdite !");
+						}
+						break;
+					case "setpoint":
+						permCheck(player, "arena.setpoint");
+
+						if (args.length != 3 || ChatColor.stripColor(args[2].toLowerCase()).trim().isEmpty()) {
+							player.sendMessage(Locale.PREFIX + "§cVeuillez spécifier le nom du point d'apparition.");
+							return;
+						}
+						String point = ChatColor.stripColor(args[2].toLowerCase());
+
+						location = player.getLocation();
+						config = YamlConfiguration.loadConfiguration(BlackMarket.file);
+						LocationUtil.yamlFullSave(config, location, path + "points." + point);
+						try {
+							config.save(BlackMarket.file);
+							BlackMarket.refreshForbiddenArena();
+							player.sendMessage(Locale.PREFIX + "§aLe point d'apparition §2" + point + "§a de l'arène interdite vient d'être défini à votre position.");
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+							player.sendMessage(Locale.PREFIX + "§cImpossible de sauvegarder ce nouveau point d'apparition !");
+						}
+						break;
+					case "removepoint":
+						permCheck(player, "arena.setpoint");
+
+						if (args.length != 3 || ChatColor.stripColor(args[2].toLowerCase()).trim().isEmpty()) {
+							player.sendMessage(Locale.PREFIX + "§cVeuillez spécifier le nom du point d'apparition.");
+							return;
+						}
+						point = ChatColor.stripColor(args[2].toLowerCase());
+
+						config = YamlConfiguration.loadConfiguration(BlackMarket.file);
+						config.set(path + "points." + point, null);
+						try {
+							config.save(BlackMarket.file);
+							BlackMarket.refreshForbiddenArena();
+							player.sendMessage(Locale.PREFIX + "§2Le point d'apparition §e" + point + "§2 de l'arène interdite vient d'être supprimé.");
+						}
+						catch (IOException e) {
+							e.printStackTrace();
+							player.sendMessage(Locale.PREFIX + "§cImpossible de supprimer ce point d'apparition !");
+						}
+						break;
+					case "listpoints":
+						permCheck(player, "arena.listpoints");
+						config = BlackMarket.config;
+
+						List<String> points = Lists.newArrayList();
+						ConfigurationSection section = config.getConfigurationSection(path + "points");
+						if (section != null) {
+							points.addAll(section.getKeys(false));
+						}
+
+						if (!points.isEmpty()) {
+							player.sendMessage(Locale.PREFIX + "§3Points d'apparitions de l'arène interdite: " + TextUtil.iterate(points, p -> p, "§b", "§3, ") + "§3.");
+						}
+						else {
+							player.sendMessage(Locale.PREFIX + "§cIl n'y a aucun point d'apparition pour l'arène interdite, le point de spawn sera utilisé.");
+						}
+						break;
+				}
+				break;
 			case "warp":
 			case "tp":
-				permCheck(player, "command.warp");
+				permCheck(player, "warp");
 				if (BlackMarket.TELEPORT_POINT == null) {
 					player.sendMessage(Locale.PREFIX + "§cIl n'y a pas de warp défini pour le marché noir !");
 					return;
@@ -83,7 +181,7 @@ public class BlackMarketCommand extends CoreCommand {
 				player.teleport(BlackMarket.TELEPORT_POINT);
 				break;
 			case "fix":
-				permCheck(player, "command.fix");
+				permCheck(player, "fix");
 				if (BlackMarket.NPC == null) {
 					player.sendMessage(Locale.PREFIX + "§cLe PNJ du marché noir n'est pas présent.");
 					return;
@@ -98,7 +196,7 @@ public class BlackMarketCommand extends CoreCommand {
 				player.sendMessage(Locale.PREFIX + "§eLe PNJ devrait désormais être cliquable à nouveau.");
 				break;
 			case "reload":
-				permCheck(player, "command.reload");
+				permCheck(player, "reload");
 
 				if (BlackMarket.NPC != null) {
 					BlackMarket.NPC.despawn();
@@ -111,7 +209,7 @@ public class BlackMarketCommand extends CoreCommand {
 				}
 				break;
 			case "update":
-				permCheck(player, "command.update");
+				permCheck(player, "update");
 
 				// Reload the skin of the BM for the commandSender
 				if (BlackMarket.NPC != null) {

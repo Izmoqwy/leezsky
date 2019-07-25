@@ -2,7 +2,9 @@ package lz.izmoqwy.market.rpg;
 
 import com.google.common.collect.Maps;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
+import lz.izmoqwy.market.Locale;
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -70,5 +72,44 @@ public class RPGManager {
 		}
 
 		return Maps.immutableEntry(player, newPlayer);
+	}
+
+	public static boolean givePoints(OfflinePlayer bukkitPlayer, int amount) {
+		try {
+			RPGStorage.PLAYERS.increase("points", amount, "uuid", bukkitPlayer.getUniqueId().toString());
+			return true;
+		}
+		catch (SQLActionImpossibleException e) {
+			e.printStackTrace();
+			if (bukkitPlayer.isOnline())
+				bukkitPlayer.getPlayer().sendMessage(Locale.PREFIX + "§4Une erreur est survenue !");
+			return false;
+		}
+	}
+
+	public static boolean give(OfflinePlayer bukkitPlayer, RPGResource resource, int amount) {
+		try {
+			RPGStorage.PLAYERS.increase(resource.dbCol(), amount, "uuid", bukkitPlayer.getUniqueId().toString());
+			return true;
+		}
+		catch (SQLActionImpossibleException e) {
+			e.printStackTrace();
+			if (bukkitPlayer.isOnline())
+				bukkitPlayer.getPlayer().sendMessage(Locale.PREFIX + "§4Une erreur est survenue !");
+			return false;
+		}
+	}
+
+	public static boolean take(OfflinePlayer bukkitPlayer, RPGResource resource, int amount) {
+		try {
+			RPGStorage.PLAYERS.decrease(resource.dbCol(), amount, "uuid", bukkitPlayer.getUniqueId().toString());
+			return true;
+		}
+		catch (SQLActionImpossibleException e) {
+			e.printStackTrace();
+			if (bukkitPlayer.isOnline())
+				bukkitPlayer.getPlayer().sendMessage(Locale.PREFIX + "§4Une erreur est survenue !");
+			return false;
+		}
 	}
 }

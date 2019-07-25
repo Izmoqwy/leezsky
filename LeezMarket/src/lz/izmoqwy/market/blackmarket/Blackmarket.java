@@ -1,16 +1,19 @@
 package lz.izmoqwy.market.blackmarket;
 
+import com.google.common.collect.Lists;
 import com.sun.istack.internal.NotNull;
 import lz.izmoqwy.core.CorePrinter;
 import lz.izmoqwy.core.PlayerDataStorage;
 import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.market.MarketPlugin;
+import lz.izmoqwy.market.blackmarket.illegal.ForbiddenArena;
 import lz.izmoqwy.market.npc.NPC_v1_12_R1;
 import lz.izmoqwy.market.rpg.commands.*;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
@@ -57,6 +60,24 @@ public class BlackMarket implements Listener {
 		PluginHelper.loadListener(MarketPlugin.getInstance(), new BlackMarket());
 		PluginHelper.loadListener(MarketPlugin.getInstance(), new BlackMarketGUI());
 		loadRPG();
+
+		refreshForbiddenArena();
+	}
+
+	public static void refreshForbiddenArena() {
+		final String path = "forbiddenarena.";
+
+		List<Location> points = Lists.newArrayList();
+		ConfigurationSection section = config.getConfigurationSection(path + "points");
+		if (section != null) {
+			for(String strPoint : section.getKeys(false)) {
+				Location location = LocationUtil.yamlFullLoad(config, path + "points." + strPoint);
+				if (location != null)
+					points.add(location);
+			}
+		}
+
+		ForbiddenArena.load(LocationUtil.yamlFullLoad(config, path + "spawn"), points);
 	}
 
 	private static boolean loadConfig() {

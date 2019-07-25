@@ -31,10 +31,11 @@ import java.util.*;
 @SuppressWarnings("deprecation")
 public class BlackMarketGUI implements Listener {
 
-	protected static final String GUI_ACCESS_NAME = "§6§lMN §8» §aAcheter l'accès", GUI_CONFIRM_NAME = "§6§lMN §8» §eAchat", GUI_MENU_NAME = "§6§lMarché noir", GUI_FORGE_NAME = "§6§lMN §8» §7Forge en titane";
-	protected static final List<String> GUIS = Arrays.asList(GUI_ACCESS_NAME, GUI_CONFIRM_NAME, GUI_MENU_NAME, GUI_FORGE_NAME);
+	protected static final String GUI_ACCESS_NAME = "§6§lMN §8» §aAcheter l'accès", GUI_CONFIRM_NAME = "§6§lMN §8» §eAchat", GUI_MENU_NAME = "§6§lMarché noir",
+			GUI_ILLEGAL_NAME = "§6§lMN §8» §c§kIllégal", GUI_FORGE_NAME = "§6§lMN §8» §7Forge en titane";
+	protected static final List<String> GUIS = Arrays.asList(GUI_ACCESS_NAME, GUI_CONFIRM_NAME, GUI_MENU_NAME, GUI_ILLEGAL_NAME, GUI_FORGE_NAME);
 
-	protected static final Inventory GUI_MENU, GUI_FORGE;
+	protected static final Inventory GUI_MENU, GUI_ILLEGAL, GUI_FORGE;
 	protected static final ItemStack ITEM_BACK = ItemUtil.createItem(Material.ARROW, "§cRetour", Collections.singletonList("§7Retourner au menu"));
 
 	static {
@@ -45,6 +46,14 @@ public class BlackMarketGUI implements Listener {
 		GUI_MENU.setItem(14, ItemUtil.createItem(Material.ANVIL, "§7Forge en titane", Collections.singletonList("§eUtilisez le " + RPGResource.TITANE.getFullName() + " §epour obtenir des équipements")));
 		GUI_MENU.setItem(15, ItemUtil.createItem(Material.LIME_GLAZED_TERRACOTTA, "§aRéacteur nucléaire", Collections.singletonList("§aCet endroit semble dangereux")));
 		GUI_MENU.setItem(16, ItemUtil.createItem(Material.REDSTONE_LAMP_OFF, "§cCentrale éléctrique", Collections.singletonList("§eVendez le " + RPGResource.COPPER.getFullName() + " §epour obtenir de l'argent")));
+
+		GUI_ILLEGAL = Bukkit.createInventory(null, 3 * 9, GUI_ILLEGAL_NAME);
+
+		GUI_ILLEGAL.setItem(13, ItemUtil.createItem(Material.GOLD_SWORD, "§cArène interdite",
+				Arrays.asList("§7Voulez-vous faire un combat", "§7dans l'arène interdite ?", " ",
+						"§2Il vous sera demandé de confirmer", "§3Prix: " + RPGResource.DARKMATTER.getFullName(TextUtil.readbleNumber(1000)))));
+
+		GUI_ILLEGAL.setItem(3 * 9 - 1, ITEM_BACK);
 
 		GUI_FORGE = Bukkit.createInventory(null, 4 * 9, GUI_FORGE_NAME);
 
@@ -69,7 +78,7 @@ public class BlackMarketGUI implements Listener {
 
 		try {
 			RPGPlayer rpgPlayer = RPGManager.loadRPGPlayer(player.getUniqueId(), false).getKey();
-			if (rpgPlayer.getRes_darkmatter() >= 100) {
+			if (rpgPlayer.getRes_darkmatter() >= 250) {
 				inventory.setItem(11, ItemUtil.createItem(new MaterialData(Material.WOOL, (byte) 5), "§aAcheter", Arrays.asList("§2Cela débloque le marché noir", "§2de manière permanente")));
 				inventory.setItem(13, ItemUtil.createItem(Material.BOOK, "§eInformations",
 						Arrays.asList("§aVoulez-vous débloquer l'accès au marché noir ?", "§ePrix: " + RPGResource.DARKMATTER.getFullName(Integer.toString(80)))));
@@ -77,7 +86,7 @@ public class BlackMarketGUI implements Listener {
 			}
 			else {
 				inventory.setItem(13, ItemUtil.createItem(Material.BARRIER, "§cRessources inssufisantes",
-						Arrays.asList("§CVous n'avez pas de quoi débloquer le marché noir !", "§7Revenez quand vous aurez " + RPGResource.DARKMATTER.getFullName(Integer.toString(80)) + "§7.")));
+						Arrays.asList("§CVous n'avez pas de quoi débloquer le marché noir !", "§7Revenez quand vous aurez " + RPGResource.DARKMATTER.getFullName(Integer.toString(250)) + "§7.")));
 			}
 		}
 		catch (SQLException | SQLActionImpossibleException e) {
@@ -138,7 +147,7 @@ public class BlackMarketGUI implements Listener {
 					switch (event.getSlot()) {
 						case 11:
 							try {
-								RPGStorage.PLAYERS.decrease(RPGResource.DARKMATTER.dbCol(), 100, "uuid", player.getUniqueId().toString());
+								RPGStorage.PLAYERS.decrease(RPGResource.DARKMATTER.dbCol(), 250, "uuid", player.getUniqueId().toString());
 								PlayerDataStorage.set(player, "blackmarket.access", true);
 								PlayerDataStorage.save(player);
 								player.sendMessage(Locale.RPG_PREFIX + "§aVous avez débloqué l'accès du PNJ du marché noir. Attention à ne pas vous faire remarquer dans le coin !");
@@ -173,6 +182,9 @@ public class BlackMarketGUI implements Listener {
 					break;
 				case GUI_MENU_NAME:
 					switch (event.getSlot()) {
+						case 11:
+							player.openInventory(GUI_ILLEGAL);
+							break;
 						case 14:
 							player.openInventory(GUI_FORGE);
 							break;
