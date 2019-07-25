@@ -51,8 +51,8 @@ public class PlayerBackup {
 		clearBukkitPlayer(onPlayer, false);
 
 		onPlayer.setGameMode(this.gameMode);
-		onPlayer.getInventory().setContents(this.getContents());
-		onPlayer.getInventory().setArmorContents(this.getArmorContents());
+		onPlayer.getInventory().setContents(this.contents);
+		onPlayer.getInventory().setArmorContents(this.armorContents);
 		onPlayer.updateInventory();
 
 		onPlayer.setLevel((int) this.fullExp[0]);
