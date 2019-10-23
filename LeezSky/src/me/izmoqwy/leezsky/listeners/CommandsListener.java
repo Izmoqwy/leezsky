@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class CommandsListener implements Listener {
 
-	private final List<String> AUTHORS = Arrays.asList("Izmoqwy", "_V4SC0", "Vasco", "zXeweii_XXV");
+	private final List<String> AUTHORS = Arrays.asList("Izmoqwy", "_V4SC0", "Vasco", "zXeweii_XXV", "Leezsky");
 
 	private boolean checkAuthor(Plugin plugin) {
 		for (String author : AUTHORS) {
@@ -55,7 +55,7 @@ public class CommandsListener implements Listener {
 				}
 			}
 			player.sendMessage(" ");
-			player.sendMessage(LeezSky.PREFIX + "§cVotre commande contient \":\", elle n'est donc pas acceptée.");
+			player.sendMessage(LeezSky.PREFIX + "§cCette commande contient \":\", elle n'est donc pas acceptée.");
 			player.sendMessage(" ");
 			event.setCancelled(true);
 			return;
@@ -72,7 +72,7 @@ public class CommandsListener implements Listener {
 			case "pl":
 				player.sendMessage(" ");
 				player.sendMessage(LeezSky.PREFIX + "§eNous utilisons majoritairement des plugins faits maisons et donc §nprivés§e.");
-				player.sendMessage(LeezSky.PREFIX + "§6Nous ne donnerons en aucun cas un plugin privé.");
+				player.sendMessage(LeezSky.PREFIX + "§6Nous ne donnerons/venderons en aucun cas un plugin privé.");
 				player.sendMessage(" ");
 				StringBuilder bldr = new StringBuilder();
 				int count = 0;
@@ -94,7 +94,7 @@ public class CommandsListener implements Listener {
 			case "about":
 			case "?":
 				player.sendMessage(" ");
-				player.sendMessage(LeezSky.PREFIX + "§eLe serveur est en 1.12.2 mais est peut-être rejoint en toute version supérieur à 12.2 églaement.");
+				player.sendMessage(LeezSky.PREFIX + "§eLe serveur est en 1.12.2 mais est peut-être rejoint avec des versions supérieurs également.");
 				player.sendMessage(" ");
 				break;
 

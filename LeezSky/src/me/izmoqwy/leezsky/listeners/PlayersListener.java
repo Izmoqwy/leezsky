@@ -33,9 +33,9 @@ public class PlayersListener implements Listener {
 
 			String helper = "§4[OP] §cLeezSky §8-> §emoi§8: ";
 			player.sendMessage(helper + "§6BIP BIP BIP ! §eIl semblerait que tu sois nouveau ici, laisse moi te donner quelques informations.");
-			player.sendMessage(helper + "§eTu te trouve actuellement sur un serveur skyblock simple. Un skyblock simple est un skyblock où les joueurs progresse plus rapidement que la normale.");
+			player.sendMessage(helper + "§eTu es actuellement sur un serveur skyblock simple. Un skyblock simple est un skyblock où les joueurs progressent plus rapidement que la normale.");
 			player.sendMessage(helper + "§eUtilise la commande §6/settings §epour configurer tes paramètres de base et §6/help §epour obtenir de l'aide sur le serveur et/ou les commandes.");
-			player.sendMessage("§d§oBesoin de plus d'informations sur le skyblock en général ? Fais §5/help skyblock§d§o.");
+			player.sendMessage("§d§oBesoin de plus d'informations sur le skyblock en général ? Utilise §5/help skyblock§d§o.");
 
 			player.sendMessage("");
 		}

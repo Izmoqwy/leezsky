@@ -27,15 +27,15 @@ public class HelpCommand implements CommandExecutor {
 				{
 				case "leezsky":
 					sender.sendMessage(" ");
-					sender.sendMessage( LeezSky.PREFIX + "§6Le serveur dispose de son propre plugin skyblock, cela permet d'avoir le contrôle total sur le bugs qui peuvent survenir." );
+					sender.sendMessage( LeezSky.PREFIX + "§6Le serveur dispose de son propre plugin skyblock, cela permet d'avoir le contrôle total sur les bugs qui peuvent survenir." );
 					sender.sendMessage( LeezSky.PREFIX + "§eVous pouvez attribuer trois rôles aux membres de votre île : Recruteur (Il peut inviter des gens sur votre île ainsi qu'en coop), Officier (C'est comme un sous-chef), Chef (Vous passerez automatiquement Officier). Par défaut, un membre de votre île n'a aucun rôle spécifique mais a assez de permissions pour jouer sans administrer l'île." );
 					sender.sendMessage(" ");
 					break;
 				case "skyblock":
 					sender.sendMessage(" ");
 					sender.sendMessage(LeezSky.PREFIX + "§6Le skyblock est un mode de jeu très apprécié sur Minecraft et le concept est assez simple et compréhensible.");
-					sender.sendMessage(LeezSky.PREFIX + "§eQuand vous commencez l'aventure, vous arrivez sur une île. Le but est de développer un maximum votre île via le biai de farms, décorations, etc.. Poser des blocs permet de gagner des niveaux d'île en fonction de la valeur du bloc posé. Le skyblock en multijoueur apporte des choses tel qu'un classement des meilleurs îles, le fait de pouvoir jouer avec ses amis ou autres.");
-					sender.sendMessage(LeezSky.PREFIX + "§d§oBesoin de plus d'informations sur le serveur ? Fais §5/help leezsky§d.");
+					sender.sendMessage(LeezSky.PREFIX + "§eQuand vous commencez l'aventure, vous arrivez sur une île. Le but est de développer un maximum votre île via le biai d'usines, décorations, etc.. Poser des blocs permet de gagner des niveaux d'île en fonction de la valeur du bloc posé. Le skyblock en multijoueur apporte des choses tel qu'un classement des meilleurs îles, le fait de pouvoir jouer avec ses amis et bien plus encore.");
+					sender.sendMessage(LeezSky.PREFIX + "§d§oBesoin de plus d'informations sur le serveur ? Utilise §5/help leezsky§d.");
 					sender.sendMessage(" ");
 					break;
 				case "plugins":
@@ -43,6 +43,9 @@ public class HelpCommand implements CommandExecutor {
 					break;
 				case "commands":
 				case "commandes":
+					sender.sendMessage(" ");
+					sender.sendMessage(LeezSky.PREFIX + "§cCette section arrive bientôt.");
+					sender.sendMessage(" ");
 					break;
 				}
 			}
