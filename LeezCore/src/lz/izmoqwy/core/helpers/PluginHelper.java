@@ -32,6 +32,8 @@ public class PluginHelper {
 	}
 
 	public static void performCommand(String command) {
+		if (command.startsWith("/"))
+			command = command.replaceFirst("/", "");
 		Bukkit.dispatchCommand(Bukkit.getConsoleSender(), command);
 	}
 

@@ -56,6 +56,11 @@ public class LeezPermissions extends JavaPlugin {
 				Group group = Configs.getOfflinePlayerGroupOrDefault(player);
 				return new lz.izmoqwy.core.crosshooks.interfaces.Group() {
 					@Override
+					public String getName() {
+						return group.getName();
+					}
+
+					@Override
 					public String getPrefix() {
 						return group.getPrefix();
 					}
@@ -67,7 +72,7 @@ public class LeezPermissions extends JavaPlugin {
 
 					@Override
 					public ChatColor getChatColor() {
-						return ChatColor.getByChar(group.getChatcolor().charAt(1));
+						return ChatColor.getByChar(group.getChatcolor().length() == 2 ? group.getChatcolor().charAt(1) : group.getChatcolor().charAt(0));
 					}
 				};
 			}

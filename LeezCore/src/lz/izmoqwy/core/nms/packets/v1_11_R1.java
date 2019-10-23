@@ -16,7 +16,7 @@ import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Objects;
 
-public class v1_11_R2 implements NMSPacket {
+public class v1_11_R1 implements NMSPacket {
 
 	public void removeProfileProperty(Player player, String property) {
 		gp(player).getProperties().removeAll(property);

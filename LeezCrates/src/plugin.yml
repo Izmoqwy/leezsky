@@ -1,0 +1,27 @@
+name: LeezCrates
+author: Izmoqwy
+version: 1.0.0
+
+main: lz.izmoqwy.leezcrates.LeezCrates
+depend: [LeezCore]
+
+commands:
+  leezcrates:
+    aliases: [crates, crate]
+    description: Create box to open with keys
+permissions:
+  leezcrates.*:
+    children:
+      leezcrates.admin.*:
+        children:
+          leezcrates.admin.types:
+            description: Show available crate types
+          leezcrates.admin.create:
+            description: Create a new crate
+          leezcrates.admin.remove:
+            description: Remove an existing crate
+      leezcrates.regular.*:
+        children:
+          leezcrates.open:
+            default: true
+            description: Open crate

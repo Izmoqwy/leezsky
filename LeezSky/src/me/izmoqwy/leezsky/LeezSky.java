@@ -1,11 +1,18 @@
 package me.izmoqwy.leezsky;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lz.izmoqwy.core.Economy;
 import lz.izmoqwy.core.LeezCore;
 import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.api.database.SQLite;
+import lz.izmoqwy.core.crosshooks.CrosshooksManager;
+import lz.izmoqwy.core.crosshooks.interfaces.Group;
+import lz.izmoqwy.core.crosshooks.interfaces.LeezPermissionsCH;
 import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.nms.NmsAPI;
+import lz.izmoqwy.core.nms.scoreboard.NMSScoreboard;
+import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.core.world.WorldsManager;
 import me.izmoqwy.leezsky.challenges.ChallengePlugin;
 import me.izmoqwy.leezsky.commands.*;
@@ -26,6 +33,9 @@ import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class LeezSky extends JavaPlugin {
@@ -39,6 +49,8 @@ public class LeezSky extends JavaPlugin {
 			TAB_FOOTER = "\n§8┅⊰ §ediscord.gg/X78wMsE §8⊱┅";
 
 	public static SQLDatabase DB;
+
+	public static Map<UUID, NMSScoreboard> scoreboardMap = Maps.newHashMap();
 
 	@Override
 	public void onEnable() {
@@ -110,10 +122,46 @@ public class LeezSky extends JavaPlugin {
 		if (CLUSTER_HOST)
 			new Rebooter().start();
 
+
+		final boolean useScoreboard = NmsAPI.scoreboard != null;
+		if (useScoreboard)
+			getLogger().info("Able to use scoreboards!");
+
 		ObjectiveManager.load(this);
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			ObjectiveManager.loadPlayer(player);
 			ObjectiveManager.addToBB(player);
+
+			if (useScoreboard)
+				createScoreboard(player);
+		}
+	}
+
+	public static void createScoreboard(Player player) {
+		NMSScoreboard scoreboard = NmsAPI.createScoreboard(player, "§6PLAY.LEEZSKY.FR");
+		if (scoreboard != null) {
+			scoreboard.create();
+
+			List<String> sbLines = Lists.newArrayList();
+			sbLines.add("§3Joueur: §b" + player.getName());
+
+			if (CrosshooksManager.isPluginRegistred("LeezPermissions")) {
+				LeezPermissionsCH permissions = CrosshooksManager.get("LeezPermissions", LeezPermissionsCH.class);
+				if (permissions != null) {
+					Group group = permissions.getGroup(player);
+					if (group != null)
+						sbLines.add("§8➥ §3Grade: " + group.getChatColor() + group.getName());
+				}
+			}
+
+
+			sbLines.add("§8➥ §3Monnaie: §e" + TextUtil.readbleNumber(Economy.getBalance(player)) );
+
+			Collections.reverse(sbLines);
+			for (int i = 0; i < sbLines.size(); i++) {
+				scoreboard.setLine(i, sbLines.get(i));
+			}
+			scoreboardMap.put(player.getUniqueId(), scoreboard);
 		}
 	}
 
@@ -125,6 +173,11 @@ public class LeezSky extends JavaPlugin {
 	public void onDisable() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			ObjectiveManager.removeFromBB(player);
+		}
+
+		for (Map.Entry<UUID, NMSScoreboard> scoreboard : scoreboardMap.entrySet()) {
+			scoreboard.getValue().destroy();
+			scoreboardMap.remove(scoreboard.getKey());
 		}
 
 		if (!reboot)

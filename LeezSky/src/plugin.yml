@@ -1,9 +1,12 @@
 name: LeezSky
 author: Izmoqwy
 version: 1.0.0
-depend: [LeezCore, LeezPermissions]
-softdepend: [LeezIsland]
+
+depend: [LeezCore]
+softdepend: [LeezIsland, LeezPermissions]
+
 main: me.izmoqwy.leezsky.LeezSky
+
 commands:
   help:
     aliases: [serverhelp, sh, ?]

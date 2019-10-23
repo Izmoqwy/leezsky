@@ -205,7 +205,7 @@ public class ForbiddenArena implements Listener {
 	}
 
 	private static int getNeededGolems() {
-		return GOLEMS * (concurrents.size() > 1 ? (concurrents.size() - 1) * GOLEMS / 2 : 1);
+		return concurrents.size() > 1 ? GOLEMS + (concurrents.size() - 1) * (GOLEMS / 2) : GOLEMS;
 	}
 
 	private static int spawnGolems(boolean random) {
@@ -472,6 +472,10 @@ public class ForbiddenArena implements Listener {
 					}
 					else if (golem.getCustomName().equals(IRON_GOLEM)) {
 						earnIron(player, random.nextInt(5) + 1);
+					}
+
+					if (!player.getBase().getInventory().containsAtLeast(ItemUtil.createItem(Material.GOLDEN_CARROT), 20) &&  random.nextBoolean()) {
+						player.getBase().getInventory().addItem(ItemUtil.createItem(Material.GOLDEN_CARROT, random.nextInt(2) + 1));
 					}
 				}
 				else {

@@ -1,0 +1,14 @@
+types:
+  Daily:
+    material: CHEST(1)
+    displayname: '&cTest'
+    broadcast: true
+    rewards:
+      test:
+        chance: 40
+        displayname: '&7Test'
+        command: 'say Test %p'
+        icon: STONE
+      second:
+        chance: 50
+        displayname:

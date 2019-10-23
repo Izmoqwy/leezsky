@@ -4,6 +4,8 @@ import org.bukkit.ChatColor;
 
 public interface Group {
 
+	String getName();
+
 	String getPrefix();
 	String getSuffix();
 

@@ -15,6 +15,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 import java.text.MessageFormat;
 
@@ -30,14 +31,15 @@ public class PlayersListener implements Listener {
 		else {
 			player.sendMessage("");
 
-			String helper = "§4[OP] §cLeezSky §8» ";
-			player.sendMessage(helper + "§6BIP BIP BIP ! §eIl semblerait que tu sois nouveau ici, laisse moi t'aider !");
+			String helper = "§4[OP] §cLeezSky §8-> §emoi§8: ";
+			player.sendMessage(helper + "§6BIP BIP BIP ! §eIl semblerait que tu sois nouveau ici, laisse moi te donner quelques informations.");
 			player.sendMessage(helper + "§eTu te trouve actuellement sur un serveur skyblock simple. Un skyblock simple est un skyblock où les joueurs progresse plus rapidement que la normale.");
-			player.sendMessage(helper + "§eUtilise la commande §6/settings §epour configurer tes paramètres et §6/help §epour obtenir de l'aide sur le serveur.");
+			player.sendMessage(helper + "§eUtilise la commande §6/settings §epour configurer tes paramètres de base et §6/help §epour obtenir de l'aide sur le serveur et/ou les commandes.");
 			player.sendMessage("§d§oBesoin de plus d'informations sur le skyblock en général ? Fais §5/help skyblock§d§o.");
 
 			player.sendMessage("");
 		}
+		LeezSky.createScoreboard(player);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -68,6 +70,11 @@ public class PlayersListener implements Listener {
 		LeezIslandCH CH = CrosshooksManager.isPluginRegistred("LeezIsland") ? CrosshooksManager.get("LeezIsland", LeezIslandCH.class) : null;
 		int islandLevel = !player.hasPermission("leezsky.chat.nolevel") && CH != null ? CH.getIslandLevel(player) : -1;
 		Bukkit.broadcastMessage(MessageFormat.format("{0}{1} {2}➟ {3}", islandLevel != -1 ? "§8(§a" + islandLevel + "§8) " : "", displayName, ChatColor.DARK_GRAY, message));
+	}
+
+	@EventHandler
+	public void onQuit(PlayerQuitEvent event) {
+		LeezSky.scoreboardMap.remove(event.getPlayer().getUniqueId());
 	}
 
 }
