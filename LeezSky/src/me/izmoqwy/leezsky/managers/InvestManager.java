@@ -114,7 +114,7 @@ public class InvestManager {
 		Inventory inv = InventoryUtil.copy(CONFIRM_DEPOSIT_INVENTORY, GUI_DEPOSIT_CONFIRM_NAME.replace("%s", slot + ""));
 		List<String> informations = Lists.newArrayList();
 		if (true)
-			informations.addAll(Arrays.asList("§4Attention:", "§cSi vous récupérez l'argent avant 24h,", "§cLe montent sera diminué de 18%"));
+			informations.addAll(Arrays.asList("§4Attention:", "§cSi vous récupérez l'argent avant 24h,", "§cLe montant sera diminué de 18%"));
 		inv.setItem(13, ItemUtil.createItem(Material.BOOK, "§eInformations", informations));
 		player.openInventory(inv);
 	}
