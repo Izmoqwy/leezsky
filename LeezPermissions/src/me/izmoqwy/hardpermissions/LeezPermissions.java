@@ -71,6 +71,11 @@ public class LeezPermissions extends JavaPlugin {
 					}
 
 					@Override
+					public int getPower() {
+						return group.getPower();
+					}
+
+					@Override
 					public ChatColor getChatColor() {
 						return ChatColor.getByChar(group.getChatcolor().length() == 2 ? group.getChatcolor().charAt(1) : group.getChatcolor().charAt(0));
 					}

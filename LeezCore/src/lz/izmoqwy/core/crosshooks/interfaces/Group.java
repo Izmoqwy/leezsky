@@ -9,6 +9,8 @@ public interface Group {
 	String getPrefix();
 	String getSuffix();
 
+	int getPower();
+
 	ChatColor getChatColor();
 
 }

@@ -1,6 +1,8 @@
 package lz.izmoqwy.leezisland;
 
 import lz.izmoqwy.core.crosshooks.CrosshooksManager;
+import lz.izmoqwy.core.crosshooks.interfaces.IslandInfo;
+import lz.izmoqwy.core.crosshooks.interfaces.IslandRelationship;
 import lz.izmoqwy.core.crosshooks.interfaces.LeezIslandCH;
 import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.i18n.LocaleManager;
@@ -10,6 +12,7 @@ import lz.izmoqwy.leezisland.grid.CoopsManager;
 import lz.izmoqwy.leezisland.grid.GridManager;
 import lz.izmoqwy.leezisland.grid.IslandManager;
 import lz.izmoqwy.leezisland.island.Island;
+import lz.izmoqwy.leezisland.island.IslandRole;
 import lz.izmoqwy.leezisland.listeners.*;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
 import lz.izmoqwy.leezisland.players.Wrapper;
@@ -23,6 +26,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.sql.SQLException;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 public class LeezIsland extends JavaPlugin implements Listener {
@@ -51,7 +55,7 @@ public class LeezIsland extends JavaPlugin implements Listener {
 		PluginHelper.loadListener(this, new BordersListener());
 		PluginHelper.loadListener(this, new IslandGuard());
 		PluginHelper.loadListener(this, new SettingsMenuListener());
-		PluginHelper.loadListener(this, new CobbleGeneratorListener());
+		PluginHelper.loadListener(this, new OreGeneratorListener());
 
 		PluginHelper.loadCommand("island", new PlayerCommand());
 		PluginHelper.setTabCompleter("island", new PlayerCommandTabCompleter());
@@ -59,9 +63,39 @@ public class LeezIsland extends JavaPlugin implements Listener {
 
 		CrosshooksManager.registerHook(this, new LeezIslandCH() {
 			@Override
-			public int getIslandLevel(OfflinePlayer player) {
-				Island island = Wrapper.wrapOffPlayerIsland(player);
-				return island != null ? island.getLevel() : -1;
+			public IslandInfo getIslandInfo(OfflinePlayer player) {
+				final Island island = Wrapper.wrapOffPlayerIsland(player);
+				if (island == null)
+					return null;
+
+				return new IslandInfo() {
+					@Override
+					public String getName() {
+						return island.getDisplayName();
+					}
+
+					@Override
+					public int getLevel() {
+						return island.getLevel();
+					}
+
+					@Override
+					public String getRoleName(UUID player, boolean color) {
+						IslandRole role = island.getRole(player);
+						return color ? "§" + role.getColorChat() + role.name : role.name;
+					}
+
+					@Override
+					public IslandRelationship getRelationship(UUID player) {
+						if (island.getMembersMap().containsKey(player))
+							return IslandRelationship.MEMBER;
+						if (island.getBanneds().contains(player))
+							return IslandRelationship.BANNED;
+						if (CoopsManager.isCooped(player, island.ID))
+							return IslandRelationship.COOP;
+						return IslandRelationship.VISITOR;
+					}
+				};
 			}
 
 			@Override

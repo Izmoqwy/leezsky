@@ -1,5 +1,6 @@
 package me.izmoqwy.leezsky.objectives;
 
+import me.izmoqwy.leezsky.managers.SettingsManager;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
@@ -15,7 +16,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.material.MaterialData;
 
-public class ObjectiveListener implements Listener {
+public class ObjectiveListener implements Listener, SettingsManager.SettingUser {
+
+	public static ObjectiveListener INSTANCE = new ObjectiveListener();
 
 	@EventHandler
 	public void onJoin(final PlayerJoinEvent event) {
@@ -91,4 +94,11 @@ public class ObjectiveListener implements Listener {
 		}
 	}
 
+	@Override
+	public void onSettingUpdate(Player player, SettingsManager.Setting setting, Enum value) {
+		if (value == SettingsManager.SimpleToggle.ON)
+			ObjectiveManager.addToBB(player);
+		else
+			ObjectiveManager.removeFromBB(player);
+	}
 }

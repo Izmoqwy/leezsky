@@ -21,6 +21,7 @@ import me.izmoqwy.leezsky.listeners.MotdListener;
 import me.izmoqwy.leezsky.listeners.PlayersListener;
 import me.izmoqwy.leezsky.listeners.SpawnListener;
 import me.izmoqwy.leezsky.managers.InvestManager;
+import me.izmoqwy.leezsky.managers.SettingsManager;
 import me.izmoqwy.leezsky.objectives.ObjectiveManager;
 import me.izmoqwy.leezsky.tasks.AutoMessage;
 import me.izmoqwy.leezsky.tasks.Rebooter;
@@ -96,6 +97,10 @@ public class LeezSky extends JavaPlugin {
 		InvestManager.TABLE = DB.getTable("Invests");
 		InvestManager.load();
 		PluginHelper.loadCommand("invest", new InvestCommand());
+
+		SettingsManager.load();
+		PluginHelper.loadCommand("settings", new SettingsCommand());
+
 		PluginHelper.loadCommand("objective", new ObjectiveCommand());
 
 		/*
@@ -138,6 +143,9 @@ public class LeezSky extends JavaPlugin {
 	}
 
 	public static void createScoreboard(Player player) {
+		if (SettingsManager.SCOREBOARD.getState(player) == SettingsManager.SimpleToggle.OFF)
+			return;
+
 		NMSScoreboard scoreboard = NmsAPI.createScoreboard(player, "§6PLAY.LEEZSKY.FR");
 		if (scoreboard != null) {
 			scoreboard.create();

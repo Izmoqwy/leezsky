@@ -2,10 +2,10 @@ package me.izmoqwy.leezsky.objectives;
 
 import com.google.common.collect.Maps;
 import lz.izmoqwy.core.PlayerDataStorage;
-import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.utils.StoreUtil;
 import me.izmoqwy.leezsky.LeezSky;
+import me.izmoqwy.leezsky.managers.SettingsManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -26,8 +26,6 @@ public class ObjectiveManager {
 	static {
 		OBJECTIVES_SIZE = LeezObjective.values().length;
 	}
-
-	private static SQLDatabase db;
 
 	private static Map<UUID, Map.Entry<LeezObjective, BossBar>> players = Maps.newHashMap();
 	private static Map<UUID, Integer> indexes = Maps.newHashMap();
@@ -60,7 +58,7 @@ public class ObjectiveManager {
 			bossBarMap.put(objective, bossBar);
 		}
 
-		PluginHelper.loadListener(instance, new ObjectiveListener());
+		PluginHelper.loadListener(instance, ObjectiveListener.INSTANCE);
 	}
 
 	public static void loadPlayer(OfflinePlayer player) {
@@ -144,7 +142,7 @@ public class ObjectiveManager {
 	}
 
 	public static void addToBB(Player player) {
-		if (players.containsKey(player.getUniqueId())) {
+		if (SettingsManager.OBJECTIVE_BOSSBAR.getState(player) == SettingsManager.SimpleToggle.ON && players.containsKey(player.getUniqueId())) {
 			Map.Entry<LeezObjective, BossBar> entry = players.get(player.getUniqueId());
 			if (entry == null)
 				return;

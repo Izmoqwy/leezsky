@@ -5,6 +5,6 @@ import org.bukkit.OfflinePlayer;
 
 public interface LeezIslandCH extends CrossHook {
 
-	int getIslandLevel(OfflinePlayer player);
+	IslandInfo getIslandInfo(OfflinePlayer player);
 
 }
