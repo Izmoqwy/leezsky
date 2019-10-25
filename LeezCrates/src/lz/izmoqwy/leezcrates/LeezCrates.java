@@ -114,40 +114,44 @@ public class LeezCrates extends JavaPlugin {
 				if (materialData == null)
 					materialData = new MaterialData(Material.CHEST);
 
-				ConfigurationSection rewardsSection = typeSection.getConfigurationSection("rewards");
 				List<Reward> rewards = Lists.newArrayList();
-				for (String key : typeSection.getKeys(false)) {
-					ConfigurationSection rewardSection = rewardsSection.getConfigurationSection(key);
-					String fullRewardIconMaterial = typeSection.getString("material", "STONE");
-					Matcher m = materialPattern.matcher(fullRewardIconMaterial);
+				ConfigurationSection rewardsSection = typeSection.getConfigurationSection("rewards");
+				if (rewardsSection != null) {
+					for (String key : rewardsSection.getKeys(false)) {
+						ConfigurationSection rewardSection = rewardsSection.getConfigurationSection(key);
+						if (rewardSection == null)
+							continue;
 
-					MaterialData mdata = null;
-					if (m.find()) {
-						String strMaterial = m.group(1);
-						if (strMaterial != null) {
-							try {
-								Material material = Material.valueOf(strMaterial.toUpperCase());
-								if (m.group(2) != null) {
-									byte data = Byte.parseByte(m.group(2));
-									mdata = new MaterialData(material, data);
+						String fullRewardIconMaterial = rewardSection.getString("icon", "STONE");
+						Matcher m = materialPattern.matcher(fullRewardIconMaterial);
+
+						MaterialData mdata = null;
+						if (m.find()) {
+							String strMaterial = m.group(1);
+							if (strMaterial != null) {
+								try {
+									Material material = Material.valueOf(strMaterial.toUpperCase());
+									if (m.group(2) != null) {
+										byte data = Byte.parseByte(m.group(2));
+										mdata = new MaterialData(material, data);
+									}
+									else {
+										mdata = new MaterialData(material);
+									}
 								}
-								else {
-									mdata = new MaterialData(material);
+								catch (Exception ex) {
+									CorePrinter.warn("Crate reward {0} seems to have an invalid material ({1}). Format: NAME or NAME(data)", type, strMaterial);
 								}
-							}
-							catch (Exception ex) {
-								CorePrinter.warn("Crate reward {0} seems to have an invalid material ({1}). Format: NAME or NAME(data)", type, strMaterial);
 							}
 						}
+
+						if (mdata == null)
+							mdata = new MaterialData(Material.CHEST);
+
+						Reward reward = new Reward(mdata, ChatColor.translateAlternateColorCodes('&', rewardSection.getString("displayname", "§cSans nom")), rewardSection.getString("command", null), rewardSection.getInt("chance", 0));
+						rewards.add(reward);
 					}
-
-					if (mdata == null)
-						mdata = new MaterialData(Material.CHEST);
-
-					Reward reward = new Reward(mdata, rewardSection.getString("displayname", "§cSans nom"), rewardSection.getString("command", "say GG %p, pour gagné %r !"), rewardSection.getInt("chance", 0));
-					rewards.add(reward);
 				}
-
 				crateTypes.add(new CrateType(type, ChatColor.translateAlternateColorCodes('&', typeSection.getString("displayname", type)), typeSection.getBoolean("broadcast", false), materialData, rewards));
 			}
 		}
@@ -262,17 +266,17 @@ public class LeezCrates extends JavaPlugin {
 						return;
 					}
 
-					if (roll == 30) {
+					if (roll == 15) {
 						cancel();
 						ItemStack rewardIcon = inventory.getItem(13);
 						if (rewardIcon == null)
 							return;
 
-						openingPlayers.remove(player);
 						Reward reward = crate.getType().getRewards().stream().filter(r -> r.getItem().isSimilar(rewardIcon)).collect(Collectors.toList()).get(0);
-						PluginHelper.performCommand(reward.getCommand().replace("%p", player.getName()).replace("%r", reward.getDisplayName()));
+						if (reward.getCommand() != null)
+							PluginHelper.performCommand(reward.getCommand().replace("%p", player.getName()).replace("%r", reward.getDisplayName()));
 						if (crate.getType().isBroadcasted()) {
-							Bukkit.broadcastMessage(PREFIX + "§e" + player.getName() + " §7a ouvert une box §6" + crate.getType().getDisplayName() != null ? crate.getType().getDisplayName() : crate.getType().getName());
+							Bukkit.broadcastMessage(PREFIX + "§e" + player.getName() + " §7a ouvert une box §6" + (crate.getType().getDisplayName() != null ? crate.getType().getDisplayName() : crate.getType().getName()));
 						}
 
 						setBrand(inventory, 10, 16, null);
@@ -281,6 +285,7 @@ public class LeezCrates extends JavaPlugin {
 
 						Bukkit.getScheduler().runTaskLater(instance, () -> {
 							player.closeInventory();
+							openingPlayers.remove(player);
 							player.playSound(player.getLocation(), Sound.ENTITY_ENDERMEN_TELEPORT, 1, 1);
 						}, 15);
 					}
