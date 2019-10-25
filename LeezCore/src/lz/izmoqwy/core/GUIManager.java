@@ -17,32 +17,50 @@ import java.util.Map;
 
 public class GUIManager implements Listener {
 
-	private static Map<String, Map<Integer, GUIFireAction>> inventories = Maps.newHashMap();
+	private static Map<String, GUIActions> inventories = Maps.newHashMap();
 
 	public static void registerInventory(String inventoryName, GUIActions actions) {
-		Map<Integer, GUIFireAction> slots = Maps.newHashMap();
-		actions.getSlots().forEach(slots::put);
+		//Map<Integer, GUIFireAction> slots = Maps.newHashMap();
+		//actions.getSlots().forEach(slots::put);
 
-		inventories.put(inventoryName, slots);
+		inventories.put(inventoryName, actions);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	private void onClick(InventoryClickEvent event) {
-		if (event.getClickedInventory() == null || event.getWhoClicked() == null || event.getCurrentItem() == null) {
+		if (event.getClickedInventory() == null || event.getWhoClicked() == null) {
+			return;
+		}
+
+		if (event.getClickedInventory().equals(event.getWhoClicked().getInventory())) {
+			Player player = (Player) event.getWhoClicked();
+			String title = player.getOpenInventory().getTitle();
+			if (player.getOpenInventory() != null && inventories.containsKey(title)) {
+				if (inventories.get(title).protect)
+					event.setCancelled(true);
+			}
 			return;
 		}
 
 		final String inventoryName = event.getClickedInventory().getName();
 		final int clickedSlot = event.getSlot();
-		inventories.forEach((inventory, slots) -> {
+		for (Map.Entry<String, GUIActions> entry : inventories.entrySet()) {
+			String inventory = entry.getKey();
+			GUIActions actions = entry.getValue();
 			if (inventory.contains("%s") ? inventoryName.startsWith(inventory.split("%s")[0]) : inventory.equals(inventoryName)) {
-				slots.forEach((slot, action) -> {
-					if (slot == -1 || slot == clickedSlot) {
-						event.setCancelled(action.fireAction((Player) event.getWhoClicked(), event));
-					}
-				});
+				if (event.getCurrentItem() != null) {
+					actions.slots.forEach((slot, action) -> {
+						if (slot == -1 || slot == clickedSlot) {
+							event.setCancelled(action.fireAction((Player) event.getWhoClicked(), event));
+						}
+					});
+				}
+				if (actions.protect) {
+					event.setCancelled(true);
+				}
+				break;
 			}
-		});
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -55,9 +73,11 @@ public class GUIManager implements Listener {
 		Inventory inv = event.getInventory();
 
 		final String inventoryName = event.getInventory().getName();
-		inventories.forEach((inventory, slots) -> {
+		for (Map.Entry<String, GUIActions> entry : inventories.entrySet()) {
+			String inventory = entry.getKey();
+			GUIActions actions = entry.getValue();
 			if (inventory.contains("%s") ? inventoryName.startsWith(inventory.split("%s")[0]) : inventory.equals(inventoryName)) {
-				slots.forEach((slot, action) -> {
+				actions.slots.forEach((slot, action) -> {
 					if (slot >= 0 && slot < inv.getSize()) {
 						ItemStack item = inv.getItem(slot);
 						if (item == null)
@@ -71,24 +91,34 @@ public class GUIManager implements Listener {
 						}
 					}
 				});
+				break;
 			}
-		});
+		}
 	}
 
 	public static class GUIActions {
 
 		@Getter
 		private Map<Integer, GUIFireAction> slots;
+		@Getter
+		private boolean protect;
 
-		protected GUIActions(Map<Integer, GUIFireAction> slots) {
+		public GUIActions(Map<Integer, GUIFireAction> slots, boolean protect) {
 			this.slots = slots;
+			this.protect = protect;
 		}
-
 	}
 
 	public static class GUIActionsBuilder {
 
 		private Map<Integer, GUIFireAction> slots = Maps.newHashMap();
+
+		private boolean protect = true;
+
+		public GUIActionsBuilder disableProtect() {
+			this.protect = false;
+			return this;
+		}
 
 		public GUIActionsBuilder onSlot(int slot, GUIFireAction action) {
 			slots.put(slot, action);
@@ -101,7 +131,7 @@ public class GUIManager implements Listener {
 		}
 
 		public GUIActions build() {
-			return new GUIActions(slots);
+			return new GUIActions(slots, protect);
 		}
 
 	}
