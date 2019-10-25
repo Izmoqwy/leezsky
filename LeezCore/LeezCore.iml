@@ -24,6 +24,14 @@
     <orderEntry type="library" name="LiteBans" level="project" />
     <orderEntry type="library" name="Vault" level="project" />
     <orderEntry type="library" name="FastAsyncWorldEdit-bukkit-19.07.06-e994c76-1276-22.2.2" level="project" />
-    <orderEntry type="library" name="worldedit-bukkit-6.1.9" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$USER_HOME$/Downloads/old/worldedit-bukkit-6.1.9.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
   </component>
 </module>
