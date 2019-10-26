@@ -21,11 +21,17 @@ public class CrateListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onOpenClick(PlayerInteractEvent event) {
+	public void onClickCrate(PlayerInteractEvent event) {
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			if (LeezCrates.getCrates().containsKey(event.getClickedBlock().getLocation())) {
 				event.setCancelled(true);
 				LeezCrates.open(LeezCrates.getCrates().get(event.getClickedBlock().getLocation()), event.getPlayer());
+			}
+		}
+		else if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			if (LeezCrates.getCrates().containsKey(event.getClickedBlock().getLocation())) {
+				event.setCancelled(true);
+				LeezCrates.preview(LeezCrates.getCrates().get(event.getClickedBlock().getLocation()), event.getPlayer());
 			}
 		}
 	}
@@ -44,6 +50,9 @@ public class CrateListener implements Listener {
 	public void onClick(InventoryClickEvent event) {
 		//noinspection SuspiciousMethodCalls
 		if (LeezCrates.getOpeningPlayers().contains(event.getWhoClicked())) {
+			event.setCancelled(true);
+		}
+		else if (event.getInventory() != null && event.getInventory().getName().startsWith(LeezCrates.PREVIEW_TITLE)) {
 			event.setCancelled(true);
 		}
 	}

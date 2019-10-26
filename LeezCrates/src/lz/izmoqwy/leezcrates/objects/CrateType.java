@@ -10,7 +10,7 @@ import java.util.List;
 public class CrateType {
 
 	@Getter
-	private String name, displayName;
+	private String name, displayName, lore;
 
 	@Getter
 	private boolean broadcasted;
@@ -20,9 +20,10 @@ public class CrateType {
 	@Getter
 	private List<Reward> rewards;
 
-	public CrateType(String name, String displayName, boolean broadcast, MaterialData materialData, List<Reward> rewards) {
+	public CrateType(String name, String displayName, String lore, boolean broadcast, MaterialData materialData, List<Reward> rewards) {
 		this.name = name;
 		this.displayName = displayName;
+		this.lore = lore;
 		this.broadcasted = broadcast;
 		this.materialData = materialData;
 		this.rewards = rewards;

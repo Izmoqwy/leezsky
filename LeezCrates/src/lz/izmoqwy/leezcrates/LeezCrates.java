@@ -39,6 +39,7 @@ public class LeezCrates extends JavaPlugin {
 	public static final String PREFIX = "§6Crates §8» ";
 	public static final Random RANDOM = new Random();
 	private static final String GUI_TITLE = "§aOuverture de box";
+	public static final String PREVIEW_TITLE = "§6Box §8» §e";
 
 	@Getter
 	private static LeezCrates instance;
@@ -152,7 +153,7 @@ public class LeezCrates extends JavaPlugin {
 						rewards.add(reward);
 					}
 				}
-				crateTypes.add(new CrateType(type, ChatColor.translateAlternateColorCodes('&', typeSection.getString("displayname", type)), typeSection.getBoolean("broadcast", false), materialData, rewards));
+				crateTypes.add(new CrateType(type, ChatColor.translateAlternateColorCodes('&', typeSection.getString("displayname", type)), ChatColor.translateAlternateColorCodes('&', typeSection.getString("lore")), typeSection.getBoolean("broadcast", false), materialData, rewards));
 			}
 		}
 		LeezCrates.crateTypes = crateTypes;
@@ -215,7 +216,12 @@ public class LeezCrates extends JavaPlugin {
 			else
 				id = Integer.toString(crates.size());
 		}
-		Hologram hologram = new Hologram(block.getLocation().add(.5D, -1.25D, .5D), Arrays.asList(type.getDisplayName().startsWith("§") ? type.getDisplayName() : "§5✱ §d" + type.getDisplayName() + " §5✱", ChatColor.RED + "En période de test"));
+
+		List<String> text = Lists.newArrayList(type.getDisplayName().startsWith("§") ? type.getDisplayName() : "§5✱ §d" + type.getDisplayName() + " §5✱");
+		if (type.getLore() != null) {
+			text.addAll(Arrays.asList(type.getLore().split("\\n")));
+		}
+		Hologram hologram = new Hologram(block.getLocation().add(.5D, -1.25D, .5D), text);
 		Crate crate = new Crate(id, type, location, null, hologram);
 		hologram.spawn();
 		crates.put(block.getLocation(), crate);
@@ -231,6 +237,25 @@ public class LeezCrates extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	public static void preview(Crate crate, Player player) {
+		int size = (int) Math.ceil(crate.getType().getRewards().size() / 9D);
+		if (size > 6) {
+			player.sendMessage(PREFIX + "§cCette box contient trop de recompenses pour afficher un apercu!");
+			return;
+		}
+		if (size == 0) {
+			player.sendMessage(PREFIX + "§cCette box ne contient pas de recompenses!");
+			return;
+		}
+
+		Inventory previewInventory = Bukkit.createInventory(null, size * 9, PREVIEW_TITLE + crate.getType().getName());
+		List<Reward> rewards = crate.getType().getRewards();
+		for (int i = 0; i < rewards.size(); i++) {
+			previewInventory.setItem(i, rewards.get(i).getItem());
+		}
+		player.openInventory(previewInventory);
 	}
 
 	@Getter
