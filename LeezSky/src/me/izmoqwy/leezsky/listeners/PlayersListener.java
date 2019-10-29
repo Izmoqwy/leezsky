@@ -83,6 +83,8 @@ public class PlayersListener implements Listener {
 			message = chatcolor + message;
 
 		String flatMessage = MessageFormat.format("{0} {1}➟ {2}", displayName, ChatColor.DARK_GRAY, message);
+		Bukkit.getConsoleSender().sendMessage(flatMessage);
+
 		ComponentBuilder componentBuilder = new ComponentBuilder("");
 
 		LeezIslandCH CH = CrosshooksManager.isPluginRegistred("LeezIsland") ? CrosshooksManager.get("LeezIsland", LeezIslandCH.class) : null;
