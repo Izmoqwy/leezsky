@@ -143,7 +143,7 @@ public class Wrapper {
 		Island island = new Island(ID,
 				leader, name, level,
 				ParseUtil.str2locNW(content[0], GridManager.getWorld().getName()),
-				Double.parseDouble(content[1]), Double.parseDouble(content[2]), Integer.parseInt(content[3]),
+				Integer.parseInt(content[1]), Integer.parseInt(content[2]), Short.parseShort(content[3]),
 				Boolean.parseBoolean(content[4]), memberList, bannedList,
 				visitorsPermissions, generalPermissions, coopPermissions);
 

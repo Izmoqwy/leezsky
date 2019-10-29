@@ -78,9 +78,9 @@ public class AdminCommand implements CommandExecutor {
 					if (player.isOnline() || player.hasPlayedBefore()) {
 						Island island = Wrapper.wrapOffPlayerIsland(player);
 						if (island != null) {
-							int newRange;
+							short newRange;
 							try {
-								newRange = Integer.parseInt(args[2]);
+								newRange = Short.parseShort(args[2]);
 							}
 							catch (Exception ex) {
 								Locale.ARGUMENT_NOTINT.send(sender);

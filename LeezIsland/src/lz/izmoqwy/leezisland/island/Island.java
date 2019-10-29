@@ -21,7 +21,7 @@ public class Island {
 
 	public String ID;
 	private String owner;
-	private double midX, midZ;
+	private int midX, midZ;
 
 	@Getter @Setter
 	private String name;
@@ -32,7 +32,7 @@ public class Island {
 	 * Maximum avec les paramètres actuels, 125 (Espace de 300 si deux îles "proches" font 250 chacune).
 	 */
 	@Getter
-	private int range;
+	private short range;
 	@Getter
 	private boolean locked;
 	@Getter
@@ -50,7 +50,7 @@ public class Island {
 	@Getter
 	private List<CoopPermission> coopPermissions;
 
-	public Island(String ID, String owner, String name, int level, Location home, double midX, double midZ, int range, boolean locked,
+	public Island(String ID, String owner, String name, int level, Location home, int midX, int midZ, short range, boolean locked,
 				  List<IslandMember> members, List<UUID> banneds,
 				  List<VisitorPermission> visitorsPermissions, List<GeneralPermission> generalPermissions, List<CoopPermission> coopPermissions) {
 		this.ID = ID;
@@ -58,9 +58,12 @@ public class Island {
 		this.name = name;
 		this.level = level;
 		this.home = home;
+
 		this.midX = midX;
 		this.midZ = midZ;
 		this.range = range;
+		calcBounds();
+
 		this.locked = locked;
 
 		Map<UUID, IslandMember> membersMap = Maps.newHashMap();
@@ -125,61 +128,40 @@ public class Island {
 		this.home = location;
 	}
 
-	public double getMiddleX() {
+	public int getMiddleX() {
 		return this.midX;
 	}
 
-	public double getMiddleZ() {
+	public int getMiddleZ() {
 		return this.midZ;
 	}
 
-	public double getMinX() {
-		return this.midX < 0 ? this.midX - (this.range - 1) : this.midX - (this.range + 1);
-	}
+	private int minX, maxX;
+	private int minZ, maxZ;
 
-	public double getMinZ() {
-		return this.midZ < 0 ? this.midZ - (this.range - 1) : this.midZ - (this.range + 1);
-	}
-
-	public double getMaxX() {
-		return getMinX() + (this.range * 2) + (getMinX() < 0 ? -1 : 1);
-	}
-
-	public double getMaxZ() {
-		return getMinZ() + (this.range * 2) + (getMinZ() < 0 ? -1 : 1);
-	}
-
-	public double getLowerX() {
-		return Math.min(getMinX(), getMaxX());
-	}
-
-	public double getLowerZ() {
-		return Math.min(getMinZ(), getMaxZ());
-	}
-
-	public double getUpperX() {
-		return Math.max(getMinX(), getMaxX());
-	}
-
-	public double getUpperZ() {
-		return Math.max(getMinZ(), getMaxZ());
+	private void calcBounds() {
+		this.minX = this.midX - this.range;
+		this.minZ = this.midZ - this.range;
+		this.maxX = this.midX + this.range;
+		this.maxZ = this.midZ + this.range;
 	}
 
 	public Location getLowerNE() {
-		return new Location(GridManager.getWorld(), getLowerX(), 0, getLowerZ());
+		return new Location(GridManager.getWorld(), minX, 0, minZ);
 	}
 
 	public Location getUpperSW() {
-		return new Location(GridManager.getWorld(), getUpperX(), GridManager.getWorld().getMaxHeight(), getUpperZ());
+		return new Location(GridManager.getWorld(), maxX, GridManager.getWorld().getMaxHeight(), maxZ);
 	}
 
-	public void setRange(int range) {
+	public void setRange(short range) {
 		this.range = range;
+		calcBounds();
 		save();
 	}
 
 	public boolean isInBounds(int x, int z) {
-		return x >= getLowerX() && x <= getUpperX() && z >= getLowerZ() && z <= getUpperZ();
+		return x >= minX && x <= maxX && z >= minZ && z <= maxZ;
 	}
 
 	public boolean isInBounds(Location location) {

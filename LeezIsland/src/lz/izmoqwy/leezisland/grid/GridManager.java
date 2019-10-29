@@ -32,7 +32,7 @@ public class GridManager {
 			if (Storage.SETTINGS.hasResult("valueString", "setting_name", "Grid")) {
 				String parsedGrid = Storage.SETTINGS.getString("valueString", "setting_name", "Grid");
 				String[] splitted = parsedGrid.split(Pattern.quote("|")), coords = splitted[2].split(Pattern.quote(":"));
-				grid = new Grid(Integer.parseInt(splitted[0]), Integer.parseInt(splitted[1]), Double.parseDouble(coords[0]), Double.parseDouble(coords[1]));
+				grid = new Grid(Integer.parseInt(splitted[0]), Integer.parseInt(splitted[1]), Integer.parseInt(coords[0]), Integer.parseInt(coords[1]));
 			}
 		}
 		catch (SQLActionImpossibleException e) {
@@ -76,7 +76,7 @@ public class GridManager {
 		rs.close();
 	}
 
-	protected static Map.Entry<Double, Double> next() {
+	protected static Map.Entry<Integer, Integer> next() {
 		return grid.next();
 	}
 
@@ -98,7 +98,7 @@ public class GridManager {
 		}
 	}
 
-	public static Entry<Double, Double> getMiddle(double x, double z) {
+	public static Entry<Integer, Integer> getMiddle(int x, int z) {
 		return grid.getMiddle(x, z);
 	}
 

@@ -10,11 +10,11 @@ import org.bukkit.entity.Player;
 public class BorderAPI {
 	
 	public static void setOwnBorder(SkyblockPlayer player) {
-		NmsAPI.packet.setBorder(player.bukkit(), player.getIsland().getRange() * 2 + 1, new Location(GridManager.getWorld(), player.getIsland().getMiddleX(), 0, player.getIsland().getMiddleZ()));
+		setBorder(player.bukkit(), player.getIsland());
 	}
 	
 	public static void setBorder(Player player, Island island) {
-		NmsAPI.packet.setBorder(player, island.getRange() * 2 + 1, new Location(GridManager.getWorld(), island.getMiddleX(), 0, island.getMiddleZ()));
+		NmsAPI.packet.setBorder(player, island.getRange() * 2 + 1, new Location(GridManager.getWorld(), island.getMiddleX() + .5, 0, island.getMiddleZ() + .5));
 	}
 
 }

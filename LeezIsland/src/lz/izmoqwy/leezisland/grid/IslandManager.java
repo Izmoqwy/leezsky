@@ -176,11 +176,12 @@ public class IslandManager {
 		}
 		Locale.PLAYER_ISLAND_CREATE_STARTING.send(creator);
 
-		Map.Entry<Double, Double> coords = GridManager.next();
-		double x = coords.getKey(), z = coords.getValue();
-		Map.Entry<Double, Double> middle = GridManager.getMiddle(x, z);
-		double mx = middle.getKey() < 0 ? middle.getKey() - 1.5 : middle.getKey() + 1.5,
-				mz = middle.getValue() < 0 ? middle.getValue() - 1.5 : middle.getValue() + 1.5;
+		Map.Entry<Integer, Integer> coords = GridManager.next();
+		int x = coords.getKey(), z = coords.getValue();
+
+		Map.Entry<Integer, Integer> middle = GridManager.getMiddle(x, z);
+		int mx = middle.getKey() < 0 ? middle.getKey() : middle.getKey(),
+				mz = middle.getValue() < 0 ? middle.getValue() : middle.getValue();
 
 		final Location bedrock = new Location(GridManager.getWorld(), mx, 100, mz);
 		final boolean originalFlightState = creator.getAllowFlight();
@@ -231,7 +232,7 @@ public class IslandManager {
 
 		Island island = new Island(
 				GridManager.getCurrentID(), creator.getUniqueId().toString(), null, 0,
-				home != null ? home : GridManager.getWorld().getHighestBlockAt(bedrock).getLocation(), mx, mz, 50, false, Lists.newArrayList(), Lists.newArrayList(),
+				home != null ? home : GridManager.getWorld().getHighestBlockAt(bedrock).getLocation(), mx, mz, (short) 50, false, Lists.newArrayList(), Lists.newArrayList(),
 				Lists.newArrayList(VisitorPermission.DOORS, VisitorPermission.GATES, VisitorPermission.BUTTONS, VisitorPermission.LEVERS, VisitorPermission.DROP, VisitorPermission.PICKUP,
 						VisitorPermission.PLATES, VisitorPermission.VILLAGERS, VisitorPermission.FLY),
 				Lists.newArrayList(GeneralPermission.SPAWNERS, GeneralPermission.MOBSPAWNING, GeneralPermission.FLUIDFLOWING, GeneralPermission.GENENABLED),
@@ -311,7 +312,7 @@ public class IslandManager {
 		}
 	}
 
-	public static void setRange(Island island, int range) {
+	public static void setRange(Island island, short range) {
 		island.setRange(range);
 		island.save();
 		Wrapper.getIslands().replace(island.ID, island);
