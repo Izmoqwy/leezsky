@@ -9,6 +9,7 @@ import net.minecraft.server.v1_12_R1.PacketPlayOutTitle.EnumTitleAction;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.craftbukkit.v1_12_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -110,6 +111,7 @@ public class v1_12_R1 implements NMSPacket {
 		sendPacket(player, packet);
 	}
 
+	@Override
 	public void setBorder(Player player, double radius, Location location) {
 		WorldBorder border = new WorldBorder();
 
@@ -117,7 +119,7 @@ public class v1_12_R1 implements NMSPacket {
 		border.setCenter(location.getX(), location.getZ());
 		border.setWarningDistance(0);
 
-		border.world = (WorldServer) cp(player).getHandle().world;
+		border.world = ((CraftWorld) location.getWorld()).getHandle();
 
 		sendPacket(player, new PacketPlayOutWorldBorder(border, PacketPlayOutWorldBorder.EnumWorldBorderAction.SET_SIZE));
 		sendPacket(player, new PacketPlayOutWorldBorder(border, PacketPlayOutWorldBorder.EnumWorldBorderAction.SET_CENTER));

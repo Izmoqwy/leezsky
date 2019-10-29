@@ -10,6 +10,7 @@ import net.minecraft.server.v1_8_R3.WorldSettings.EnumGamemode;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -34,12 +35,12 @@ public class v1_8_R3 implements NMSPacket {
 
 	public void addToTablist(Player player) {
 		if (!player.isOnline()) return;
-		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, new EntityPlayer[]{cp(player).getHandle()});
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.ADD_PLAYER, cp(player).getHandle());
 		sendPacket(packet);
 	}
 
 	public void removeFromTablist(Player player) {
-		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, new EntityPlayer[]{cp(player).getHandle()});
+		PacketPlayOutPlayerInfo packet = new PacketPlayOutPlayerInfo(PacketPlayOutPlayerInfo.EnumPlayerInfoAction.REMOVE_PLAYER, cp(player).getHandle());
 		sendPacket(packet);
 	}
 
@@ -111,6 +112,7 @@ public class v1_8_R3 implements NMSPacket {
 		sendPacket(player, packet);
 	}
 
+	@Override
 	public void setBorder(Player player, double radius, Location location) {
 		WorldBorder border = null;
 		try {
@@ -119,12 +121,18 @@ public class v1_8_R3 implements NMSPacket {
 		catch (Exception e) {
 			e.printStackTrace();
 		}
+		if (border == null)
+			return;
 
 		border.setSize(radius);
 		border.setCenter(location.getX(), location.getZ());
+		border.setWarningDistance(0);
+
+		border.world = ((CraftWorld) location.getWorld()).getHandle();
 
 		sendPacket(player, new PacketPlayOutWorldBorder(border, PacketPlayOutWorldBorder.EnumWorldBorderAction.SET_SIZE));
 		sendPacket(player, new PacketPlayOutWorldBorder(border, PacketPlayOutWorldBorder.EnumWorldBorderAction.SET_CENTER));
+		sendPacket(player, new PacketPlayOutWorldBorder(border, PacketPlayOutWorldBorder.EnumWorldBorderAction.SET_WARNING_BLOCKS));
 	}
 
 	public Player loadPlayer(OfflinePlayer player) {
