@@ -98,6 +98,21 @@ public class ItemBuilder {
 		return this;
 	}
 
+	public ItemBuilder appendInlineLore(String lore) {
+		List<String> lines = Lists.newArrayList();
+		if (meta.hasLore()) {
+			lines.addAll(meta.getLore());
+		}
+		if (lines.isEmpty())
+			lines.add(lore);
+		else {
+			int lastIndex = lines.size() - 1;
+			lines.set(lastIndex, lines.get(lastIndex) + lore);
+		}
+		meta.setLore(lines);
+		return this;
+	}
+
 	public ItemBuilder removeLoreLine(int line) {
 		if (checkLore(line)) {
 			meta.getLore().remove(line);

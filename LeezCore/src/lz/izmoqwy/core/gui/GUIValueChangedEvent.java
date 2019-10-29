@@ -1,4 +1,4 @@
-package lz.izmoqwy.core;
+package lz.izmoqwy.core.gui;
 
 import lombok.Getter;
 import lombok.Setter;

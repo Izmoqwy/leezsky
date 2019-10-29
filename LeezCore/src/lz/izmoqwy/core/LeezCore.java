@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lz.izmoqwy.core.api.database.Database;
 import lz.izmoqwy.core.api.nickname.NicknameAPI;
 import lz.izmoqwy.core.commands.LeezCoreCommand;
+import lz.izmoqwy.core.gui.GUIManager;
 import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.hooks.HooksManager;
 import lz.izmoqwy.core.nms.NmsAPI;

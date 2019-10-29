@@ -1,22 +1,31 @@
-package lz.izmoqwy.core;
+package lz.izmoqwy.core.gui;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
+import lz.izmoqwy.core.LeezCore;
 import lz.izmoqwy.core.builder.ItemBuilder;
+import lz.izmoqwy.core.nms.NmsAPI;
+import lz.izmoqwy.core.utils.ItemUtil;
 import org.apache.commons.lang.ArrayUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Collections;
 import java.util.Map;
 
 public class GUIManager implements Listener {
 
+	private static final ItemStack GO_BACK = ItemUtil.createItem(Material.ARROW, "§cRetour", Collections.singletonList("§7Retourner a la page precedente"));
 	private static Map<String, GUIActions> inventories = Maps.newHashMap();
 
 	public static void registerInventory(String inventoryName, GUIActions actions) {
@@ -32,8 +41,8 @@ public class GUIManager implements Listener {
 			return;
 		}
 
-		if (event.getClickedInventory().equals(event.getWhoClicked().getInventory())) {
-			Player player = (Player) event.getWhoClicked();
+		Player player = (Player) event.getWhoClicked();
+		if (event.getClickedInventory().equals(player.getInventory())) {
 			String title = player.getOpenInventory().getTitle();
 			if (player.getOpenInventory() != null && inventories.containsKey(title)) {
 				if (inventories.get(title).protect)
@@ -49,9 +58,17 @@ public class GUIManager implements Listener {
 			GUIActions actions = entry.getValue();
 			if (inventory.contains("%s") ? inventoryName.startsWith(inventory.split("%s")[0]) : inventory.equals(inventoryName)) {
 				if (event.getCurrentItem() != null) {
+					if (currentOpenedStates.containsKey(player) && clickedSlot == event.getInventory().getSize() - 1) {
+						GUIState state = currentOpenedStates.get(player);
+						if (state.getParent() != null) {
+							currentOpenedStates.replace(player, state.getParent());
+							player.openInventory(state.getParent().getInvoker().invoke(player));
+							return;
+						}
+					}
 					actions.slots.forEach((slot, action) -> {
 						if (slot == -1 || slot == clickedSlot) {
-							event.setCancelled(action.fireAction((Player) event.getWhoClicked(), event));
+							event.setCancelled(action.fireAction(player, new GUIClickEvent(event, actions)));
 						}
 					});
 				}
@@ -91,20 +108,35 @@ public class GUIManager implements Listener {
 						}
 					}
 				});
+				if (currentOpenedStates.containsKey(player) && currentOpenedStates.get(player).getParent() != null) {
+					inv.setItem(inv.getSize() - 1, GO_BACK);
+				}
 				break;
 			}
 		}
 	}
 
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	private void onInventoryClose(InventoryCloseEvent event) {
+		Player player = (Player) event.getPlayer();
+		if (currentOpenedStates.containsKey(player)) {
+			Bukkit.getScheduler().runTaskLater(LeezCore.instance, () -> {
+				if (!NmsAPI.craft.hasInventoryOpened(player))
+					currentOpenedStates.remove(player);
+			}, 1);
+		}
+	}
+
+	@Getter
 	public static class GUIActions {
 
-		@Getter
 		private Map<Integer, GUIFireAction> slots;
-		@Getter
+		private GUIState.GUIInvoker invoker;
 		private boolean protect;
 
-		public GUIActions(Map<Integer, GUIFireAction> slots, boolean protect) {
+		public GUIActions(Map<Integer, GUIFireAction> slots, GUIState.GUIInvoker invoker, boolean protect) {
 			this.slots = slots;
+			this.invoker = invoker;
 			this.protect = protect;
 		}
 	}
@@ -112,7 +144,7 @@ public class GUIManager implements Listener {
 	public static class GUIActionsBuilder {
 
 		private Map<Integer, GUIFireAction> slots = Maps.newHashMap();
-
+		private GUIState.GUIInvoker invoker;
 		private boolean protect = true;
 
 		public GUIActionsBuilder disableProtect() {
@@ -125,15 +157,58 @@ public class GUIManager implements Listener {
 			return this;
 		}
 
+		public GUIActionsBuilder onSlot(int slot, GUIActions toOpen) {
+			slots.put(slot, new GUIOpener(toOpen));
+			return this;
+		}
+
+		public GUIActionsBuilder invoker(GUIState.GUIInvoker invoker) {
+			this.invoker = invoker;
+			return this;
+		}
+
 		public GUIActionsBuilder valueChanger(GUIValueChanger listener, int slot, ValueChangerFireActon playerCurrentValue, boolean refactorOnOpen, Enum... values) {
 			slots.put(slot, new ValueChanger(listener, playerCurrentValue, refactorOnOpen, values));
 			return this;
 		}
 
 		public GUIActions build() {
-			return new GUIActions(slots, protect);
+			return new GUIActions(slots, invoker, protect);
 		}
 
+		public GUIActions buildAndRegister(String guiName) {
+			GUIActions guiActions = build();
+			registerInventory(ChatColor.translateAlternateColorCodes('&', guiName), guiActions);
+			return guiActions;
+		}
+	}
+
+	private static Map<Player, GUIState> currentOpenedStates = Maps.newHashMap();
+
+	@Getter
+	private static class GUIOpener implements GUIFireAction {
+
+		private GUIActions toOpen;
+
+		public GUIOpener(GUIActions toOpen) {
+			if (toOpen.invoker == null) {
+				throw new NullPointerException("Invoker is null on a GUIActions registred to open!");
+			}
+			this.toOpen = toOpen;
+		}
+
+		@Override
+		public boolean fireAction(Player player, GUIClickEvent event) {
+			GUIState parent = currentOpenedStates.getOrDefault(player, null);
+			if (parent == null) {
+				if (event.getGui().getInvoker() != null) {
+					parent = new GUIState(event.getGui().getInvoker(), null);
+				}
+			}
+			currentOpenedStates.put(player, new GUIState(toOpen.invoker, parent));
+			player.openInventory(toOpen.invoker.invoke(player));
+			return true;
+		}
 	}
 
 	private static class ValueChanger implements GUIFireAction {
@@ -151,7 +226,7 @@ public class GUIManager implements Listener {
 		}
 
 		@Override
-		public boolean fireAction(Player player, InventoryClickEvent event) {
+		public boolean fireAction(Player player, GUIClickEvent event) {
 			GUIManager.callValueChanger(listener, player, event, values, playerCurrentValue.fireAction(player));
 			return true;
 		}
@@ -188,12 +263,23 @@ public class GUIManager implements Listener {
 		}
 	}
 
+	public class GUIClickEvent extends InventoryClickEvent {
+
+		@Getter
+		private GUIActions gui;
+
+		public GUIClickEvent(InventoryClickEvent event, GUIActions gui) {
+			super(event.getView(), event.getSlotType(), event.getSlot(), event.getClick(), event.getAction());
+			this.gui = gui;
+		}
+	}
+
 	public interface GUIValueChanger {
 		void onChange(GUIValueChangedEvent event);
 	}
 
 	public interface GUIFireAction {
-		boolean fireAction(Player player, InventoryClickEvent event);
+		boolean fireAction(Player player, GUIClickEvent event);
 	}
 
 	public interface ValueChangerFireActon {

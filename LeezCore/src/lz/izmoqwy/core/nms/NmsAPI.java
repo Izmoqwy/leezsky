@@ -1,6 +1,7 @@
 package lz.izmoqwy.core.nms;
 
 import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.nms.craft.NMSCraft;
 import lz.izmoqwy.core.nms.packets.NMSPacket;
 import lz.izmoqwy.core.nms.packets.v1_11_R1;
 import lz.izmoqwy.core.nms.packets.v1_12_R1;
@@ -14,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 public class NmsAPI {
 
 	public static NMSPacket packet = null;
+	public static NMSCraft craft = null;
 	public static Class<? extends NMSScoreboard> scoreboard = null;
 
 	public static void load() {
@@ -28,6 +30,7 @@ public class NmsAPI {
 		}
 		else if (nms_version.equalsIgnoreCase("v1_12_R1")) {
 			packet = new v1_12_R1();
+			craft = new lz.izmoqwy.core.nms.craft.v1_12_R1();
 			scoreboard = lz.izmoqwy.core.nms.scoreboard.v1_12_R1.class;
 		}
 		else {
