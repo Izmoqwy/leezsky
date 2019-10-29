@@ -10,10 +10,7 @@ import lz.izmoqwy.core.nms.NmsAPI;
 import lz.izmoqwy.core.utils.TitleUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import me.izmoqwy.leezsky.managers.SettingsManager;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
@@ -120,8 +117,10 @@ public class PlayersListener implements Listener {
 			displayNameHover.add("§2✔ §aMembre du staff validé.");
 		}
 		HoverEvent displayNameHoverEvent = new HoverEvent(HoverEvent.Action.SHOW_TEXT, fromLegacy(String.join("\n", displayNameHover)));
+		ClickEvent displayNameClickEvent = new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "/pm " + player.getName() + " ");
 		for (BaseComponent displayNameComp : displayNameComps) {
 			displayNameComp.setHoverEvent(displayNameHoverEvent);
+			displayNameComp.setClickEvent(displayNameClickEvent);
 		}
 		componentBuilder.append(displayNameComps);
 		componentBuilder.append(fromLegacy("§8 ➟ ")).append(TextComponent.fromLegacyText(message));
