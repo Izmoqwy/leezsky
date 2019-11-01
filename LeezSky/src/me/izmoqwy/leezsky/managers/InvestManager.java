@@ -3,7 +3,7 @@ package me.izmoqwy.leezsky.managers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lz.izmoqwy.core.Economy;
-import lz.izmoqwy.core.GUIManager;
+import lz.izmoqwy.core.gui.GUIManager;
 import lz.izmoqwy.core.LeezCore;
 import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
@@ -223,6 +223,7 @@ public class InvestManager {
 				if (hours >= 3) {
 					double solde = map.get(player.getUniqueId()).getValue();
 					for (int i = 0; i < hours; i++) {
+						// On bloque a une semaine
 						if (i > 168)
 							break;
 						solde += (0.76 / 100) * solde;

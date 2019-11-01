@@ -38,7 +38,7 @@ public class ItemBuilder {
 	}
 
 	public ItemBuilder(ItemStack from) {
-		this.is = from;
+		this.is = from.clone();
 		meta();
 	}
 
@@ -81,7 +81,7 @@ public class ItemBuilder {
 	}
 
 	public ItemBuilder appendLore(List<String> lore) {
-		return appendLore(lore, ChatColor.RESET);
+		return appendLore(lore, null);
 	}
 
 	public ItemBuilder appendLore(List<String> lore, ChatColor chatColor) {
@@ -91,7 +91,7 @@ public class ItemBuilder {
 		}
 		for (String line : lore) {
 			for (String _line : line.split("\\n")) {
-				lines.add(chatColor + _line);
+				lines.add(chatColor != null ? chatColor + _line : _line);
 			}
 		}
 		meta.setLore(lines);
