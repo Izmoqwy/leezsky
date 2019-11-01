@@ -8,6 +8,7 @@ import lz.izmoqwy.leezisland.island.CoopPermission;
 import lz.izmoqwy.leezisland.island.GeneralPermission;
 import lz.izmoqwy.leezisland.island.Island;
 import lz.izmoqwy.leezisland.island.VisitorPermission;
+import lz.izmoqwy.leezisland.spawners.SpawnersManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -193,11 +194,16 @@ public class IslandGuard implements Listener {
 	public void onPlace(final BlockPlaceEvent event) {
 		if (event.getBlock().getWorld() != GridManager.getWorld())
 			return;
+
 		if (canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.PLACE)) {
-			if (event.getBlock().getType() == Material.CHEST) {
+			Material type = event.getBlock().getType();
+			if (type == Material.MOB_SPAWNER) {
+				SpawnersManager.manager.onSpawnerPlace(event);
+			}
+			else if (type == Material.CHEST) {
 				canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.CHEST);
 			}
-			else if (isShulker(event.getBlock().getType())) {
+			else if (isShulker(type)) {
 				canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.SHULKER_BOX);
 			}
 		}
@@ -207,11 +213,16 @@ public class IslandGuard implements Listener {
 	public void onBreak(final BlockBreakEvent event) {
 		if (event.getBlock().getWorld() != GridManager.getWorld())
 			return;
+
 		if (canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.BREAK)) {
-			if (event.getBlock().getType() == Material.CHEST) {
+			Material type = event.getBlock().getType();
+			if (type == Material.MOB_SPAWNER) {
+				SpawnersManager.manager.onSpawnerBreak(event);
+			}
+			else if (type == Material.CHEST) {
 				canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.CHEST);
 			}
-			else if (isShulker(event.getBlock().getType())) {
+			else if (isShulker(type)) {
 				canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.SHULKER_BOX);
 			}
 		}
