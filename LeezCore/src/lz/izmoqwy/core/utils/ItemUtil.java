@@ -1,11 +1,13 @@
 package lz.izmoqwy.core.utils;
 
+import com.google.common.collect.Lists;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
@@ -20,12 +22,14 @@ public class ItemUtil {
 	}
 
 	/**
+	 * @deprecated Will be removed soon (Use give instead)
 	 * Give items to player's inventory and drop remaining items that can't be given
 	 *
 	 * @param player    the player to give the items to
 	 * @param rewardItm items to give
 	 * @return if some items were dropped or not
 	 */
+	@Deprecated
 	public static boolean giveItems(Player player, ItemStack rewardItm) {
 		if (player.getInventory().firstEmpty() == -1) {
 			int nb = 0, max = 0;
@@ -58,10 +62,113 @@ public class ItemUtil {
 		}
 	}
 
-
-	/*
-		Item Builder
+	/**
+	 * Give items to a player
+	 * (does not use built-in give methods)
+	 *
+	 * @param player The player to give the items to
+	 * @param items The items to give
+	 * @return Items that couldn't be added
 	 */
+	public static List<ItemStack> give(Player player, ItemStack... items) {
+		PlayerInventory inventory = player.getInventory();
+		final int inventorySize = 36;
+		List<ItemStack> remaining = Lists.newArrayList();
+
+		all:
+		for (ItemStack item : items) {
+			int total = item.getAmount(), toGive = total;
+			final int max = item.getMaxStackSize();
+
+			// Partials
+			for (int i = 0; i < inventorySize; i++) {
+				ItemStack content = inventory.getItem(i);
+				if (content != null && content.getAmount() < max && content.isSimilar(item)) {
+					int _amount = max - content.getAmount() > toGive ? toGive : max - content.getAmount();
+					content.setAmount(content.getAmount() + _amount);
+					toGive -= _amount;
+					if (toGive == 0)
+						continue all;
+				}
+			}
+
+			// Empties
+			for (int i = 0; i < inventorySize; i++) {
+				ItemStack content = inventory.getItem(i);
+				if (content == null) {
+					int _amount = toGive > max ? max : toGive;
+					item = item.clone();
+					item.setAmount(_amount);
+					inventory.setItem(i, item);
+					toGive -= _amount;
+					if (toGive == 0)
+						continue all;
+				}
+			}
+
+			item = item.clone();
+			item.setAmount(toGive);
+			remaining.add(item);
+		}
+
+		return remaining;
+	}
+
+	/**
+	 * Remove items from player's inventory
+	 * (does not use built-in remove methods)
+	 *
+	 * @param player The player to remove the items from
+	 * @param items The items to remove
+	 * @return Items that couldn't be removed (basicly missings ones)
+	 */
+	public static List<ItemStack> take(Player player, ItemStack... items) {
+		PlayerInventory inventory = player.getInventory();
+		final int inventorySize = 36;
+		List<ItemStack> remaining = Lists.newArrayList();
+
+		all:
+		for (ItemStack item : items) {
+			int total = item.getAmount(), toTake = total;
+
+			// check held item first
+			if (inventory.getItemInHand() != null && inventory.getItemInHand().isSimilar(item)) {
+				ItemStack held = inventory.getItemInHand();
+				if (held.getAmount() > toTake) {
+					held.setAmount(held.getAmount() - toTake);
+					toTake = 0;
+				}
+				else {
+					inventory.setItem(inventory.getHeldItemSlot(), null);
+					toTake -= held.getAmount();
+				}
+				if (toTake == 0)
+					continue;
+			}
+
+			for (int i = 0; i < inventorySize; i++) {
+				ItemStack content = inventory.getItem(i);
+				if (content != null && content.isSimilar(item)) {
+					if (content.getAmount() > toTake) {
+						content.setAmount(content.getAmount() - toTake);
+						toTake = 0;
+					}
+					else {
+						inventory.setItem(i, null);
+						toTake -= content.getAmount();
+					}
+					if (toTake == 0)
+						continue all;
+				}
+			}
+
+			item = item.clone();
+			item.setAmount(toTake);
+			remaining.add(item);
+		}
+
+		return remaining;
+	}
 
 	private static ItemStack buildItem(MaterialData materialData, int amount, String name, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		ItemStack item = new ItemStack(materialData.getItemType(), amount, materialData.getData());
