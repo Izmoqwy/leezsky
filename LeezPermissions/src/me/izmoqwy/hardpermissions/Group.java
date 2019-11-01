@@ -10,7 +10,7 @@ import java.util.List;
 public class Group {
 
 	@Getter
-	private String name, chatcolor;
+	private String name, chatcolor; // todo: actual and full chatdisplay
 	@Getter @Setter
 	private String prefix, suffix;
 
@@ -39,18 +39,6 @@ public class Group {
 
 	public boolean hasInheritances() {
 		return inheritances != null;
-	}
-
-	private void calculatePermissions() {
-		if (inheritances == null) return;
-		List<String> perms = permissions;
-		for (Group group : inheritances) {
-			for (String permission : group.getBasePermissions()) {
-				if (permission.startsWith("ntag.")) continue;
-				if (!perms.contains(permission)) perms.add(permission);
-			}
-		}
-		setPermissions(perms);
 	}
 
 }

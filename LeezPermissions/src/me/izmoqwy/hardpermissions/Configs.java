@@ -2,6 +2,7 @@ package me.izmoqwy.hardpermissions;
 
 import com.google.common.collect.Lists;
 import lz.izmoqwy.core.hooks.HooksManager;
+import me.izmoqwy.hardpermissions.events.PlayerGroupChangedEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -193,6 +194,7 @@ public class Configs {
 		return all_groups;
 	}
 
+	// todo: map (opti)
 	public static Group getGroup(String name) {
 		for (Group grp : getAllGroups()) {
 			if (grp.getName().equalsIgnoreCase(name)) return grp;
@@ -227,6 +229,7 @@ public class Configs {
 					HooksManager.nte().getApi().reloadNametag(Bukkit.getPlayer(target.getUniqueId()));
 				}
 			}
+			Bukkit.getPluginManager().callEvent(new PlayerGroupChangedEvent(target, group));
 		}
 	}
 

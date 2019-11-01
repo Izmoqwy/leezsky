@@ -1,10 +1,12 @@
 package lz.izmoqwy.core.nms.scoreboard;
 
+import lombok.Getter;
 import org.bukkit.entity.Player;
 
 public abstract class NMSScoreboard {
 
-	protected final Player player;
+	@Getter
+	protected Player player;
 	protected String objectiveName;
 
 	public NMSScoreboard(Player player, String objectiveName) {

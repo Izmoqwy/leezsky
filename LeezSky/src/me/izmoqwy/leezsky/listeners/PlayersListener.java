@@ -9,6 +9,7 @@ import lz.izmoqwy.core.crosshooks.interfaces.LeezPermissionsCH;
 import lz.izmoqwy.core.nms.NmsAPI;
 import lz.izmoqwy.core.utils.TitleUtil;
 import me.izmoqwy.leezsky.LeezSky;
+import me.izmoqwy.leezsky.managers.ScoreboardManager;
 import me.izmoqwy.leezsky.managers.SettingsManager;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
@@ -46,7 +47,13 @@ public class PlayersListener implements Listener {
 
 			player.sendMessage("");
 		}
-		LeezSky.createScoreboard(player);
+
+		ScoreboardManager.createScoreboard(player);
+	}
+
+	@EventHandler
+	public void onQuit(PlayerQuitEvent event) {
+		ScoreboardManager.destroyScoreboard(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -138,11 +145,6 @@ public class PlayersListener implements Listener {
 
 	private BaseComponent[] fromLegacy(String legacy) {
 		return new ComponentBuilder("").append(TextComponent.fromLegacyText(legacy)).create();
-	}
-
-	@EventHandler
-	public void onQuit(PlayerQuitEvent event) {
-		LeezSky.scoreboardMap.remove(event.getPlayer().getUniqueId());
 	}
 
 }

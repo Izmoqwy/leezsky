@@ -29,7 +29,7 @@ public class v1_12_R1 extends NMSScoreboard {
 		if (created)
 			return;
 
-		PlayerConnection player = getPlayer();
+		PlayerConnection player = getCon();
 		player.sendPacket(createObjectivePacket(0, objectiveName));
 		player.sendPacket(setObjectiveSlot());
 		int i = 0;
@@ -47,10 +47,10 @@ public class v1_12_R1 extends NMSScoreboard {
 		if (!created)
 			return;
 
-		getPlayer().sendPacket(createObjectivePacket(1, null));
+		getCon().sendPacket(createObjectivePacket(1, null));
 		for (VirtualTeam team : lines)
 			if (team != null)
-				getPlayer().sendPacket(team.removeTeam());
+				getCon().sendPacket(team.removeTeam());
 
 		created = false;
 	}
@@ -62,7 +62,7 @@ public class v1_12_R1 extends NMSScoreboard {
 	public void setObjectiveName(String name) {
 		this.objectiveName = name;
 		if (created)
-			getPlayer().sendPacket(createObjectivePacket(2, name));
+			getCon().sendPacket(createObjectivePacket(2, name));
 	}
 
 	/**
@@ -75,7 +75,7 @@ public class v1_12_R1 extends NMSScoreboard {
 		String old = team.getCurrentPlayer();
 
 		if (old != null && created)
-			getPlayer().sendPacket(removeLine(old));
+			getCon().sendPacket(removeLine(old));
 
 		team.setValue(value);
 		sendLine(line);
@@ -90,8 +90,8 @@ public class v1_12_R1 extends NMSScoreboard {
 		String old = team.getCurrentPlayer();
 
 		if (old != null && created) {
-			getPlayer().sendPacket(removeLine(old));
-			getPlayer().sendPacket(team.removeTeam());
+			getCon().sendPacket(removeLine(old));
+			getCon().sendPacket(team.removeTeam());
 		}
 
 		lines[line] = null;
@@ -122,7 +122,7 @@ public class v1_12_R1 extends NMSScoreboard {
 		return getOrCreateTeam(line);
 	}
 
-	private PlayerConnection getPlayer() {
+	private PlayerConnection getCon() {
 		return ((CraftPlayer) player).getHandle().playerConnection;
 	}
 
@@ -138,8 +138,8 @@ public class v1_12_R1 extends NMSScoreboard {
 		//int score = (15 - line);
 		VirtualTeam val = getOrCreateTeam(line);
 		for (Packet packet : val.sendLine())
-			getPlayer().sendPacket(packet);
-		getPlayer().sendPacket(sendScore(val.getCurrentPlayer(), line));
+			getCon().sendPacket(packet);
+		getCon().sendPacket(sendScore(val.getCurrentPlayer(), line));
 		val.reset();
 	}
 

@@ -1,9 +1,9 @@
 package me.izmoqwy.leezsky.managers;
 
-import lz.izmoqwy.core.GUIManager;
-import lz.izmoqwy.core.GUIValueChangedEvent;
 import lz.izmoqwy.core.PlayerDataStorage;
 import lz.izmoqwy.core.builder.ItemBuilder;
+import lz.izmoqwy.core.gui.GUIManager;
+import lz.izmoqwy.core.gui.GUIValueChangedEvent;
 import me.izmoqwy.leezsky.objectives.ObjectiveListener;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -21,7 +21,7 @@ public class SettingsManager implements GUIManager.GUIValueChanger {
 	private static final String INVENTORY_NAME = "§7Paramètres";
 
 	public static final Setting
-			SCOREBOARD = new Setting<>("scoreboard", SimpleToggle.class, SimpleToggle.ON, Material.EMPTY_MAP, "Scoreboard", "Désactivez pour cacher le scoreboard"),
+			SCOREBOARD = new Setting<>("scoreboard", ScoreboardManager.INSTANCE, SimpleToggle.class, SimpleToggle.ON, Material.EMPTY_MAP, "Scoreboard", "Désactivez pour cacher le scoreboard"),
 			OBJECTIVE_BOSSBAR = new Setting<>("objectivebb", ObjectiveListener.INSTANCE, SimpleToggle.class, SimpleToggle.ON, Material.EXP_BOTTLE, "Affichage des objectifs", "Désactivez pour cacher la bossbar des", "objectifs"),
 
 			CHAT_MESSAGES = new Setting<>("chatmsgs", ChatSetting.class, ChatSetting.EXTRA, Material.BOOK_AND_QUILL, "Mesages du chat", "Passez en §eNormaux §7si vous avez des", "problèmes relatifs au chat");
