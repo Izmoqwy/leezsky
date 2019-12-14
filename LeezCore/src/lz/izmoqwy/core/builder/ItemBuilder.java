@@ -58,7 +58,7 @@ public class ItemBuilder {
 
 	@SuppressWarnings("deprecation")
 	public ItemBuilder dyeColor(DyeColor color) {
-		return damage(color.getData());
+		return damage(color.getDyeData());
 	}
 
 	public ItemBuilder name(String displayName) {
@@ -155,6 +155,11 @@ public class ItemBuilder {
 	public ItemBuilder addFlags(ItemFlag... itemFlags) {
 		meta.addItemFlags(itemFlags);
 		return this;
+	}
+
+	// add hidden enchant to make the item shine
+	public ItemBuilder quickEnchant() {
+		return addEnchant(Enchantment.DAMAGE_ARTHROPODS, 1, false).addFlags(ItemFlag.HIDE_ENCHANTS);
 	}
 
 	public ItemBuilder makeUnbrekable() {

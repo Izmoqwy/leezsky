@@ -1,6 +1,7 @@
 package lz.izmoqwy.core.i18n;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import lz.izmoqwy.core.CorePrinter;
 import lz.izmoqwy.core.LeezCore;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -13,6 +14,9 @@ import java.util.Map;
 public class LocaleManager {
 
 	private static Map<Plugin, Class<? extends i18nLocale>> pluginMap = Maps.newHashMap();
+
+	@Getter
+	private static ItemNamer itemNamer = new ItemNamer();
 
 	public static <E extends Enum<E>> void register(Plugin plugin, Class<? extends i18nLocale> locale) {
 		pluginMap.put(plugin, locale);

@@ -2,6 +2,7 @@ package lz.izmoqwy.leezisland.listeners;
 
 import lz.izmoqwy.leezisland.Locale;
 import lz.izmoqwy.leezisland.commands.AdminCommand;
+import lz.izmoqwy.leezisland.generator.OreGenerator;
 import lz.izmoqwy.leezisland.grid.CoopsManager;
 import lz.izmoqwy.leezisland.grid.GridManager;
 import lz.izmoqwy.leezisland.island.CoopPermission;
@@ -11,6 +12,7 @@ import lz.izmoqwy.leezisland.island.VisitorPermission;
 import lz.izmoqwy.leezisland.spawners.SpawnersManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
@@ -27,7 +29,13 @@ import java.util.List;
 
 public class IslandGuard implements Listener {
 
-	private static final List<String> SETHOME_COMMANDS = Arrays.asList("sethome", "esethome", "createhome", "ecreatehome");
+	private final List<String> SETHOME_COMMANDS = Arrays.asList("sethome", "esethome", "createhome", "ecreatehome");
+
+	private OreGenerator oreGenerator;
+
+	public IslandGuard() {
+		this.oreGenerator = new OreGenerator();
+	}
 
 	private boolean canDo(Player player, Location location, Cancellable event, VisitorPermission ifVisitor, CoopPermission ifCoop) {
 		if (AdminCommand.BYPASSING.contains(player.getUniqueId())) {
@@ -84,11 +92,26 @@ public class IslandGuard implements Listener {
 	}
 
 	/*
+		World Check Methods
+	 */
+	private boolean inWorld(Location location) {
+		return inWorld(location.getWorld());
+	}
+
+	private boolean inWorld(Block block) {
+		return inWorld(block.getWorld());
+	}
+
+	private boolean inWorld(World world) {
+		return GridManager.isGridWorld(world);
+	}
+
+	/*
 		Glitches prevention
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onPistonExtend(final BlockPistonExtendEvent event) {
-		if (event.getBlock().getWorld() != GridManager.getWorld() || event.getBlocks().size() <= 0)
+	public void onPistonExtend(BlockPistonExtendEvent event) {
+		if (event.getBlocks().isEmpty() || inWorld(event.getBlock()))
 			return;
 		event.setCancelled(!isThereIslandAt(event.getBlocks().get(event.getBlocks().size() - 1).getRelative(event.getDirection()).getLocation()));
 	}
@@ -97,11 +120,12 @@ public class IslandGuard implements Listener {
 		Teleporting
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onTeleport(final PlayerTeleportEvent event) {
+	public void onTeleport(PlayerTeleportEvent event) {
 		if (event.getTo().getWorld() != GridManager.getWorld())
 			return;
 
-		if (AdminCommand.BYPASSING.contains(event.getPlayer().getUniqueId()))
+		Player player = event.getPlayer();
+		if (AdminCommand.BYPASSING.contains(player.getUniqueId()))
 			return;
 
 		Island is = GridManager.getIslandAt(event.getTo());
@@ -112,17 +136,16 @@ public class IslandGuard implements Listener {
 
 			if (is.isLocked()) {
 				event.setCancelled(true);
-				Locale.GUARD_LOCKED.send(event.getPlayer());
+				Locale.GUARD_LOCKED.send(player);
 			}
-			else if (is.getBanneds().contains(event.getPlayer().getUniqueId())) {
+			else if (is.getBanneds().contains(player.getUniqueId())) {
 				event.setCancelled(true);
-				Locale.GUARD_BANNED.send(event.getPlayer());
+				Locale.GUARD_BANNED.send(player);
 			}
 			else {
-				if (is.hasFullAccess(event.getPlayer()))
+				if (is.hasFullAccess(player))
 					return;
 
-				Player player = event.getPlayer();
 				if (is.getName() != null)
 					Locale.GUARD_ENTER_NAMED.send(player, is.getName());
 				else
@@ -140,46 +163,63 @@ public class IslandGuard implements Listener {
 		General Settings
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onSpawnerSpawn(final SpawnerSpawnEvent event) {
-		if (event.getLocation().getWorld() != GridManager.getWorld())
+	public void onSpawnerSpawn(SpawnerSpawnEvent event) {
+		if (inWorld(event.getLocation()))
 			return;
 
 		event.setCancelled(!testGeneralPermission(event.getLocation(), GeneralPermission.SPAWNERS));
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onMobSpawn(final CreatureSpawnEvent event) {
-		if (event.getLocation().getWorld() != GridManager.getWorld() || !(event.getEntity() instanceof Monster))
+	public void onMobSpawn(CreatureSpawnEvent event) {
+		if (inWorld(event.getLocation()) || !(event.getEntity() instanceof Monster))
 			return;
 
 		event.setCancelled(!testGeneralPermission(event.getLocation(), GeneralPermission.MOBSPAWNING));
 	}
 
-	// Using LOWEST priority because CobbleGeneratorListener alrd uses LOW priority
-	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-	public void onFlow(final BlockFromToEvent event) {
-		if (event.getToBlock().getWorld() != GridManager.getWorld())
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onFlow(BlockFromToEvent event) {
+		if (inWorld(event.getToBlock()))
 			return;
 
-		event.setCancelled(!testGeneralPermission(event.getToBlock().getLocation(), GeneralPermission.FLUIDFLOWING));
+		Block toBlock = event.getToBlock();
+		if (toBlock.getType() != Material.AIR)
+			return;
+
+		Island island = GridManager.getIslandAtSafe(toBlock.getLocation());
+		if (island != null) {
+			if (!island.hasGeneralPermission(GeneralPermission.FLUIDFLOWING)) {
+				event.setCancelled(true);
+				return;
+			}
+
+			if (!island.hasGeneralPermission(GeneralPermission.GENENABLED))
+				return;
+
+			int flowId = event.getBlock().getTypeId();
+			if (flowId >= 8 && flowId <= 11 && oreGenerator.shouldGenerates(toBlock, flowId)) {
+				toBlock.setType(oreGenerator.randomize(island));
+			}
+		}
 	}
 
 	/*
 		Guardian
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onToggleFly(final PlayerToggleFlightEvent event) {
+	public void onToggleFly(PlayerToggleFlightEvent event) {
 		Location location = event.getPlayer().getLocation();
-		if (location.getWorld() != GridManager.getWorld())
+		if (inWorld(location))
 			return;
 
 		canDo(event.getPlayer(), location, event, VisitorPermission.FLY, null);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onCommand(final PlayerCommandPreprocessEvent event) {
+	public void onCommand(PlayerCommandPreprocessEvent event) {
 		Location location = event.getPlayer().getLocation();
-		if (location.getWorld() != GridManager.getWorld())
+		if (inWorld(location))
 			return;
 
 		final String command = event.getMessage().split(" ")[0].substring(1).toLowerCase();
@@ -191,8 +231,8 @@ public class IslandGuard implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onPlace(final BlockPlaceEvent event) {
-		if (event.getBlock().getWorld() != GridManager.getWorld())
+	public void onPlace(BlockPlaceEvent event) {
+		if (inWorld(event.getBlock()))
 			return;
 
 		if (canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.PLACE)) {
@@ -210,8 +250,8 @@ public class IslandGuard implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onBreak(final BlockBreakEvent event) {
-		if (event.getBlock().getWorld() != GridManager.getWorld())
+	public void onBreak(BlockBreakEvent event) {
+		if (inWorld(event.getBlock()))
 			return;
 
 		if (canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.BREAK)) {
@@ -229,41 +269,40 @@ public class IslandGuard implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onEmptyBucket(final PlayerBucketEmptyEvent event) {
-		if (event.getBlockClicked().getWorld() != GridManager.getWorld())
+	public void onEmptyBucket(PlayerBucketEmptyEvent event) {
+		if (inWorld(event.getBlockClicked()))
 			return;
 		canDo(event.getPlayer(), event.getBlockClicked(), event, null, CoopPermission.BUCKETS);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onFillBucket(final PlayerBucketFillEvent event) {
-		if (event.getBlockClicked().getWorld() != GridManager.getWorld())
+	public void onFillBucket(PlayerBucketFillEvent event) {
+		if (inWorld(event.getBlockClicked()))
 			return;
 		canDo(event.getPlayer(), event.getBlockClicked(), event, null, CoopPermission.BUCKETS);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onPickup(final EntityPickupItemEvent event) {
-		if (event.getEntity().getWorld() != GridManager.getWorld()) {
+	public void onPickup(EntityPickupItemEvent event) {
+		if (inWorld(event.getEntity().getWorld()))
 			return;
-		}
 		if (event.getEntityType() == EntityType.PLAYER) {
 			canDo((Player) event.getEntity(), event.getEntity().getLocation(), event, VisitorPermission.PICKUP, null);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onDrop(final PlayerDropItemEvent event) {
-		if (event.getPlayer().getWorld() != GridManager.getWorld())
+	public void onDrop(PlayerDropItemEvent event) {
+		if (inWorld(event.getPlayer().getLocation()))
 			return;
 		canDo(event.getPlayer(), event.getPlayer().getLocation(), event, VisitorPermission.DROP, null);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onInteract(final PlayerInteractEvent event) {
-		if (event.getPlayer().getWorld() != GridManager.getWorld())
-			return;
+	public void onInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		if (inWorld(player.getWorld()))
+			return;
 
 		if (event.getAction() == Action.PHYSICAL) {
 			if (event.hasBlock()) {
@@ -367,8 +406,8 @@ public class IslandGuard implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onHit(final EntityDamageByEntityEvent event) {
-		if (event.getDamager().getType() != EntityType.PLAYER || event.getDamager().getWorld() != GridManager.getWorld())
+	public void onHit(EntityDamageByEntityEvent event) {
+		if (event.getDamager().getType() != EntityType.PLAYER || inWorld(event.getDamager().getWorld()))
 			return;
 
 		Player damager = (Player) event.getDamager();
@@ -397,19 +436,19 @@ public class IslandGuard implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onRod(final PlayerFishEvent event) {
-		if (event.getCaught() == null || event.getCaught().getWorld() != GridManager.getWorld())
+	public void onRod(PlayerFishEvent event) {
+		Entity victim = event.getCaught();
+		if (victim == null || inWorld(victim.getWorld()))
 			return;
 
 		Player damager = event.getPlayer();
-		Entity victim = event.getCaught();
 		if (victim.getType() == EntityType.PLAYER) {
 			if (victim.equals(damager))
 				return;
 
 			event.setCancelled(true);
-
 			event.getHook().remove();
+
 			damager.sendMessage(Locale.PREFIX + "§cLe PvP est désactivé dans ce monde !");
 		}
 		else if (victim.getType() == EntityType.ARMOR_STAND || victim.getType() == EntityType.ENDER_CRYSTAL) {
@@ -417,7 +456,7 @@ public class IslandGuard implements Listener {
 		}
 		else if (victim instanceof Monster || victim.getType() == EntityType.SLIME) {
 			if (!canDo(damager, victim.getLocation(), event, VisitorPermission.HITMOBS, null)) {
-				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les animaux sur cette île !");
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les monstres sur cette île !");
 			}
 		}
 		else if (victim instanceof Animals || victim.getType() == EntityType.SQUID) {
@@ -427,7 +466,7 @@ public class IslandGuard implements Listener {
 		}
 		else if (victim instanceof Golem) {
 			if (!canDo(damager, victim.getLocation(), event, VisitorPermission.HITGOLEMS, null)) {
-				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les Golems sur cette île !");
+				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les golems sur cette île !");
 			}
 		}
 	}

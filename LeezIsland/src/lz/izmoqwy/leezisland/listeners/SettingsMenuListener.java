@@ -2,6 +2,7 @@ package lz.izmoqwy.leezisland.listeners;
 
 import lz.izmoqwy.core.utils.ItemUtil;
 import lz.izmoqwy.leezisland.Locale;
+import lz.izmoqwy.leezisland.generator.OreGeneratorGUI;
 import lz.izmoqwy.leezisland.grid.IslandManager;
 import lz.izmoqwy.leezisland.island.*;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
@@ -11,7 +12,6 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
@@ -34,12 +34,14 @@ public class SettingsMenuListener implements Listener {
 	static final Map<Integer, CoopPermission> COOP_SLOTMAP;
 
 	private static final ItemStack BACK = ItemUtil.createItem(Material.ARROW, "§cRetour au menu", Collections.singletonList("§7Retourner à la page des paramètres"));
+	private static OreGeneratorGUI oreGeneratorGUI = new OreGeneratorGUI();
 
 	static {
 		GUI = Bukkit.createInventory(null, 3 * 9, GUI_NAME);
-		GUI.setItem(11, ItemUtil.createItem(Material.EMPTY_MAP, "§eParamètres des visiteurs"));
-		GUI.setItem(13, ItemUtil.createItem(Material.BOOK, "§6Paramètres généraux"));
-		GUI.setItem(15, ItemUtil.createItem(Material.BRICK, "§eParamètres des coopérants"));
+		GUI.setItem(11, ItemUtil.createItem(Material.COBBLESTONE, "§6Paramètres du générateur"));
+		GUI.setItem(12, ItemUtil.createItem(Material.BOOK, "§6Paramètres généraux"));
+		GUI.setItem(14, ItemUtil.createItem(Material.BRICK, "§eParamètres des coopérants"));
+		GUI.setItem(15, ItemUtil.createItem(Material.EMPTY_MAP, "§eParamètres des visiteurs"));
 
 		GENERAL_GUI = Bukkit.createInventory(null, 3 * 9, GENERAL_GUI_NAME);
 		GENERAL_GUI.setItem(26, BACK);
@@ -123,7 +125,7 @@ public class SettingsMenuListener implements Listener {
 		return ItemUtil.createItem(icon, "§e" + name, lore);
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler
 	public void onClick(InventoryClickEvent event) {
 		if (event.getClickedInventory() == null || event.getWhoClicked() == null)
 			return;
@@ -160,7 +162,7 @@ public class SettingsMenuListener implements Listener {
 				}
 
 				switch (slot) {
-					case 11:
+					case 15:
 						Inventory inventory = VISITORS_GUI;
 
 						List<VisitorPermission> visitorPermissions = island.getVisitorsPermissions();
@@ -168,7 +170,7 @@ public class SettingsMenuListener implements Listener {
 
 						player.bukkit().openInventory(inventory);
 						break;
-					case 13:
+					case 12:
 						inventory = GENERAL_GUI;
 
 						List<GeneralPermission> generalPermissions = island.getGeneralPermissions();
@@ -176,7 +178,10 @@ public class SettingsMenuListener implements Listener {
 
 						player.bukkit().openInventory(inventory);
 						break;
-					case 15:
+					case 11:
+						player.bukkit().openInventory(oreGeneratorGUI.bakeInventory(player.bukkit()));
+						break;
+					case 14:
 						inventory = COOP_GUI;
 
 						List<CoopPermission> coopPermissions = island.getCoopPermissions();
