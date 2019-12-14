@@ -23,6 +23,7 @@ public class GridManager {
 
 	@Getter
 	private static World world;
+	private static String worldName;
 
 	private static Grid grid;
 	private static TreeMap<Integer, TreeMap<Integer, String>> islandsGrid = Maps.newTreeMap();
@@ -56,6 +57,7 @@ public class GridManager {
 					.generateStructures(false).type(WorldType.NORMAL).environment(World.Environment.NORMAL));
 			world = Bukkit.getWorld(LeezIsland.WORLD_NAME);
 		}
+		worldName = world.getName();
 
 		if (grid == null)
 			grid = new Grid(0, 0, 0, 0);
@@ -100,6 +102,10 @@ public class GridManager {
 
 	public static Entry<Integer, Integer> getMiddle(int x, int z) {
 		return grid.getMiddle(x, z);
+	}
+
+	public static boolean isGridWorld(World world) {
+		return world.getName().compareTo(worldName) > 0;
 	}
 
 	protected static void addToGrid(Island newIsland) {
@@ -147,6 +153,10 @@ public class GridManager {
 		if (location == null) return null;
 		if (!world.equals(location.getWorld())) return null;
 
+		return getIslandAt(location.getBlockX(), location.getBlockZ());
+	}
+	// get island at location without checking if the location is valid
+	public static Island getIslandAtSafe(Location location) {
 		return getIslandAt(location.getBlockX(), location.getBlockZ());
 	}
 
