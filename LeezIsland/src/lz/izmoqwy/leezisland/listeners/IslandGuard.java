@@ -77,9 +77,8 @@ public class IslandGuard implements Listener {
 		return canDo(player, block.getLocation(), event, ifVisitor, ifCoop);
 	}
 
-	private boolean isThereIslandAt(Location location) {
-		Island is = GridManager.getIslandAt(location);
-		return is != null;
+	private boolean noIslandAt(Location location) {
+		return GridManager.getIslandAt(location) == null;
 	}
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
@@ -94,16 +93,16 @@ public class IslandGuard implements Listener {
 	/*
 		World Check Methods
 	 */
-	private boolean inWorld(Location location) {
-		return inWorld(location.getWorld());
+	private boolean notInWorld(Location location) {
+		return notInWorld(location.getWorld());
 	}
 
-	private boolean inWorld(Block block) {
-		return inWorld(block.getWorld());
+	private boolean notInWorld(Block block) {
+		return notInWorld(block.getWorld());
 	}
 
-	private boolean inWorld(World world) {
-		return GridManager.isGridWorld(world);
+	private boolean notInWorld(World world) {
+		return GridManager.notOnGrid(world);
 	}
 
 	/*
@@ -111,9 +110,18 @@ public class IslandGuard implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPistonExtend(BlockPistonExtendEvent event) {
-		if (event.getBlocks().isEmpty() || inWorld(event.getBlock()))
+		if (event.getBlocks().isEmpty() || notInWorld(event.getBlock()))
 			return;
-		event.setCancelled(!isThereIslandAt(event.getBlocks().get(event.getBlocks().size() - 1).getRelative(event.getDirection()).getLocation()));
+		event.setCancelled(noIslandAt(event.getBlocks().get(event.getBlocks().size() - 1).getRelative(event.getDirection()).getLocation()));
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onDispenseEvent(BlockDispenseEvent event) {
+		if (notInWorld(event.getBlock()))
+			return;
+
+		Location targetLocation = event.getVelocity().toLocation(event.getBlock().getWorld());
+		event.setCancelled(noIslandAt(targetLocation));
 	}
 
 	/*
@@ -121,7 +129,7 @@ public class IslandGuard implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onTeleport(PlayerTeleportEvent event) {
-		if (event.getTo().getWorld() != GridManager.getWorld())
+		if (notInWorld(event.getTo()))
 			return;
 
 		Player player = event.getPlayer();
@@ -164,7 +172,7 @@ public class IslandGuard implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onSpawnerSpawn(SpawnerSpawnEvent event) {
-		if (inWorld(event.getLocation()))
+		if (notInWorld(event.getLocation()))
 			return;
 
 		event.setCancelled(!testGeneralPermission(event.getLocation(), GeneralPermission.SPAWNERS));
@@ -172,15 +180,16 @@ public class IslandGuard implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onMobSpawn(CreatureSpawnEvent event) {
-		if (inWorld(event.getLocation()) || !(event.getEntity() instanceof Monster))
+		if (notInWorld(event.getLocation()) || !(event.getEntity() instanceof Monster))
 			return;
 
 		event.setCancelled(!testGeneralPermission(event.getLocation(), GeneralPermission.MOBSPAWNING));
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onFlow(BlockFromToEvent event) {
-		if (inWorld(event.getToBlock()))
+		if (notInWorld(event.getToBlock()))
 			return;
 
 		Block toBlock = event.getToBlock();
@@ -202,6 +211,9 @@ public class IslandGuard implements Listener {
 				toBlock.setType(oreGenerator.randomize(island));
 			}
 		}
+		else {
+			event.setCancelled(true);
+		}
 	}
 
 	/*
@@ -210,7 +222,7 @@ public class IslandGuard implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onToggleFly(PlayerToggleFlightEvent event) {
 		Location location = event.getPlayer().getLocation();
-		if (inWorld(location))
+		if (notInWorld(location))
 			return;
 
 		canDo(event.getPlayer(), location, event, VisitorPermission.FLY, null);
@@ -219,7 +231,7 @@ public class IslandGuard implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onCommand(PlayerCommandPreprocessEvent event) {
 		Location location = event.getPlayer().getLocation();
-		if (inWorld(location))
+		if (notInWorld(location))
 			return;
 
 		final String command = event.getMessage().split(" ")[0].substring(1).toLowerCase();
@@ -232,7 +244,7 @@ public class IslandGuard implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPlace(BlockPlaceEvent event) {
-		if (inWorld(event.getBlock()))
+		if (notInWorld(event.getBlock()))
 			return;
 
 		if (canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.PLACE)) {
@@ -251,7 +263,7 @@ public class IslandGuard implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onBreak(BlockBreakEvent event) {
-		if (inWorld(event.getBlock()))
+		if (notInWorld(event.getBlock()))
 			return;
 
 		if (canDo(event.getPlayer(), event.getBlock(), event, null, CoopPermission.BREAK)) {
@@ -270,21 +282,21 @@ public class IslandGuard implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onEmptyBucket(PlayerBucketEmptyEvent event) {
-		if (inWorld(event.getBlockClicked()))
+		if (notInWorld(event.getBlockClicked()))
 			return;
 		canDo(event.getPlayer(), event.getBlockClicked(), event, null, CoopPermission.BUCKETS);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onFillBucket(PlayerBucketFillEvent event) {
-		if (inWorld(event.getBlockClicked()))
+		if (notInWorld(event.getBlockClicked()))
 			return;
 		canDo(event.getPlayer(), event.getBlockClicked(), event, null, CoopPermission.BUCKETS);
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPickup(EntityPickupItemEvent event) {
-		if (inWorld(event.getEntity().getWorld()))
+		if (notInWorld(event.getEntity().getWorld()))
 			return;
 		if (event.getEntityType() == EntityType.PLAYER) {
 			canDo((Player) event.getEntity(), event.getEntity().getLocation(), event, VisitorPermission.PICKUP, null);
@@ -293,7 +305,7 @@ public class IslandGuard implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onDrop(PlayerDropItemEvent event) {
-		if (inWorld(event.getPlayer().getLocation()))
+		if (notInWorld(event.getPlayer().getLocation()))
 			return;
 		canDo(event.getPlayer(), event.getPlayer().getLocation(), event, VisitorPermission.DROP, null);
 	}
@@ -301,7 +313,7 @@ public class IslandGuard implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		if (inWorld(player.getWorld()))
+		if (notInWorld(player.getWorld()))
 			return;
 
 		if (event.getAction() == Action.PHYSICAL) {
@@ -407,7 +419,7 @@ public class IslandGuard implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onHit(EntityDamageByEntityEvent event) {
-		if (event.getDamager().getType() != EntityType.PLAYER || inWorld(event.getDamager().getWorld()))
+		if (event.getDamager().getType() != EntityType.PLAYER || notInWorld(event.getDamager().getWorld()))
 			return;
 
 		Player damager = (Player) event.getDamager();
@@ -438,7 +450,7 @@ public class IslandGuard implements Listener {
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onRod(PlayerFishEvent event) {
 		Entity victim = event.getCaught();
-		if (victim == null || inWorld(victim.getWorld()))
+		if (victim == null || notInWorld(victim.getWorld()))
 			return;
 
 		Player damager = event.getPlayer();

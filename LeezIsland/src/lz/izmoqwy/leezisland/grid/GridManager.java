@@ -104,7 +104,7 @@ public class GridManager {
 		return grid.getMiddle(x, z);
 	}
 
-	public static boolean isGridWorld(World world) {
+	public static boolean notOnGrid(World world) {
 		return world.getName().compareTo(worldName) > 0;
 	}
 
