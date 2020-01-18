@@ -1,12 +1,11 @@
 package me.izmoqwy.leezsky;
 
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.LeezCore;
+import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.api.database.SQLite;
-import lz.izmoqwy.core.helpers.PluginHelper;
-import lz.izmoqwy.core.nms.NmsAPI;
-import lz.izmoqwy.core.world.WorldsManager;
+import lz.izmoqwy.core.nms.NMS;
+import lz.izmoqwy.core.utils.ServerUtil;
 import me.izmoqwy.leezsky.challenges.ChallengePlugin;
 import me.izmoqwy.leezsky.commands.*;
 import me.izmoqwy.leezsky.listeners.CommandsListener;
@@ -60,10 +59,10 @@ public class LeezSky extends JavaPlugin{
 			Bukkit.getConsoleSender().sendMessage("§6» " + line);
 		}
 
-		WorldsManager.registerPersistentVoidWorld("Spawn");
+		ServerUtil.registerPersistentVoidWorld("Spawn");
 		World world = Bukkit.getWorld("Spawn");
 		if (world != null) {
-			PluginHelper.loadListener(this, new SpawnListener(world));
+			ServerUtil.registerListeners(this, new SpawnListener(world));
 		}
 
 		DB = new SQLite("LeezSky", this, new File(getDataFolder(), "storage.db"));
@@ -86,39 +85,39 @@ public class LeezSky extends JavaPlugin{
 
 		InvestManager.TABLE = DB.getTable("Invests");
 		InvestManager.load();
-		PluginHelper.loadCommand("invest", new InvestCommand());
+		ServerUtil.registerCommand("invest", new InvestCommand());
 
 		SettingsManager.load();
-		PluginHelper.loadCommand("settings", new SettingsCommand());
+		ServerUtil.registerCommand("settings", new SettingsCommand());
 		ScoreboardManager.load(this);
 
-		PluginHelper.loadCommand("objective", new ObjectiveCommand());
+		ServerUtil.registerCommand("objective", new ObjectiveCommand());
 
 		/*
 			Internal staff security
 		 */
-		PluginHelper.loadCommand("leezop", new OpCommand());
-		PluginHelper.loadCommand("leezdeop", new DeopCommand());
+		ServerUtil.registerCommand("leezop", new OpCommand());
+		ServerUtil.registerCommand("leezdeop", new DeopCommand());
 
-		PluginHelper.loadCommand("help", new HelpCommand());
-		PluginHelper.loadCommand("announce", new AnnounceCommand());
-		PluginHelper.loadCommand("worlds", new WorldsCommand());
+		ServerUtil.registerCommand("help", new HelpCommand());
+		ServerUtil.registerCommand("announce", new AnnounceCommand());
+		ServerUtil.registerCommand("worlds", new WorldsCommand());
 
-		PluginHelper.loadListener(this, new PlayersListener());
-		PluginHelper.loadListener(this, new CommandsListener());
-		PluginHelper.loadListener(this, new MotdListener());
+		ServerUtil.registerListeners(this, new PlayersListener());
+		ServerUtil.registerListeners(this, new CommandsListener());
+		ServerUtil.registerListeners(this, new MotdListener());
 
 		ChallengePlugin.load(this);
 
 		if (Bukkit.getOnlinePlayers().size() >= 1) {
-			NmsAPI.packet.sendTablist(TAB_HEADER, TAB_FOOTER);
+			NMS.packet.sendGlobalTablist(TAB_HEADER, TAB_FOOTER);
 		}
 
 		new AutoMessage();
 		if (CLUSTER_HOST)
 			new Rebooter().start();
 
-		final boolean useScoreboard = NmsAPI.scoreboard != null;
+		final boolean useScoreboard = NMS.scoreboard != null;
 		if (useScoreboard)
 			getLogger().info("Able to use scoreboards!");
 

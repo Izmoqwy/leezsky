@@ -1,6 +1,7 @@
 package lz.izmoqwy.core;
 
 import com.google.common.collect.Maps;
+import lz.izmoqwy.core.self.LeezCore;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
 

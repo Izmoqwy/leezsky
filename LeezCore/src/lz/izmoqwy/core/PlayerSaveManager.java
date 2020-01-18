@@ -1,7 +1,8 @@
 package lz.izmoqwy.core;
 
 import lz.izmoqwy.core.api.PlayerBackup;
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.self.LeezCore;
+import lz.izmoqwy.core.utils.ServerUtil;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,8 +14,8 @@ import java.io.File;
 
 public class PlayerSaveManager {
 
-	protected static void load(){
-		PluginHelper.loadListener(LeezCore.instance, new Listener() {
+	public static void load(){
+		ServerUtil.registerListeners(LeezCore.instance, new Listener() {
 			// Call the event almost at the end due to message ordering
 			@EventHandler(priority = EventPriority.HIGH)
 			public void onPlayerJoin(PlayerJoinEvent event) {

@@ -1,5 +1,7 @@
 package lz.izmoqwy.core;
 
+import lz.izmoqwy.core.utils.MathUtil;
+import lz.izmoqwy.core.utils.TextUtil;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -10,6 +12,7 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class Economy {
+
 	private static net.milkbowl.vault.economy.Economy economy = null;
 
 	private static NumberFormat PRETTY_FORMAT = NumberFormat.getInstance(Locale.US);
@@ -38,19 +41,12 @@ public class Economy {
 		return economy.getBalance(player);
 	}
 
+	/**
+	 * @deprecated use {@link TextUtil#humanReadableNumber(double)}
+	 */
+	@Deprecated
 	public static double round(double balance) {
-		return round("" + balance);
+		return MathUtil.roundDecimal(balance, 2);
 	}
 
-	public static double round(String balance) {
-		return Math.floor(Double.parseDouble(balance) * 100) / 100;
-	}
-
-	public static String prettyBalance(OfflinePlayer player) {
-		String str = PRETTY_FORMAT.format(getBalance(player));
-		if (str.endsWith(".00")) {
-			str = str.substring(0, str.length() - 3);
-		}
-		return str;
-	}
 }

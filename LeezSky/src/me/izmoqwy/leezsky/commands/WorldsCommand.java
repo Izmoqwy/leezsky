@@ -1,7 +1,7 @@
 package me.izmoqwy.leezsky.commands;
 
-import lz.izmoqwy.core.api.CommandOptions;
-import lz.izmoqwy.core.api.CoreCommand;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.command.CoreCommand;
 import me.izmoqwy.leezsky.LeezSky;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -9,7 +9,9 @@ import org.bukkit.command.CommandSender;
 public class WorldsCommand extends CoreCommand {
 
 	public WorldsCommand() {
-		super("worlds", new CommandOptions().withPermission("leezsky.admin.worlds"));
+		super("worlds", CommandOptions.builder()
+				.permission("leezsky.commands.worlds")
+				.build());
 	}
 
 	@Override

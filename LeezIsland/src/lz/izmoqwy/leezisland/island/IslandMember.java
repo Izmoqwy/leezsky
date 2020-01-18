@@ -5,11 +5,10 @@ import lombok.Setter;
 
 import java.util.UUID;
 
+@Getter
 public class IslandMember {
 
-	@Getter
 	private UUID uniqueId;
-	@Getter
 	@Setter
 	private IslandRole role;
 

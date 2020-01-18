@@ -17,7 +17,7 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lombok" level="project" />
-    <orderEntry type="library" name="Spigot 1.12.2 (NMS v1_12_R1)" level="project" />
     <orderEntry type="module" module-name="LeezCore" />
+    <orderEntry type="library" name="Spigot 1.12.2 (NMS v1_12_R1)" level="project" />
   </component>
 </module>

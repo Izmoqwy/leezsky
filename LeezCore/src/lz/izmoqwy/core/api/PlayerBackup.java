@@ -4,6 +4,7 @@ import lombok.Getter;
 import lz.izmoqwy.core.utils.LocationUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,19 +13,14 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+@Getter
 public class PlayerBackup {
 
-	@Getter
 	private final Location from;
-	@Getter
 	private final ItemStack[] contents, armorContents;
-	@Getter
 	private final float[] fullExp, fullFood;
-	@Getter
 	private final double health;
-	@Getter
 	private final boolean[] fullFly;
-	@Getter
 	private final GameMode gameMode;
 
 	protected PlayerBackup(Location from, ItemStack[] contents, ItemStack[] armorContents, float[] xp, double health, float[] food, boolean[] fly, GameMode gameMode) {
@@ -83,7 +79,7 @@ public class PlayerBackup {
 			file.createNewFile();
 		}
 		YamlConfiguration yaml = append ? YamlConfiguration.loadConfiguration(file) : new YamlConfiguration();
-		LocationUtil.yamlFullSave(yaml, this.from, path + "location");
+		LocationUtil.saveInYaml(yaml, this.from, path + "location");
 		yaml.set(path + "contents", this.contents);
 		yaml.set(path + "armorcontents", this.armorContents);
 
@@ -121,7 +117,7 @@ public class PlayerBackup {
 		else if (!path.endsWith("."))
 			path += ".";
 
-		Location location = LocationUtil.yamlFullLoad(yaml, path + "location");
+		Location location = LocationUtil.loadFromYaml(yaml, path + "location");
 		ItemStack[] contents = ((List<ItemStack>) yaml.get(path + "contents")).toArray(new ItemStack[0]);
 		ItemStack[] armorContents = ((List<ItemStack>) yaml.get(path + "armorcontents")).toArray(new ItemStack[0]);
 
@@ -156,7 +152,7 @@ public class PlayerBackup {
 		player.setExp(0.001F);
 		player.setTotalExperience(0);
 		if (regen) {
-			player.setHealth(player.getMaxHealth());
+			player.setHealth(player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
 			player.setFoodLevel(20);
 			player.setSaturation(20.F);
 			player.setExhaustion(0.F);

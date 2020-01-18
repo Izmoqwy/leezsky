@@ -1,7 +1,7 @@
 package lz.izmoqwy.leezisland.players;
 
 import lombok.Getter;
-import lz.izmoqwy.core.LeezCore;
+import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.leezisland.island.Island;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Player.Spigot;

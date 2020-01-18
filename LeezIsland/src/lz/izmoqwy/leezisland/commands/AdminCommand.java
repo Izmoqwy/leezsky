@@ -2,10 +2,10 @@ package lz.izmoqwy.leezisland.commands;
 
 import com.google.common.collect.Lists;
 import lz.izmoqwy.core.utils.TextUtil;
+import lz.izmoqwy.leezisland.Locale;
 import lz.izmoqwy.leezisland.grid.GridManager;
 import lz.izmoqwy.leezisland.grid.IslandManager;
 import lz.izmoqwy.leezisland.island.Island;
-import lz.izmoqwy.leezisland.Locale;
 import lz.izmoqwy.leezisland.players.Wrapper;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -99,7 +99,6 @@ public class AdminCommand implements CommandExecutor {
 					Locale.COMMAND_INVALID.send(sender);
 			}
 			else if (args.length >= 1 && (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?"))) {
-
 				sender.sendMessage(" ");
 
 				sender.sendMessage(Locale.PREFIX + "§3Aide de la commande /isadmin:");
@@ -109,7 +108,6 @@ public class AdminCommand implements CommandExecutor {
 				sender.sendMessage("§6/isadmin §esetrange <Pseudo> <Nouveau rayon> §8- §eDéfinir un nouveau rayon pour une île");
 
 				sender.sendMessage(" ");
-
 			}
 			else
 				Locale.COMMAND_UNKOWN.send(sender);
@@ -119,7 +117,6 @@ public class AdminCommand implements CommandExecutor {
 	}
 
 	protected static void sendIslandInfo(Island island, CommandSender sender) {
-
 		sender.sendMessage(" ");
 
 		sender.sendMessage(Locale.PREFIX + "§3Informations de l'île §b#" + island.ID + "§3:");
@@ -144,7 +141,6 @@ public class AdminCommand implements CommandExecutor {
 		sender.sendMessage(Locale.PREFIX + "§6Fermée: §e" + (island.isLocked() ? "oui" : "non"));
 
 		sender.sendMessage(" ");
-
 	}
 
 }

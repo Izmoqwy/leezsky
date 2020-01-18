@@ -4,11 +4,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lz.izmoqwy.core.Economy;
 import lz.izmoqwy.core.gui.GUIManager;
-import lz.izmoqwy.core.LeezCore;
+import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
-import lz.izmoqwy.core.utils.InventoryUtil;
 import lz.izmoqwy.core.utils.ItemUtil;
+import lz.izmoqwy.core.utils.PlayerUtil;
 import lz.izmoqwy.core.utils.StoreUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import me.izmoqwy.leezsky.commands.InvestCommand;
@@ -111,7 +111,7 @@ public class InvestManager {
 	}
 
 	private static void guiDepositConfirm(Player player, int slot) {
-		Inventory inv = InventoryUtil.copy(CONFIRM_DEPOSIT_INVENTORY, GUI_DEPOSIT_CONFIRM_NAME.replace("%s", slot + ""));
+		Inventory inv = PlayerUtil.copyInventory(CONFIRM_DEPOSIT_INVENTORY, GUI_DEPOSIT_CONFIRM_NAME.replace("%s", slot + ""));
 		List<String> informations = Lists.newArrayList();
 		if (true)
 			informations.addAll(Arrays.asList("§4Attention:", "§cSi vous récupérez l'argent avant 24h,", "§cLe montant sera diminué de 18%"));

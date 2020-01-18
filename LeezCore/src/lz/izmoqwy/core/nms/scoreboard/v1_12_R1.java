@@ -1,6 +1,5 @@
 package lz.izmoqwy.core.nms.scoreboard;
 
-
 import net.minecraft.server.v1_12_R1.*;
 import org.bukkit.craftbukkit.v1_12_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -57,6 +56,7 @@ public class v1_12_R1 extends NMSScoreboard {
 
 	/**
 	 * Change the name of the objective. The name is displayed at the top of the scoreboard.
+	 *
 	 * @param name the name of the objective, max 32 char
 	 */
 	public void setObjectiveName(String name) {
@@ -67,7 +67,8 @@ public class v1_12_R1 extends NMSScoreboard {
 
 	/**
 	 * Change a scoreboard line and send the packets to the player. Can be called async.
-	 * @param line the number of the line (0 <= line < 15)
+	 *
+	 * @param line  the number of the line (0 <= line < 15)
 	 * @param value the new value for the scoreboard line
 	 */
 	public void setLine(int line, String value) {
@@ -83,6 +84,7 @@ public class v1_12_R1 extends NMSScoreboard {
 
 	/**
 	 * Remove a given scoreboard line
+	 *
 	 * @param line the line to remove
 	 */
 	public void removeLine(int line) {
@@ -99,6 +101,7 @@ public class v1_12_R1 extends NMSScoreboard {
 
 	/**
 	 * Get the current value for a line
+	 *
 	 * @param line the line
 	 * @return the content of the line
 	 */
@@ -112,6 +115,7 @@ public class v1_12_R1 extends NMSScoreboard {
 
 	/**
 	 * Get the team assigned to a line
+	 *
 	 * @return the {@link VirtualTeam} used to display this line
 	 */
 	public VirtualTeam getTeam(int line) {
@@ -199,6 +203,7 @@ public class v1_12_R1 extends NMSScoreboard {
 	 * code before doing so. Use these methods at your own risk.
 	 */
 	public class VirtualTeam {
+
 		private final String name;
 		private String prefix;
 		private String suffix;
@@ -284,13 +289,14 @@ public class v1_12_R1 extends NMSScoreboard {
 
 			if (first) {
 				packets.add(createTeam());
-			} else if (prefixChanged || suffixChanged) {
+			}
+			else if (prefixChanged || suffixChanged) {
 				packets.add(updateTeam());
 			}
 
 			if (first || playerChanged) {
-				if (oldPlayer != null)										// remove these two lines ?
-					packets.add(addOrRemovePlayer(4, oldPlayer)); 	//
+				if (oldPlayer != null)                                        // remove these two lines ?
+					packets.add(addOrRemovePlayer(4, oldPlayer));    //
 				packets.add(changePlayer());
 			}
 
@@ -321,7 +327,8 @@ public class v1_12_R1 extends NMSScoreboard {
 				Field f = packet.getClass().getDeclaredField("h");
 				f.setAccessible(true);
 				((List<String>) f.get(packet)).add(playerName);
-			} catch (NoSuchFieldException | IllegalAccessException e) {
+			}
+			catch (NoSuchFieldException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
 
@@ -341,18 +348,22 @@ public class v1_12_R1 extends NMSScoreboard {
 				setPrefix("");
 				setSuffix("");
 				setPlayer(value);
-			} else if (value.length() <= 32) {
+			}
+			else if (value.length() <= 32) {
 				setPrefix(value.substring(0, 16));
 				setPlayer(value.substring(16));
 				setSuffix("");
-			} else if (value.length() <= 48) {
+			}
+			else if (value.length() <= 48) {
 				setPrefix(value.substring(0, 16));
 				setPlayer(value.substring(16, 32));
 				setSuffix(value.substring(32));
-			} else {
+			}
+			else {
 				throw new IllegalArgumentException("Too long value ! Max 48 characters, value was " + value.length() + " !");
 			}
 		}
+
 	}
 
 	private static void setField(Object edit, String fieldName, Object value) {
@@ -360,8 +371,10 @@ public class v1_12_R1 extends NMSScoreboard {
 			Field field = edit.getClass().getDeclaredField(fieldName);
 			field.setAccessible(true);
 			field.set(edit, value);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
+		}
+		catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 	}
+
 }

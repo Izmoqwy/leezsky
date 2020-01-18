@@ -1,9 +1,8 @@
 package lz.izmoqwy.market.blackmarket;
 
 import com.google.common.collect.Lists;
-import lz.izmoqwy.core.api.CommandNoPermissionException;
-import lz.izmoqwy.core.api.CommandOptions;
-import lz.izmoqwy.core.api.CoreCommand;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.command.CoreCommand;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.market.Locale;
@@ -24,17 +23,19 @@ import java.util.List;
 public class BlackMarketCommand extends CoreCommand {
 
 	protected BlackMarketCommand() {
-		super("blackmarket", new CommandOptions().withPermission("blackmarket.command").playerOnly().needArg());
+		super("blackmarket", CommandOptions.builder()
+				.permission("blackmarket.command").playerOnly(true).needsArg(true)
+				.build());
 	}
 
 	@Override
-	protected void execute(CommandSender commandSender, String usedCommand, String[] args) throws CommandNoPermissionException {
+	protected void execute(CommandSender commandSender, String usedCommand, String[] args) {
 		Player player = (Player) commandSender;
 
 		switch (args[0].toLowerCase()) {
 			case "movehere":
 			case "tphere":
-				permCheck(player, "movehere");
+				checkPermission(player, "movehere");
 
 				YamlConfiguration config = YamlConfiguration.loadConfiguration(BlackMarket.file);
 				if (BlackMarket.NPC == null) {
@@ -48,7 +49,7 @@ public class BlackMarketCommand extends CoreCommand {
 				Location location = player.getLocation();
 				BlackMarket.spawnArmorStands(location);
 
-				LocationUtil.yamlFullSave(config, location, "npc");
+				LocationUtil.saveInYaml(config, location, "npc");
 				try {
 					config.save(BlackMarket.file);
 					player.sendMessage(Locale.PREFIX + "§aLe PNJ du marché noir vient d'être déplacé.");
@@ -59,11 +60,11 @@ public class BlackMarketCommand extends CoreCommand {
 				}
 				break;
 			case "setwarp":
-				permCheck(player, "setwarp");
+				checkPermission(player, "setwarp");
 
 				location = player.getLocation();
 				config = YamlConfiguration.loadConfiguration(BlackMarket.file);
-				LocationUtil.yamlFullSave(config, location, "warp");
+				LocationUtil.saveInYaml(config, location, "warp");
 				try {
 					config.save(BlackMarket.file);
 					BlackMarket.TELEPORT_POINT = location;
@@ -75,7 +76,7 @@ public class BlackMarketCommand extends CoreCommand {
 				}
 				break;
 			case "arena":
-				permCheck(player, "arena");
+				checkPermission(player, "arena");
 
 				if (args.length < 2) {
 					player.sendMessage(Locale.PREFIX + "§cArguments manquants ! §7[jon, setspawn, setpoint, removepoint, listpoints]");
@@ -85,18 +86,18 @@ public class BlackMarketCommand extends CoreCommand {
 				final String path = "forbiddenarena.";
 				switch (args[1].toLowerCase()) {
 					case "join":
-						permCheck(player, "arena.join");
+						checkPermission(player, "arena.join");
 
 						if (ForbiddenArena.join(player, true)) {
 							RPGManager.take(player, RPGResource.DARKMATTER, 1000);
 						}
 						break;
 					case "setspawn":
-						permCheck(player, "arena.setspawn");
+						checkPermission(player, "arena.setspawn");
 
 						location = player.getLocation();
 						config = YamlConfiguration.loadConfiguration(BlackMarket.file);
-						LocationUtil.yamlFullSave(config, location, path + "spawn");
+						LocationUtil.saveInYaml(config, location, path + "spawn");
 						try {
 							config.save(BlackMarket.file);
 							BlackMarket.refreshForbiddenArena();
@@ -108,7 +109,7 @@ public class BlackMarketCommand extends CoreCommand {
 						}
 						break;
 					case "setpoint":
-						permCheck(player, "arena.setpoint");
+						checkPermission(player, "arena.setpoint");
 
 						if (args.length != 3 || ChatColor.stripColor(args[2].toLowerCase()).trim().isEmpty()) {
 							player.sendMessage(Locale.PREFIX + "§cVeuillez spécifier le nom du point d'apparition.");
@@ -118,7 +119,7 @@ public class BlackMarketCommand extends CoreCommand {
 
 						location = player.getLocation();
 						config = YamlConfiguration.loadConfiguration(BlackMarket.file);
-						LocationUtil.yamlFullSave(config, location, path + "points." + point);
+						LocationUtil.saveInYaml(config, location, path + "points." + point);
 						try {
 							config.save(BlackMarket.file);
 							BlackMarket.refreshForbiddenArena();
@@ -130,7 +131,7 @@ public class BlackMarketCommand extends CoreCommand {
 						}
 						break;
 					case "removepoint":
-						permCheck(player, "arena.setpoint");
+						checkPermission(player, "arena.setpoint");
 
 						if (args.length != 3 || ChatColor.stripColor(args[2].toLowerCase()).trim().isEmpty()) {
 							player.sendMessage(Locale.PREFIX + "§cVeuillez spécifier le nom du point d'apparition.");
@@ -151,7 +152,7 @@ public class BlackMarketCommand extends CoreCommand {
 						}
 						break;
 					case "listpoints":
-						permCheck(player, "arena.listpoints");
+						checkPermission(player, "arena.listpoints");
 						config = BlackMarket.config;
 
 						List<String> points = Lists.newArrayList();
@@ -171,7 +172,7 @@ public class BlackMarketCommand extends CoreCommand {
 				break;
 			case "warp":
 			case "tp":
-				permCheck(player, "warp");
+				checkPermission(player, "warp");
 				if (BlackMarket.TELEPORT_POINT == null) {
 					player.sendMessage(Locale.PREFIX + "§cIl n'y a pas de warp défini pour le marché noir !");
 					return;
@@ -181,7 +182,7 @@ public class BlackMarketCommand extends CoreCommand {
 				player.teleport(BlackMarket.TELEPORT_POINT);
 				break;
 			case "fix":
-				permCheck(player, "fix");
+				checkPermission(player, "fix");
 				if (BlackMarket.NPC == null) {
 					player.sendMessage(Locale.PREFIX + "§cLe PNJ du marché noir n'est pas présent.");
 					return;
@@ -196,7 +197,7 @@ public class BlackMarketCommand extends CoreCommand {
 				player.sendMessage(Locale.PREFIX + "§eLe PNJ devrait désormais être cliquable à nouveau.");
 				break;
 			case "reload":
-				permCheck(player, "reload");
+				checkPermission(player, "reload");
 
 				if (BlackMarket.NPC != null) {
 					BlackMarket.NPC.despawn();
@@ -209,7 +210,7 @@ public class BlackMarketCommand extends CoreCommand {
 				}
 				break;
 			case "update":
-				permCheck(player, "update");
+				checkPermission(player, "update");
 
 				// Reload the skin of the BM for the commandSender
 				if (BlackMarket.NPC != null) {
@@ -224,4 +225,5 @@ public class BlackMarketCommand extends CoreCommand {
 				break;
 		}
 	}
+
 }

@@ -3,9 +3,8 @@ package lz.izmoqwy.core.api.database;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.self.CorePrinter;
 import org.bukkit.plugin.Plugin;
-
 
 public class MySQL extends SQLDatabase {
 

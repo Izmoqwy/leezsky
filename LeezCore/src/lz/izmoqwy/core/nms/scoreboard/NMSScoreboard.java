@@ -25,4 +25,5 @@ public abstract class NMSScoreboard {
 	public abstract void removeLine(int line);
 
 	public abstract String getLine(int line);
+
 }

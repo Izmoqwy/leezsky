@@ -1,5 +1,6 @@
 package lz.izmoqwy.core.utils;
 
+import litebans.N;
 import lz.izmoqwy.core.FireAction;
 
 import java.util.List;
@@ -44,68 +45,74 @@ public class TextUtil {
 		return original.substring(0, 1).toUpperCase() + original.substring(1);
 	}
 
-	public static String readbleNumber(long amount) {
-		if (amount < 1e3)
-			return Long.toString(amount);
+	/*
+	Numbers
+	 */
+	private static String removeTrailing(String string) {
+		if (string.endsWith(".00"))
+			string = string.substring(0, string.length() - 3);
+		else if (string.endsWith(".0"))
+			string = string.substring(0, string.length() - 2);
 
-		String letter = null;
+		if (string.endsWith("0"))
+			string = string.substring(0, string.length() - 1);
+
+		return string;
+	}
+
+	public static String humanReadableNumber(long number) {
+		if (number < 1e3)
+			return Long.toString(number);
+
+		String suffix = null;
 		long divider = 1;
-		if (amount >= 1e12) {
-			letter = "T";
+
+		if (number >= 1e12) {
+			suffix = "T";
 			divider = (long) 1e12;
 		}
-		else if (amount >= 1e9) {
-			letter = "G";
+		else if (number >= 1e9) {
+			suffix = "G";
 			divider = (long) 1e9;
 		}
-		else if (amount >= 1e6) {
-			letter = "M";
+		else if (number >= 1e6) {
+			suffix = "M";
 			divider = (long) 1e6;
 		}
-		else if (amount >= 1e3) {
-			letter = "K";
+		else if (number >= 1e3) {
+			suffix = "K";
 			divider = (long) 1e3;
 		}
-		String str = Double.toString(Math.floor(amount / (divider / 100)) / 100);
-		if (str.endsWith(".00"))
-			str = str.substring(0, str.length() - 3);
-		if (str.endsWith(".0"))
-			str = str.substring(0, str.length() - 2);
-		if (str.endsWith("0"))
-			str = str.substring(0, str.length() - 1);
-		return str + letter;
+
+		return removeTrailing(Double.toString(Math.floor(number / (divider / 100f)) / 100)) + suffix;
 	}
 
-	public static String readbleNumber(double amount) {
-		amount = Math.floor(amount * 100) / 100;
-		if (amount < 1e3)
-			return Double.toString(amount);
+	public static String humanReadableNumber(double number) {
+		number = MathUtil.roundDecimal(number, 2);
+		if (number < 1e3)
+			return Double.toString(number);
 
-		String letter = null;
-		double divider = 1D;
-		if (amount >= 1e12) {
-			letter = "T";
+		String suffix = null;
+		double divider = 1;
+
+		if (number >= 1e12) {
+			suffix = "T";
 			divider = 1e12;
 		}
-		else if (amount >= 1e9) {
-			letter = "G";
+		else if (number >= 1e9) {
+			suffix = "G";
 			divider = 1e9;
 		}
-		else if (amount >= 1e6) {
-			letter = "M";
+		else if (number >= 1e6) {
+			suffix = "M";
 			divider = 1e6;
 		}
-		else if (amount >= 1e3) {
-			letter = "K";
+		else if (number >= 1e3) {
+			suffix = "K";
 			divider = 1e3;
 		}
-		String str = Double.toString(Math.floor(amount / (divider / 100)) / 100);
-		if (str.endsWith(".00"))
-			str = str.substring(0, str.length() - 3);
-		if (str.endsWith(".0"))
-			str = str.substring(0, str.length() - 2);
-		if (str.endsWith("0"))
-			str = str.substring(0, str.length() - 1);
-		return str + letter;
+
+		return removeTrailing(Double.toString(Math.floor(number / (divider / 100f)) / 100)) + suffix;
 	}
+
 }

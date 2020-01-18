@@ -6,7 +6,6 @@ import com.nametagedit.plugin.NametagManager;
 import com.nametagedit.plugin.api.INametagApi;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 public class NTEHook {
@@ -15,12 +14,12 @@ public class NTEHook {
 		return NametagEdit.getApi();
 	}
 
-	public boolean forceReload() {
+	public void forceReload() {
 		try {
 			Field field = getApi().getClass().getDeclaredField("handler");
 			field.setAccessible(true);
 
-			NametagHandler handler = (NametagHandler)field.get(getApi());
+			NametagHandler handler = (NametagHandler) field.get(getApi());
 
 			// Reset tags
 			NametagManager manager = handler.getNametagManager();
@@ -28,14 +27,11 @@ public class NTEHook {
 			method.setAccessible(true);
 			method.invoke(manager);
 
-			// Re-aply tags
+			// Re-apply tags
 			handler.applyTags();
-
-			return true;
 		}
-		catch(NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException | NoSuchMethodException | InvocationTargetException ex) {
+		catch (Exception ex) {
 			ex.printStackTrace();
-			return false;
 		}
 	}
 

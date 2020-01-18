@@ -1,13 +1,13 @@
 package me.izmoqwy.leezsky.listeners;
 
 import com.google.common.collect.Lists;
-import lz.izmoqwy.core.crosshooks.CrosshooksManager;
-import lz.izmoqwy.core.crosshooks.interfaces.Group;
-import lz.izmoqwy.core.crosshooks.interfaces.IslandInfo;
-import lz.izmoqwy.core.crosshooks.interfaces.LeezIslandCH;
-import lz.izmoqwy.core.crosshooks.interfaces.LeezPermissionsCH;
-import lz.izmoqwy.core.nms.NmsAPI;
-import lz.izmoqwy.core.utils.TitleUtil;
+import lz.izmoqwy.core.hooks.crosshooks.CrosshooksManager;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.Group;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.IslandInfo;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.LeezIslandCH;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.LeezPermissionsCH;
+import lz.izmoqwy.core.nms.NMS;
+import lz.izmoqwy.core.utils.PlayerUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import me.izmoqwy.leezsky.managers.ScoreboardManager;
 import me.izmoqwy.leezsky.managers.SettingsManager;
@@ -33,9 +33,9 @@ public class PlayersListener implements Listener {
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		NmsAPI.packet.sendTablist(player, LeezSky.TAB_HEADER, LeezSky.TAB_FOOTER);
+		NMS.packet.sendTablist(player, LeezSky.TAB_HEADER, LeezSky.TAB_FOOTER);
 		if (player.hasPlayedBefore())
-			TitleUtil.sendTitle(player, "§aBon retour", "§2parmi nous ;)", 5);
+			PlayerUtil.sendTitle(player, "§aBon retour", "§2parmi nous ;)", 5);
 		else {
 			player.sendMessage("");
 

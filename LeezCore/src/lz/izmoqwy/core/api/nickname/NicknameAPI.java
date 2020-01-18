@@ -1,14 +1,13 @@
 package lz.izmoqwy.core.api.nickname;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.regex.Pattern;
-
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.LeezCore;
-import lz.izmoqwy.core.helpers.PluginHelper;
-import lz.izmoqwy.core.helpers.ReflectorHelper;
+import com.google.common.collect.Maps;
+import com.mojang.authlib.GameProfile;
 import lz.izmoqwy.core.hooks.HooksManager;
+import lz.izmoqwy.core.nms.NMS;
+import lz.izmoqwy.core.self.CorePrinter;
+import lz.izmoqwy.core.self.LeezCore;
+import lz.izmoqwy.core.utils.ReflectionUtil;
+import lz.izmoqwy.core.utils.ServerUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,95 +16,79 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
 import org.bukkit.event.player.PlayerLoginEvent.Result;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.google.common.collect.Maps;
-import com.mojang.authlib.GameProfile;
-
-import lz.izmoqwy.core.nms.NmsAPI;
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 public class NicknameAPI implements Listener {
 
-	private static final NicknameAPI instance = new NicknameAPI();
+	private final Pattern VALID_PATTERN = Pattern.compile("^[a-zA-Z0-9_]{3,16}$");
+	public static final NicknameAPI instance = new NicknameAPI();
 
-	private static Field nameField = null;
-	private static final Pattern pattern = Pattern.compile("[^a-zA-Z0-9_]");
-	private static final Map<Player, String> usernames = Maps.newHashMap();
+	private NicknameAPI() {
+	}
 
-	public static void load() {
+	private Field profileUsernameField = null;
+	private Map<Player, String> originalNicks = Maps.newHashMap();
 
-		PluginHelper.loadListener(LeezCore.instance, instance);
-		nameField = ReflectorHelper.getField(GameProfile.class, "name");
+	public void load() {
+		profileUsernameField = ReflectionUtil.getField(GameProfile.class, "name");
 
+		ServerUtil.registerListeners(LeezCore.instance, instance);
+		Bukkit.getOnlinePlayers().forEach(player -> originalNicks.put(player, player.getName()));
+	}
+
+	public void unload() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
-			usernames.put(player, player.getName());
+			setNickname(player, getOriginalNick(player), false);
 		}
 	}
 
-	public static void unload() {
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			setNickname(player, getRealname(player), false);
-		}
-	}
-
+	/*
+	Events
+	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPreLogin(PlayerLoginEvent event) {
-		usernames.put(event.getPlayer(), event.getPlayer().getName());
+		originalNicks.put(event.getPlayer(), event.getPlayer().getName());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPostLogin(PlayerLoginEvent event) {
-		if (event.getResult() != Result.ALLOWED) usernames.remove(event.getPlayer());
+		if (event.getResult() != Result.ALLOWED) originalNicks.remove(event.getPlayer());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onDisconnect(PlayerQuitEvent event) {
-		usernames.remove(event.getPlayer());
+		originalNicks.remove(event.getPlayer());
 	}
 
-	public static String getRealname(Player player) {
-		return usernames.get(player);
-	}
-
-	public static boolean isCorrect(String name) {
-		return name.length() <= 16 && name.length() >= 3 && !pattern.matcher(name).find();
-	}
-
-	public static boolean setNickName(final Player player, String name) {
+	/*
+	Nick assignment
+	 */
+	public boolean setNickName(final Player player, String name) {
 		return setNickname(player, name, true);
 	}
 
-	private static boolean setNickname(final Player player, String name, boolean refreshNTE) {
+	private boolean setNickname(final Player player, String name, boolean refreshNTE) {
 		try {
+			NMS.global.setNameField(profileUsernameField, player, name);
 
-			/*
-			 * Rename player
-			 */
-			NmsAPI.packet.setNameField(nameField, player, name);
+			// Refresh player in tablist
+			// Can be removed (refreshing in world actually refresh him in tab) ?
+			NMS.packet.removeFromTablist(player);
+			NMS.packet.addToTablist(player);
 
-			/*
-			 * Refresh player from tab
-			 */
-			NmsAPI.packet.removeFromTablist(player);
-			NmsAPI.packet.addToTablist(player);
-
-			/*
-			 * Refresh player from world
-			 */
-			for (Player all : Bukkit.getOnlinePlayers()) {
-				all.hidePlayer(player);
-				all.showPlayer(player);
+			// Refresh player in world
+			JavaPlugin pluginInstance = JavaPlugin.getPlugin(LeezCore.class);
+			for (Player online : Bukkit.getOnlinePlayers()) {
+				online.hidePlayer(pluginInstance, player);
+				online.showPlayer(pluginInstance, player);
 			}
 
-			if (!refreshNTE)
-				return true;
-
-			Bukkit.getPluginManager().callEvent(new NicknameChangedEvent(player.getUniqueId(), name));
-
-			/*
-			 * Reload from tablist
-			 */
-			if (HooksManager.useNTE()) {
+			if (refreshNTE && HooksManager.useNTE()) {
 				new BukkitRunnable() {
 
 					@Override
@@ -117,11 +100,13 @@ public class NicknameAPI implements Listener {
 								if (HooksManager.nte().getApi().getFakeTeam(player) == null)
 									HooksManager.nte().forceReload();
 							}
-						}.runTaskLater(LeezCore.instance, 20);
+						}.runTaskLater(pluginInstance, 20);
 					}
 
-				}.runTaskLater(LeezCore.instance, 3);
+				}.runTaskLater(pluginInstance, 3);
 			}
+
+			Bukkit.getPluginManager().callEvent(new NicknameChangedEvent(player.getUniqueId(), name));
 			return true;
 		}
 		catch (IllegalArgumentException | IllegalAccessException ex) {
@@ -130,4 +115,13 @@ public class NicknameAPI implements Listener {
 			return false;
 		}
 	}
+
+	public String getOriginalNick(Player player) {
+		return originalNicks.get(player);
+	}
+
+	public boolean isValid(String name) {
+		return VALID_PATTERN.matcher(name).matches();
+	}
+
 }

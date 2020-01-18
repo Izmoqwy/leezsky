@@ -1,6 +1,6 @@
 package lz.izmoqwy.market.rpg.commands;
 
-import lz.izmoqwy.core.api.CommandOptions;
+import lz.izmoqwy.core.command.CommandOptions;
 import lz.izmoqwy.market.Locale;
 import lz.izmoqwy.market.rpg.RPGCommand;
 import lz.izmoqwy.market.rpg.RPGPlayer;
@@ -8,7 +8,9 @@ import lz.izmoqwy.market.rpg.RPGPlayer;
 public class StatsCommand extends RPGCommand {
 
 	public StatsCommand(String commandName) {
-		super(commandName, new CommandOptions().playerOnly());
+		super(commandName, CommandOptions.builder()
+				.playerOnly(true)
+				.build());
 	}
 
 	@Override
@@ -21,4 +23,5 @@ public class StatsCommand extends RPGCommand {
 
 		player.sendMessage(" ");
 	}
+
 }

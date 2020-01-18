@@ -1,9 +1,9 @@
 package me.izmoqwy.leezsky.commands;
 
-import lz.izmoqwy.core.api.CommandOptions;
-import lz.izmoqwy.core.api.CoreCommand;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.command.CoreCommand;
+import lz.izmoqwy.core.utils.PlayerUtil;
 import lz.izmoqwy.core.utils.TextUtil;
-import lz.izmoqwy.core.utils.TitleUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
@@ -12,7 +12,10 @@ import org.bukkit.entity.Player;
 public class AnnounceCommand extends CoreCommand {
 
 	public AnnounceCommand() {
-		super("announce", new CommandOptions().withPermission("leezsky.admin.announce").withCooldown(60));
+		super("announce", CommandOptions.builder()
+				.permission("leezsky.commands.announce")
+				.cooldown(60)
+				.build());
 	}
 
 	@Override
@@ -26,7 +29,7 @@ public class AnnounceCommand extends CoreCommand {
 				sendAnnounceMessage(TextUtil.getFinalArg(args, 1));
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1, 1);
-					TitleUtil.sendTitle(player, "§4Annonce importante", "§cRegardez le chat", 3);
+					PlayerUtil.sendTitle(player, "§4Annonce importante", "§cRegardez le chat", 3);
 				}
 				break;
 			default:

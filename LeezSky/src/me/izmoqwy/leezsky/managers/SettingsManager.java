@@ -1,7 +1,7 @@
 package me.izmoqwy.leezsky.managers;
 
 import lz.izmoqwy.core.PlayerDataStorage;
-import lz.izmoqwy.core.builder.ItemBuilder;
+import lz.izmoqwy.core.api.ItemBuilder;
 import lz.izmoqwy.core.gui.GUIManager;
 import lz.izmoqwy.core.gui.GUIValueChangedEvent;
 import me.izmoqwy.leezsky.objectives.ObjectiveListener;
@@ -41,7 +41,7 @@ public class SettingsManager implements GUIManager.GUIValueChanger {
 		SETTING_MAP.forEach((slot, setting) -> inventory.setItem(slot, bake(setting)));
 
 		ItemBuilder playerInfo = new ItemBuilder(SkullType.PLAYER);
-		playerInfo.name("§a" + player.getName()).skullOwner(player.getName());
+		playerInfo.name("§a" + player.getName()).setSkullOwner(player.getName());
 		inventory.setItem(31, playerInfo.toItemStack());
 		return inventory;
 	}

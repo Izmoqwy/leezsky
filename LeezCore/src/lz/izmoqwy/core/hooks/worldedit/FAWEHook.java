@@ -18,9 +18,9 @@ import com.sk89q.worldedit.function.visitor.FlatRegionVisitor;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Regions;
 import com.sk89q.worldedit.world.biome.BaseBiome;
-import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.hooks.interfaces.WorldEditHook;
-import lz.izmoqwy.core.objects.Cuboid;
+import lz.izmoqwy.core.world.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 

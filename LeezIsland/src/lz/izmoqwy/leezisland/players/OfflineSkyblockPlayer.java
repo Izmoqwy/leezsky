@@ -10,13 +10,17 @@ public interface OfflineSkyblockPlayer {
 	UUID getBaseId();
 
 	boolean hasIsland();
+
 	boolean isOwnerOf(Island island);
 
 	long getLastRestart();
+
 	void setLastRestart(long last);
 
-	boolean hasPersonnalHome();
-	Location getPersonnalHome();
-	void setPersonnalHome(Location loc);
+	boolean hasPersonalHome();
+
+	Location getPersonalHome();
+
+	void setPersonalHome(Location loc);
 
 }

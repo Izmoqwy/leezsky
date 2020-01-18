@@ -1,8 +1,8 @@
 package me.izmoqwy.hardpermissions.commands;
 
-import lz.izmoqwy.core.LeezCore;
-import lz.izmoqwy.core.api.CommandOptions;
-import lz.izmoqwy.core.api.CoreCommand;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.command.CoreCommand;
+import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.utils.TextUtil;
 import me.izmoqwy.hardpermissions.Configs;
 import me.izmoqwy.hardpermissions.Group;
@@ -18,7 +18,9 @@ import java.util.List;
 public class MainCommand extends CoreCommand {
 
 	public MainCommand() {
-		super("leezpermissions", new CommandOptions().withPermission("leezpermissions.command"));
+		super("leezpermissions", CommandOptions.builder()
+				.permission("leezpermissions.command")
+				.build());
 	}
 
 	@SuppressWarnings("deprecation")
@@ -34,7 +36,7 @@ public class MainCommand extends CoreCommand {
 			LeezPermissions.reload();
 		}
 		else if (args.length >= 2) {
-			if (c(args[0], "help", "?")) {
+			if (match(args, 0, "help", "?")) {
 				displayHelp(commandSender);
 			}
 			else if ("group".equalsIgnoreCase(args[0])) {
@@ -49,7 +51,7 @@ public class MainCommand extends CoreCommand {
 						else
 							Locale.GROUPS_NOGROUP.send(commandSender);
 					}
-					else if (args.length >= 3 && c(args[1], "perms", "permissions")) {
+					else if (args.length >= 3 && match(args, 1, "perms", "permissions")) {
 						final Group group = Configs.getGroup(args[2]);
 						if (group != null) {
 							if (!group.getBasePermissions().isEmpty()) {
@@ -84,7 +86,7 @@ public class MainCommand extends CoreCommand {
 							Locale.GROUP_ALRDEXISTS.send(commandSender, group.getName());
 					}
 					else if (args.length >= 4 && args[1].equalsIgnoreCase("edit")) {
-						if (c(args[3], "prefix", "suffix", "addperm", "delperm") && args.length >= 5) {
+						if (match(args, 3, "prefix", "suffix", "addperm", "delperm") && args.length >= 5) {
 							final Group group = Configs.getGroup(args[2]);
 							if (group != null) {
 								final String name = group.getName();

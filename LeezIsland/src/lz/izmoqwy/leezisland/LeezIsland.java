@@ -1,11 +1,11 @@
 package lz.izmoqwy.leezisland;
 
-import lz.izmoqwy.core.crosshooks.CrosshooksManager;
-import lz.izmoqwy.core.crosshooks.interfaces.IslandInfo;
-import lz.izmoqwy.core.crosshooks.interfaces.IslandRelationship;
-import lz.izmoqwy.core.crosshooks.interfaces.LeezIslandCH;
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.hooks.crosshooks.CrosshooksManager;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.IslandInfo;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.IslandRelationship;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.LeezIslandCH;
 import lz.izmoqwy.core.i18n.LocaleManager;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.leezisland.commands.AdminCommand;
 import lz.izmoqwy.leezisland.commands.PlayerCommand;
 import lz.izmoqwy.leezisland.grid.CoopsManager;
@@ -16,7 +16,7 @@ import lz.izmoqwy.leezisland.island.IslandRole;
 import lz.izmoqwy.leezisland.listeners.*;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
 import lz.izmoqwy.leezisland.players.Wrapper;
-import lz.izmoqwy.leezisland.tabcompleters.PlayerCommandTabCompleter;
+import lz.izmoqwy.leezisland.commands.PlayerCommandTabCompleter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -42,7 +42,6 @@ public class LeezIsland extends JavaPlugin implements Listener {
 		log = getLogger();
 
 		GridManager.load();
-
 		try {
 			GridManager.loadAllIslands();
 		}
@@ -50,16 +49,15 @@ public class LeezIsland extends JavaPlugin implements Listener {
 			e.printStackTrace();
 		}
 
-		PluginHelper.loadListener(this, this);
-		PluginHelper.loadListener(this, new GenerationListener());
-		PluginHelper.loadListener(this, new BordersListener());
-		PluginHelper.loadListener(this, new IslandGuard());
-		PluginHelper.loadListener(this, new SettingsMenuListener());
-		PluginHelper.loadListener(this, new OreGeneratorListener());
+		ServerUtil.registerListeners(this, this);
+		ServerUtil.registerListeners(this, new GenerationListener());
+		ServerUtil.registerListeners(this, new BordersListener());
+		ServerUtil.registerListeners(this, new IslandGuard());
+		ServerUtil.registerListeners(this, new SettingsMenuListener());
 
-		PluginHelper.loadCommand("island", new PlayerCommand());
-		PluginHelper.setTabCompleter("island", new PlayerCommandTabCompleter());
-		PluginHelper.loadCommand("isadmin", new AdminCommand());
+		ServerUtil.registerCommand("island", new PlayerCommand());
+		ServerUtil.setCommandTabCompleter("island", new PlayerCommandTabCompleter());
+		ServerUtil.registerCommand("isadmin", new AdminCommand());
 
 		CrosshooksManager.registerHook(this, new LeezIslandCH() {
 			@Override
@@ -107,13 +105,13 @@ public class LeezIsland extends JavaPlugin implements Listener {
 	}
 
 	@EventHandler
-	public void onDisconnnect(final PlayerQuitEvent event) {
+	public void onDisconnect(PlayerQuitEvent event) {
 		CoopsManager.handleDisconnect(event.getPlayer());
 		Wrapper.getPlayers().remove(event.getPlayer().getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onAsyncChat(final AsyncPlayerChatEvent event) {
+	public void onAsyncChat(AsyncPlayerChatEvent event) {
 		if (PlayerCommand.teamChat.contains(event.getPlayer().getUniqueId())) {
 			event.setCancelled(true);
 
@@ -135,4 +133,5 @@ public class LeezIsland extends JavaPlugin implements Listener {
 	public static LeezIsland getInstance() {
 		return LeezIsland.instance;
 	}
+
 }

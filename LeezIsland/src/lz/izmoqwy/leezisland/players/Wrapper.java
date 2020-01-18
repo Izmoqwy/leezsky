@@ -4,10 +4,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
+import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.leezisland.Storage;
 import lz.izmoqwy.leezisland.grid.*;
 import lz.izmoqwy.leezisland.island.*;
-import lz.izmoqwy.leezisland.utils.ParseUtil;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -142,7 +142,7 @@ public class Wrapper {
 		}
 		Island island = new Island(ID,
 				leader, name, level,
-				ParseUtil.str2locNW(content[0], GridManager.getWorld().getName()),
+				LocationUtil.inlineParse(content[0], GridManager.getWorld()),
 				Integer.parseInt(content[1]), Integer.parseInt(content[2]), Short.parseShort(content[3]),
 				Boolean.parseBoolean(content[4]), memberList, bannedList,
 				visitorsPermissions, generalPermissions, coopPermissions);

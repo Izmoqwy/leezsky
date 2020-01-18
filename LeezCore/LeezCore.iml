@@ -17,21 +17,11 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="lombok" level="project" />
-    <orderEntry type="library" name="Spigot 1.8.7 (NMS v1_8_R3)" level="project" />
-    <orderEntry type="library" name="Spigot 1.11.2 (NMS v1_11_R1)" level="project" />
     <orderEntry type="library" name="Spigot 1.12.2 (NMS v1_12_R1)" level="project" />
     <orderEntry type="library" name="NametagEdit" level="project" />
     <orderEntry type="library" name="LiteBans" level="project" />
     <orderEntry type="library" name="Vault" level="project" />
     <orderEntry type="library" name="FastAsyncWorldEdit-bukkit-19.07.06-e994c76-1276-22.2.2" level="project" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Downloads/old/worldedit-bukkit-6.1.9.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
+    <orderEntry type="library" name="worldedit-bukkit-6.1.9" level="project" />
   </component>
 </module>

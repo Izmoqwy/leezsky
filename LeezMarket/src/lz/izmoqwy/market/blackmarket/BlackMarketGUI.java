@@ -51,7 +51,7 @@ public class BlackMarketGUI implements Listener {
 
 		GUI_ILLEGAL.setItem(13, ItemUtil.createItem(Material.GOLD_SWORD, "§cArène interdite",
 				Arrays.asList("§7Voulez-vous faire un combat", "§7dans l'arène interdite ?", " ",
-						"§2Il vous sera demandé de confirmer", "§3Prix: " + RPGResource.DARKMATTER.getFullName(TextUtil.readbleNumber(1000)))));
+						"§2Il vous sera demandé de confirmer", "§3Prix: " + RPGResource.DARKMATTER.getFullName(TextUtil.humanReadableNumber(1000)))));
 
 		GUI_ILLEGAL.setItem(3 * 9 - 1, ITEM_BACK);
 
@@ -103,7 +103,7 @@ public class BlackMarketGUI implements Listener {
 	public static void openConfirmGUI(Player player, StuffBase stuff) {
 		Inventory inventory = Bukkit.createInventory(null, 3 * 9, GUI_CONFIRM_NAME);
 		inventory.setItem(11, ItemUtil.createItem(new MaterialData(Material.WOOL, (byte) 5), "§aAcheter",
-				Collections.singletonList("§9» §3Prix: §r" + stuff.getCostRes().getFullName(TextUtil.readbleNumber(stuff.getCost())))));
+				Collections.singletonList("§9» §3Prix: §r" + stuff.getCostRes().getFullName(TextUtil.humanReadableNumber(stuff.getCost())))));
 
 		ItemStack informations = stuff.getPresentationItem().clone();
 		ItemMeta informationsMeta = informations.getItemMeta();

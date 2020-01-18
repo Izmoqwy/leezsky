@@ -1,6 +1,6 @@
 package lz.izmoqwy.core.hooks.interfaces;
 
-import lz.izmoqwy.core.objects.Cuboid;
+import lz.izmoqwy.core.world.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;
 

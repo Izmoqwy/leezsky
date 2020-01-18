@@ -1,9 +1,9 @@
 package me.izmoqwy.leezsky.commands;
 
 import com.google.common.collect.Lists;
-import lz.izmoqwy.core.api.CommandOptions;
-import lz.izmoqwy.core.api.CoreCommand;
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.command.CoreCommand;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.core.utils.TextUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import org.bukkit.command.CommandSender;
@@ -16,7 +16,9 @@ public class OpCommand extends CoreCommand {
 	public static List<Player> allowOpCommand = Lists.newArrayList();
 
 	public OpCommand() {
-		super("leezop", new CommandOptions().withPermission("minecraft.command.op"));
+		super("leezop", CommandOptions.builder()
+				.permission("minecraft.command.op")
+				.build());
 	}
 
 	@Override
@@ -38,7 +40,8 @@ public class OpCommand extends CoreCommand {
 				commandSender.sendMessage(LeezSky.PREFIX + "§cVeuillez spécifier un joueur.");
 		}
 		else {
-			PluginHelper.performCommand("minecraft:op " + TextUtil.getFinalArg(args, 0));
+			ServerUtil.performCommand("minecraft:op " + TextUtil.getFinalArg(args, 0));
 		}
 	}
+
 }

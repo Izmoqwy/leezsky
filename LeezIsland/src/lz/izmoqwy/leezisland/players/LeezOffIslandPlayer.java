@@ -1,10 +1,10 @@
 package lz.izmoqwy.leezisland.players;
 
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
+import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.leezisland.Storage;
 import lz.izmoqwy.leezisland.grid.GridManager;
 import lz.izmoqwy.leezisland.island.Island;
-import lz.izmoqwy.leezisland.utils.ParseUtil;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 
@@ -45,16 +45,16 @@ public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
 	}
 
 	@Override
-	public boolean hasPersonnalHome() {
-		return getPersonnalHome() != null;
+	public boolean hasPersonalHome() {
+		return getPersonalHome() != null;
 	}
 
 	@Override
-	public Location getPersonnalHome() {
+	public Location getPersonalHome() {
 		try {
-			String loc = Storage.PLAYERS.getString("personnalHome", "player_id", base.getUniqueId().toString());
+			String loc = Storage.PLAYERS.getString("personalHome", "player_id", base.getUniqueId().toString());
 			if (loc == null) return null;
-			return ParseUtil.str2locNW(loc, GridManager.getWorld().getName());
+			return LocationUtil.inlineParse(loc, GridManager.getWorld());
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
@@ -63,9 +63,9 @@ public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
 	}
 
 	@Override
-	public void setPersonnalHome(Location loc) {
+	public void setPersonalHome(Location loc) {
 		try {
-			Storage.PLAYERS.setString("personnalHome", loc == null ? null : ParseUtil.loc2strNW(loc), "player_id", base.getUniqueId().toString());
+			Storage.PLAYERS.setString("personalHome", loc == null ? null : LocationUtil.inlineSerialize(loc, false, true), "player_id", base.getUniqueId().toString());
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();

@@ -2,11 +2,11 @@ package lz.izmoqwy.leezisland.commands;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
-import lz.izmoqwy.core.helpers.PluginHelper;
-import lz.izmoqwy.core.objects.Cuboid;
+import lz.izmoqwy.core.world.Cuboid;
 import lz.izmoqwy.core.utils.LocationUtil;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.leezisland.BorderAPI;
 import lz.izmoqwy.leezisland.LeezIsland;
@@ -167,13 +167,13 @@ public class PlayerCommand implements CommandExecutor {
 							player.sendMessage("§aLe home principal de l'île à été changé !");
 						}
 						else {
-							player.sendMessage("§cVous devez être chef ou officier pour définir le home de l'île. Pour changer uniquement §nvotre §cpoint de téléporation, faîtes '/is personnalhome'.");
+							player.sendMessage("§cVous devez être chef ou officier pour définir le home de l'île. Pour changer uniquement §nvotre §cpoint de téléporation, faîtes '/is personalhome'.");
 						}
 					}
 					else
 						Locale.PLAYER_ISLAND_NONE.send(player);
 				}
-				else if (args.length >= 1 && args[0].equalsIgnoreCase("personnalhome")) {
+				else if (args.length >= 1 && args[0].equalsIgnoreCase("personalhome")) {
 					if (player.hasIsland()) {
 						Island island = player.getIsland();
 						Location location = LocationUtil.getSafeLocation(player.bukkit().getLocation());
@@ -181,7 +181,7 @@ public class PlayerCommand implements CommandExecutor {
 							player.sendMessage("§cVous n'êtes pas sur votre île !");
 							return true;
 						}
-						player.setPersonnalHome(location);
+						player.setPersonalHome(location);
 						player.sendMessage("§aVotre home d'île personnel vient d'être modifié.");
 					}
 					else
@@ -728,7 +728,7 @@ public class PlayerCommand implements CommandExecutor {
 										Player onlineTarget = Bukkit.getPlayer(target.getUniqueId());
 										onlineTarget.sendMessage(Locale.PREFIX + "§eVous avez été banni de l'île §6" + island.getDisplayName() + "§e.");
 										if (!AdminCommand.BYPASSING.contains(onlineTarget.getUniqueId()) && island.isInBounds(onlineTarget.getLocation()))
-											PluginHelper.performCommand("spawn " + onlineTarget.getName());
+											ServerUtil.performCommand("spawn " + onlineTarget.getName());
 									}
 								}
 								else
@@ -803,7 +803,7 @@ public class PlayerCommand implements CommandExecutor {
 									return true;
 								}
 
-								PluginHelper.performCommand("spawn " + target.getName());
+								ServerUtil.performCommand("spawn " + target.getName());
 
 								sender.sendMessage(Locale.PREFIX + "§eVous avez expulsé §6" + target.getName() + " §ede votre île.");
 								target.sendMessage(Locale.PREFIX + "§eVous avez été explusé de l'île de §e" + sender.getName() + "§e.");
@@ -893,8 +893,8 @@ public class PlayerCommand implements CommandExecutor {
 				}
 				else if (args.length == 0 || c(args[0], "go", "tp")) {
 					if (player.hasIsland()) {
-						if (player.hasPersonnalHome() && !(args.length >= 2 && args[1].equalsIgnoreCase("main")))
-							player.bukkit().teleport(player.getPersonnalHome());
+						if (player.hasPersonalHome() && !(args.length >= 2 && args[1].equalsIgnoreCase("main")))
+							player.bukkit().teleport(player.getPersonalHome());
 						else
 							player.bukkit().teleport(player.getIsland().getHome());
 						BorderAPI.setOwnBorder(player);
@@ -917,7 +917,7 @@ public class PlayerCommand implements CommandExecutor {
 	}
 
 	private void sendHelp(CommandSender sender, HelpGroup helpGroup) {
-		switch(helpGroup) {
+		switch (helpGroup) {
 			case GLOBAL:
 				/*
 					Global
@@ -934,7 +934,7 @@ public class PlayerCommand implements CommandExecutor {
 					Island
 				 */
 				sender.sendMessage("§6/island §esethome §8- §eChanger le home principal de l'île"); // DONE
-				sender.sendMessage("§6/island §epersonnalhome §8- §eChanger votre point de téléporation"); // DONE
+				sender.sendMessage("§6/island §epersonalhome §8- §eChanger votre point de téléporation"); // DONE
 				sender.sendMessage("§6/island §esetwarp §8- §eDéfinir le warp de votre île");
 				sender.sendMessage("§6/island §edelwarp §8- §eDéfinir le warp de votre île");
 				sender.sendMessage("§6/island §esetname <Nom> §8- §eChanger le nom de votre île"); // DONE
@@ -994,7 +994,9 @@ public class PlayerCommand implements CommandExecutor {
 	}
 
 	private interface PlayerCommandAction {
+
 		void run(SkyblockPlayer sender, SkyblockPlayer executor);
+
 	}
 
 }

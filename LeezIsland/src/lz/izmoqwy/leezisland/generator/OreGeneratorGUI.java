@@ -1,6 +1,6 @@
 package lz.izmoqwy.leezisland.generator;
 
-import lz.izmoqwy.core.builder.ItemBuilder;
+import lz.izmoqwy.core.api.ItemBuilder;
 import lz.izmoqwy.core.gui.GUIManager;
 import lz.izmoqwy.core.i18n.ItemNamer;
 import lz.izmoqwy.core.i18n.LocaleManager;

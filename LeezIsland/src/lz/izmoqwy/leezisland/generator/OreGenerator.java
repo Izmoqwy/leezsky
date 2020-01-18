@@ -16,7 +16,7 @@ public class OreGenerator {
 			{BlockFace.SELF, BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
 	@SuppressWarnings("UnstableApiUsage")
-	private static final Map<Material, Byte> DEFAULT_ORES = Maps.immutableEnumMap(new HashMap<Material, Byte>(){
+	private static final Map<Material, Byte> DEFAULT_ORES = Maps.immutableEnumMap(new HashMap<Material, Byte>() {
 		{
 			put(Material.COBBLESTONE, 55); // 32.4%
 			put(Material.STONE, 45); // 26.5%

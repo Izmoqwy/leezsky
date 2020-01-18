@@ -2,8 +2,8 @@ package lz.izmoqwy.market.rpg.commands;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.api.CommandOptions;
+import lz.izmoqwy.core.self.CorePrinter;
+import lz.izmoqwy.core.command.CommandOptions;
 import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.market.Locale;
 import lz.izmoqwy.market.rpg.RPGCommand;
@@ -20,7 +20,9 @@ import java.util.Random;
 public class MineCommand extends RPGCommand {
 
 	public MineCommand(String commandName) {
-		super(commandName, new CommandOptions().playerOnly(), true);
+		super(commandName, CommandOptions.builder()
+				.playerOnly(true)
+				.build(), true);
 	}
 
 	@Override
@@ -30,7 +32,7 @@ public class MineCommand extends RPGCommand {
 		Random random = new Random();
 		int dm = 0, ur = 0, tt = 0, cp = 0;
 		for (int i = 0; i < mana; i++) {
-			switch(chooseResource(new Random().nextInt(49) + 1, 50)) {
+			switch (chooseResource(new Random().nextInt(49) + 1, 50)) {
 				case DARKMATTER:
 					dm += Math.floor((random.nextInt(getPercentage(5, critial, 15) / 2) + 1));
 					break;
@@ -129,4 +131,5 @@ public class MineCommand extends RPGCommand {
 			// This should NEVER be returned
 			return RPGResource.BZZODARK;
 	}
+
 }

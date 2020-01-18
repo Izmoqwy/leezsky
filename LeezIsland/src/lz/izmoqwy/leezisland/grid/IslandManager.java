@@ -2,11 +2,11 @@ package lz.izmoqwy.leezisland.grid;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
-import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.hooks.HooksManager;
 import lz.izmoqwy.core.utils.ItemUtil;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.leezisland.BorderAPI;
 import lz.izmoqwy.leezisland.LeezIsland;
@@ -136,7 +136,7 @@ public class IslandManager {
 	}
 
 	public static void teleportToSpawn(Player player) {
-		PluginHelper.performCommand("spawn " + player.getName());
+		ServerUtil.performCommand("spawn " + player.getName());
 	}
 
 	public static int expelPlayers(Island island) {
@@ -351,8 +351,8 @@ public class IslandManager {
 	}
 
 	public static void clearPlayer(OfflineSkyblockPlayer player) {
-		if (player.hasPersonnalHome()) {
-			player.setPersonnalHome(null);
+		if (player.hasPersonalHome()) {
+			player.setPersonalHome(null);
 		}
 
 		try {

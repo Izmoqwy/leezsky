@@ -1,8 +1,7 @@
 package lz.izmoqwy.leezisland;
 
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.LeezCore;
-import lz.izmoqwy.core.i18n.Locales;
+import lz.izmoqwy.core.self.CorePrinter;
+import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.i18n.i18nLocale;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
 import org.bukkit.command.CommandSender;
@@ -82,12 +81,11 @@ public enum Locale implements i18nLocale {
 	GUARD_ENTER_NAMED(1, "§3Vous entrez sur l'île §b{0}§3."),
 	GUARD_ISLAND_NOFLY("§cVoler est interdit sur cette île, votre fly a été désactivé.");
 
-	final String defaultTr;
-	final boolean needPrefix;
-	final int neededArgs;
+	private final String defaultTr;
+	private final boolean needPrefix;
+	private final int neededArgs;
 
-	String saveable;
-	String message;
+	private String writable, message;
 
 	Locale(int neededArgs, String s, boolean needPrefix) {
 		this.defaultTr = s;
@@ -121,7 +119,7 @@ public enum Locale implements i18nLocale {
 
 	@Override
 	public void set(String newMessage) {
-		this.saveable = newMessage;
+		this.writable = newMessage;
 		this.message = ((needPrefix ? LeezCore.PREFIX : "") + newMessage).replace("'", "''");
 	}
 
@@ -131,13 +129,8 @@ public enum Locale implements i18nLocale {
 	}
 
 	@Override
-	public Locales getDefaultLocale() {
-		return Locales.FRENCH;
-	}
-
-	@Override
-	public String getSavableMessage() {
-		return this.saveable == null ? this.defaultTr : this.saveable;
+	public String getWritableMessage() {
+		return this.writable == null ? this.defaultTr : this.writable;
 	}
 
 	@Override

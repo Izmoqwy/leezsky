@@ -62,7 +62,9 @@ public class StoreUtil {
 	}
 
 	public interface MapAction<V> {
+
 		V update(V current);
+
 	}
 
 }

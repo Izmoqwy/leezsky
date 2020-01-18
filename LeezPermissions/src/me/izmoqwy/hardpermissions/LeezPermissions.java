@@ -2,11 +2,11 @@ package me.izmoqwy.hardpermissions;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import lz.izmoqwy.core.crosshooks.CrosshooksManager;
-import lz.izmoqwy.core.crosshooks.interfaces.LeezPermissionsCH;
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.hooks.crosshooks.CrosshooksManager;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.LeezPermissionsCH;
 import lz.izmoqwy.core.hooks.HooksManager;
 import lz.izmoqwy.core.i18n.LocaleManager;
+import lz.izmoqwy.core.utils.ServerUtil;
 import me.izmoqwy.hardpermissions.commands.MainCommand;
 import me.izmoqwy.hardpermissions.listeners.DefaultChat;
 import me.izmoqwy.hardpermissions.listeners.PlayersListener;
@@ -41,20 +41,20 @@ public class LeezPermissions extends JavaPlugin {
 			onJoin(all);
 		}
 
-		PluginHelper.loadListener(this, new PlayersListener());
-		PluginHelper.loadListener(this, new DefaultChat());
+		ServerUtil.registerListeners(this, new PlayersListener());
+		ServerUtil.registerListeners(this, new DefaultChat());
 
-		PluginHelper.loadListener(this, new PluginsManager());
-		PluginHelper.loadCommand("leezpermissions", new MainCommand());
+		ServerUtil.registerListeners(this, new PluginsManager());
+		ServerUtil.registerCommand("leezpermissions", new MainCommand());
 
 		PluginsManager.calculateAllPermissions();
 		load();
 
 		CrosshooksManager.registerHook(this, new LeezPermissionsCH() {
 			@Override
-			public lz.izmoqwy.core.crosshooks.interfaces.Group getGroup(OfflinePlayer player) {
+			public lz.izmoqwy.core.hooks.crosshooks.interfaces.Group getGroup(OfflinePlayer player) {
 				Group group = Configs.getOfflinePlayerGroupOrDefault(player);
-				return new lz.izmoqwy.core.crosshooks.interfaces.Group() {
+				return new lz.izmoqwy.core.hooks.crosshooks.interfaces.Group() {
 					@Override
 					public String getName() {
 						return group.getName();

@@ -26,7 +26,7 @@ public abstract class StuffBase {
 	public ItemStack getPresentationItem() {
 		ItemStack item = getItem().clone();
 		ItemMeta itemMeta = item.getItemMeta();
-		itemMeta.setLore(Arrays.asList("§2Il vous sera demandé de confirmer", "§9» §3Prix: §r" + costRes.getFullName(TextUtil.readbleNumber(getCost()))));
+		itemMeta.setLore(Arrays.asList("§2Il vous sera demandé de confirmer", "§9» §3Prix: §r" + costRes.getFullName(TextUtil.humanReadableNumber(getCost()))));
 		itemMeta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
 		item.setItemMeta(itemMeta);
 		return item;

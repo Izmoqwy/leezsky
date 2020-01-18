@@ -3,12 +3,12 @@ package lz.izmoqwy.leezisland.island;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
-import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
+import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.leezisland.Storage;
 import lz.izmoqwy.leezisland.grid.*;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
-import lz.izmoqwy.leezisland.utils.ParseUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -78,7 +78,7 @@ public class Island {
 
 	@Override
 	public String toString() {
-		return ParseUtil.loc2strNW(home) + "|" + midX + "|" + midZ + "|" + range + "|" + locked;
+		return LocationUtil.inlineSerialize(home, false, true) + "|" + midX + "|" + midZ + "|" + range + "|" + locked;
 	}
 
 	public String toString_members() {

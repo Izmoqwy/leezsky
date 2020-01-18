@@ -7,8 +7,8 @@ import com.sun.istack.internal.NotNull;
 import lombok.Getter;
 import lz.izmoqwy.core.PlayerSaveManager;
 import lz.izmoqwy.core.api.PlayerBackup;
-import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.utils.ItemUtil;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.market.Locale;
 import lz.izmoqwy.market.MarketPlugin;
 import lz.izmoqwy.market.blackmarket.EntityManager;
@@ -67,7 +67,7 @@ public class ForbiddenArena implements Listener {
 		if (spawnArena != null) {
 			if (firstLoad) {
 				firstLoad = false;
-				PluginHelper.loadListener(MarketPlugin.getInstance(), new ForbiddenArena());
+				ServerUtil.registerListeners(MarketPlugin.getInstance(), new ForbiddenArena());
 				EntityManager.registerEntity("forbidden_golem", 99, ForbiddenFighter.class);
 			}
 			ForbiddenArena.teleportPoint = spawnArena;

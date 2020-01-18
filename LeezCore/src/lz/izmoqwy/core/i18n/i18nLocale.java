@@ -4,9 +4,8 @@ public interface i18nLocale {
 
 	void set(String string);
 
-	Locales getDefaultLocale();
+	String getWritableMessage();
 
-	String getSavableMessage();
 	String getEnumName();
 
 }

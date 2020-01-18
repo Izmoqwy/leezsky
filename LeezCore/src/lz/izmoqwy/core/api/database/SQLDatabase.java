@@ -1,10 +1,10 @@
 package lz.izmoqwy.core.api.database;
 
 import lombok.Getter;
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.LeezCore;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException.ImpossibleExceptionType;
+import lz.izmoqwy.core.self.CorePrinter;
+import lz.izmoqwy.core.self.LeezCore;
 import org.bukkit.plugin.Plugin;
 
 import java.sql.Connection;
@@ -12,14 +12,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+@Getter
 public abstract class SQLDatabase implements Database {
 
-	@Getter
 	protected Connection connection = null;
 
-	@Getter
 	private final String name, type;
-	@Getter
 	private final Plugin plugin;
 
 	protected SQLDatabase(String name, Plugin plugin, String type) {
@@ -231,7 +229,7 @@ public abstract class SQLDatabase implements Database {
 		}
 
 		public void increase(String key, int i, String where, String whereequals)
-			throws SQLActionImpossibleException {
+				throws SQLActionImpossibleException {
 
 			if (key == null)
 				throw new SQLActionImpossibleException("Key cannot be null", ImpossibleExceptionType.KEYISNULL);
@@ -249,7 +247,7 @@ public abstract class SQLDatabase implements Database {
 		}
 
 		public void decrease(String key, int i, String where, String whereequals)
-			throws SQLActionImpossibleException {
+				throws SQLActionImpossibleException {
 
 			if (key == null)
 				throw new SQLActionImpossibleException("Key cannot be null", ImpossibleExceptionType.KEYISNULL);
@@ -312,5 +310,7 @@ public abstract class SQLDatabase implements Database {
 			}
 			return def;
 		}
+
 	}
+
 }

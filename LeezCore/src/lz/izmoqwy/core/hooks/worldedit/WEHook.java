@@ -9,7 +9,7 @@ import com.sk89q.worldedit.bukkit.WorldEditPlugin;
 import com.sk89q.worldedit.schematic.MCEditSchematicFormat;
 import com.sk89q.worldedit.world.DataException;
 import lz.izmoqwy.core.hooks.interfaces.WorldEditHook;
-import lz.izmoqwy.core.objects.Cuboid;
+import lz.izmoqwy.core.world.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.block.Biome;

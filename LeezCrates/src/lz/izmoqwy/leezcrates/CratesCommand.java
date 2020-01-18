@@ -1,8 +1,7 @@
 package lz.izmoqwy.leezcrates;
 
-import lz.izmoqwy.core.api.CommandNoPermissionException;
-import lz.izmoqwy.core.api.CommandOptions;
-import lz.izmoqwy.core.api.CoreCommand;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.command.CoreCommand;
 import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.leezcrates.objects.Crate;
 import lz.izmoqwy.leezcrates.objects.CrateType;
@@ -19,19 +18,21 @@ public class CratesCommand extends CoreCommand {
 	final String PREFIX = LeezCrates.PREFIX;
 
 	public CratesCommand() {
-		super("leezcrates", new CommandOptions().playerOnly().withPermission("leezcrates.admin").needArg());
+		super("leezcrates", CommandOptions.builder()
+				.permission("leezcrates.admin").playerOnly(true).needsArg(true)
+				.build());
 	}
 
 	@Override
-	protected void execute(CommandSender commandSender, String usedCommand, String[] args) throws CommandNoPermissionException {
+	protected void execute(CommandSender commandSender, String usedCommand, String[] args) {
 		Player player = (Player) commandSender;
-		switch(args[0].toLowerCase()) {
+		switch (args[0].toLowerCase()) {
 			case "types":
-				permCheck(commandSender, "types");
+				checkPermission(commandSender, "types");
 				player.sendMessage(PREFIX + "§3Types de box disponibles: §b" + TextUtil.iterate(LeezCrates.getCrateTypes(), CrateType::getDisplayName, "§b", "§3, ") + "§3.");
 				break;
 			case "create":
-				permCheck(commandSender, "create");
+				checkPermission(commandSender, "create");
 				if (args.length < 2) {
 					player.sendMessage(PREFIX + "§cArgument requis: Type.");
 					return;
@@ -47,7 +48,7 @@ public class CratesCommand extends CoreCommand {
 				player.sendMessage(PREFIX + "§aUne box §2" + crateType.getName() + " §aa été ajoutée.");
 				break;
 			case "remove":
-				permCheck(commandSender, "remove");
+				checkPermission(commandSender, "remove");
 
 				Block block = player.getTargetBlock(null, 10);
 				if (block != null && LeezCrates.getCrates().containsKey(block.getLocation())) {
@@ -77,4 +78,5 @@ public class CratesCommand extends CoreCommand {
 				break;
 		}
 	}
+
 }

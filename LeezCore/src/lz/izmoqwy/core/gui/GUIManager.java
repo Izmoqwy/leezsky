@@ -2,9 +2,9 @@ package lz.izmoqwy.core.gui;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import lz.izmoqwy.core.LeezCore;
-import lz.izmoqwy.core.builder.ItemBuilder;
-import lz.izmoqwy.core.nms.NmsAPI;
+import lz.izmoqwy.core.self.LeezCore;
+import lz.izmoqwy.core.api.ItemBuilder;
+import lz.izmoqwy.core.nms.NMS;
 import lz.izmoqwy.core.utils.ItemUtil;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
@@ -121,7 +121,7 @@ public class GUIManager implements Listener {
 		Player player = (Player) event.getPlayer();
 		if (currentOpenedStates.containsKey(player)) {
 			Bukkit.getScheduler().runTaskLater(LeezCore.instance, () -> {
-				if (!NmsAPI.craft.hasInventoryOpened(player))
+				if (!NMS.global.hasInventoryOpened(player))
 					currentOpenedStates.remove(player);
 			}, 1);
 		}

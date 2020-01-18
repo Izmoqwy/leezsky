@@ -3,12 +3,12 @@ package me.izmoqwy.leezsky.managers;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lz.izmoqwy.core.Economy;
-import lz.izmoqwy.core.crosshooks.CrosshooksManager;
-import lz.izmoqwy.core.crosshooks.interfaces.Group;
-import lz.izmoqwy.core.crosshooks.interfaces.LeezPermissionsCH;
-import lz.izmoqwy.core.helpers.PluginHelper;
-import lz.izmoqwy.core.nms.NmsAPI;
+import lz.izmoqwy.core.hooks.crosshooks.CrosshooksManager;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.Group;
+import lz.izmoqwy.core.hooks.crosshooks.interfaces.LeezPermissionsCH;
+import lz.izmoqwy.core.nms.NMS;
 import lz.izmoqwy.core.nms.scoreboard.NMSScoreboard;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.core.utils.TextUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import org.bukkit.entity.Player;
@@ -37,8 +37,8 @@ public class ScoreboardManager implements SettingsManager.SettingUser {
 	}
 
 	public static void load(LeezSky instance) {
-		if (PluginHelper.isLoaded("LeezPermissions")) {
-			PluginHelper.loadListener(instance, new Listener() {
+		if (ServerUtil.isLoaded("LeezPermissions")) {
+			ServerUtil.registerListeners(instance, new Listener() {
 				@EventHandler
 				public void onGroupChange(me.izmoqwy.hardpermissions.events.PlayerGroupChangedEvent event) {
 					if (event.getPlayer().isOnline()) {
@@ -56,7 +56,7 @@ public class ScoreboardManager implements SettingsManager.SettingUser {
 		if (scoreboardMap.containsKey(player.getUniqueId()) || SettingsManager.SCOREBOARD.getState(player) == SettingsManager.SimpleToggle.OFF)
 			return;
 
-		NMSScoreboard scoreboard = NmsAPI.createScoreboard(player, "§6PLAY.LEEZSKY.FR");
+		NMSScoreboard scoreboard = NMS.createScoreboard(player, "§6PLAY.LEEZSKY.FR");
 		if (scoreboard != null) {
 			scoreboard.create();
 			scoreboardMap.put(player.getUniqueId(), new PlayerScoreboard(scoreboard));
@@ -134,7 +134,7 @@ public class ScoreboardManager implements SettingsManager.SettingUser {
 		}
 
 		private static String moneyText(Player player) {
-			return "§8➥ §3Monnaie: §e" + TextUtil.readbleNumber(Economy.getBalance(player)) + "$";
+			return "§8➥ §3Monnaie: §e" + TextUtil.humanReadableNumber(Economy.getBalance(player)) + "$";
 		}
 
 		public void updateGroup(String groupFullName) {

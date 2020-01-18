@@ -3,10 +3,10 @@ package lz.izmoqwy.leezcrates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.utils.ItemUtil;
 import lz.izmoqwy.core.utils.LocationUtil;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.leezcrates.listeners.CrateListener;
 import lz.izmoqwy.leezcrates.objects.Crate;
 import lz.izmoqwy.leezcrates.objects.CrateType;
@@ -62,8 +62,8 @@ public class LeezCrates extends JavaPlugin {
 		loadConfig();
 		loadCrates();
 
-		PluginHelper.loadCommand("leezcrates", new CratesCommand());
-		PluginHelper.loadListener(this, new CrateListener());
+		ServerUtil.registerCommand("leezcrates", new CratesCommand());
+		ServerUtil.registerListeners(this, new CrateListener());
 	}
 
 	@SuppressWarnings({"deprecation", "ResultOfMethodCallIgnored"})
@@ -170,7 +170,7 @@ public class LeezCrates extends JavaPlugin {
 				continue;
 			}
 
-			Location location = LocationUtil.yamlFullLoad(crates, key + ".location");
+			Location location = LocationUtil.loadFromYaml(crates, key + ".location");
 			if (location == null) {
 				getLogger().warning(MessageFormat.format("Crate {0} as an invalid location!", key));
 				continue;
@@ -229,7 +229,7 @@ public class LeezCrates extends JavaPlugin {
 		if (save) {
 			YamlConfiguration crates = YamlConfiguration.loadConfiguration(cratesFile);
 			crates.set(id + ".type", type.getName());
-			LocationUtil.yamlFullSave(crates, location, id + ".location");
+			LocationUtil.saveInYaml(crates, location, id + ".location");
 			try {
 				crates.save(cratesFile);
 			}
@@ -299,7 +299,7 @@ public class LeezCrates extends JavaPlugin {
 
 						Reward reward = crate.getType().getRewards().stream().filter(r -> r.getItem().isSimilar(rewardIcon)).collect(Collectors.toList()).get(0);
 						if (reward.getCommand() != null)
-							PluginHelper.performCommand(reward.getCommand().replace("%p", player.getName()).replace("%r", reward.getDisplayName()));
+							ServerUtil.performCommand(reward.getCommand().replace("%p", player.getName()).replace("%r", reward.getDisplayName()));
 						if (crate.getType().isBroadcasted()) {
 							Bukkit.broadcastMessage(PREFIX + "§e" + player.getName() + " §7a ouvert une box §6" + (crate.getType().getDisplayName() != null ? crate.getType().getDisplayName() : crate.getType().getName()));
 						}

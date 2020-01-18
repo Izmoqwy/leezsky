@@ -2,8 +2,8 @@ package lz.izmoqwy.core.i18n;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.LeezCore;
+import lz.izmoqwy.core.self.CorePrinter;
+import lz.izmoqwy.core.self.LeezCore;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
 
@@ -18,14 +18,14 @@ public class LocaleManager {
 	@Getter
 	private static ItemNamer itemNamer = new ItemNamer();
 
-	public static <E extends Enum<E>> void register(Plugin plugin, Class<? extends i18nLocale> locale) {
+	public static void register(Plugin plugin, Class<? extends i18nLocale> locale) {
 		pluginMap.put(plugin, locale);
 		reload(plugin);
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
 	private static void reload(Plugin plugin) {
-		Class<? extends  i18nLocale> clazz = pluginMap.get(plugin);
+		Class<? extends i18nLocale> clazz = pluginMap.get(plugin);
 		if (clazz == null) {
 			CorePrinter.warn("Cannot (re)load {0}''s messages due to invalid locale class passed.", plugin.getName());
 			return;
@@ -51,11 +51,11 @@ public class LocaleManager {
 					value.set(yaml.getString(path).replace('&', '§'));
 				}
 				else {
-					CorePrinter.print("Invalid message in message file \"{0}\" (path: {1})", file.getName(), path);
+					CorePrinter.warn("Invalid message in message file \"{0}\" (path: {1})", file.getName(), path);
 				}
 			}
 			else
-				yaml.set(path, value.getSavableMessage().replace('§', '&'));
+				yaml.set(path, value.getWritableMessage().replace('§', '&'));
 		}
 
 		try {

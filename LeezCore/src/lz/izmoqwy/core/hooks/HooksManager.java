@@ -1,13 +1,13 @@
 package lz.izmoqwy.core.hooks;
 
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.hooks.interfaces.ModerationHook;
 import lz.izmoqwy.core.hooks.interfaces.WorldEditHook;
 import lz.izmoqwy.core.hooks.moderation.LitebansHook;
 import lz.izmoqwy.core.hooks.worldedit.DefaultHook;
 import lz.izmoqwy.core.hooks.worldedit.FAWEHook;
 import lz.izmoqwy.core.hooks.worldedit.WEHook;
+import lz.izmoqwy.core.utils.ServerUtil;
 
 public class HooksManager {
 
@@ -16,14 +16,14 @@ public class HooksManager {
 	private static WorldEditHook worldEditHook;
 
 	public static void load() {
-		if (PluginHelper.isLoaded("NametagEdit")) nteHook = new NTEHook();
+		if (ServerUtil.isLoaded("NametagEdit")) nteHook = new NTEHook();
 
-		if (PluginHelper.isLoaded("LiteBans")) moderationHook = new LitebansHook();
+		if (ServerUtil.isLoaded("LiteBans")) moderationHook = new LitebansHook();
 		else CorePrinter.warn("No compatible moderation plugin found!");
 
-		if (PluginHelper.isLoaded("FastAsyncWorldEdit") && PluginHelper.isLoaded("WorldEdit"))
+		if (ServerUtil.isLoaded("FastAsyncWorldEdit") && ServerUtil.isLoaded("WorldEdit"))
 			worldEditHook = new FAWEHook();
-		else if (PluginHelper.isLoaded("WorldEdit"))
+		else if (ServerUtil.isLoaded("WorldEdit"))
 			worldEditHook = new WEHook();
 		else
 			worldEditHook = new DefaultHook();

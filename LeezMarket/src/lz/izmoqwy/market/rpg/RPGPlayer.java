@@ -2,7 +2,7 @@ package lz.izmoqwy.market.rpg;
 
 import lombok.Getter;
 import lombok.Setter;
-import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.self.CorePrinter;
 import org.bukkit.OfflinePlayer;
 
 public class RPGPlayer {

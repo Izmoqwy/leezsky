@@ -2,7 +2,7 @@ package me.izmoqwy.leezsky.objectives;
 
 import com.google.common.collect.Maps;
 import lz.izmoqwy.core.PlayerDataStorage;
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.core.utils.StoreUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import me.izmoqwy.leezsky.managers.SettingsManager;
@@ -58,7 +58,7 @@ public class ObjectiveManager {
 			bossBarMap.put(objective, bossBar);
 		}
 
-		PluginHelper.loadListener(instance, ObjectiveListener.INSTANCE);
+		ServerUtil.registerListeners(instance, ObjectiveListener.INSTANCE);
 	}
 
 	public static void loadPlayer(OfflinePlayer player) {

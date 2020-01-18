@@ -1,6 +1,7 @@
 package lz.izmoqwy.core.utils;
 
 import com.google.common.collect.Lists;
+import lz.izmoqwy.core.api.ItemBuilder;
 import org.bukkit.Material;
 import org.bukkit.SkullType;
 import org.bukkit.enchantments.Enchantment;
@@ -22,12 +23,11 @@ public class ItemUtil {
 	}
 
 	/**
-	 * @deprecated Will be removed soon (Use give instead)
-	 * Give items to player's inventory and drop remaining items that can't be given
-	 *
 	 * @param player    the player to give the items to
 	 * @param rewardItm items to give
 	 * @return if some items were dropped or not
+	 * @deprecated use {@link ItemUtil#give(Player, ItemStack...)} instead
+	 * Give items to player's inventory and drop remaining items that can't be given
 	 */
 	@Deprecated
 	public static boolean giveItems(Player player, ItemStack rewardItm) {
@@ -67,7 +67,7 @@ public class ItemUtil {
 	 * (does not use built-in give methods)
 	 *
 	 * @param player The player to give the items to
-	 * @param items The items to give
+	 * @param items  The items to give
 	 * @return Items that couldn't be added
 	 */
 	public static List<ItemStack> give(Player player, ItemStack... items) {
@@ -84,7 +84,7 @@ public class ItemUtil {
 			for (int i = 0; i < inventorySize; i++) {
 				ItemStack content = inventory.getItem(i);
 				if (content != null && content.getAmount() < max && content.isSimilar(item)) {
-					int _amount = max - content.getAmount() > toGive ? toGive : max - content.getAmount();
+					int _amount = Math.min(max - content.getAmount(), toGive);
 					content.setAmount(content.getAmount() + _amount);
 					toGive -= _amount;
 					if (toGive == 0)
@@ -96,7 +96,7 @@ public class ItemUtil {
 			for (int i = 0; i < inventorySize; i++) {
 				ItemStack content = inventory.getItem(i);
 				if (content == null) {
-					int _amount = toGive > max ? max : toGive;
+					int _amount = Math.min(toGive, max);
 					item = item.clone();
 					item.setAmount(_amount);
 					inventory.setItem(i, item);
@@ -119,8 +119,8 @@ public class ItemUtil {
 	 * (does not use built-in remove methods)
 	 *
 	 * @param player The player to remove the items from
-	 * @param items The items to remove
-	 * @return Items that couldn't be removed (basicly missings ones)
+	 * @param items  The items to remove
+	 * @return Items that couldn't be removed (basically missing ones)
 	 */
 	public static List<ItemStack> take(Player player, ItemStack... items) {
 		PlayerInventory inventory = player.getInventory();
@@ -132,8 +132,8 @@ public class ItemUtil {
 			int total = item.getAmount(), toTake = total;
 
 			// check held item first
-			if (inventory.getItemInHand() != null && inventory.getItemInHand().isSimilar(item)) {
-				ItemStack held = inventory.getItemInHand();
+			if (inventory.getItemInMainHand() != null && inventory.getItemInMainHand().isSimilar(item)) {
+				ItemStack held = inventory.getItemInMainHand();
 				if (held.getAmount() > toTake) {
 					held.setAmount(held.getAmount() - toTake);
 					toTake = 0;
@@ -189,118 +189,234 @@ public class ItemUtil {
 		return item;
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material) {
 		return buildItem(new MaterialData(material), 1, null, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(new MaterialData(material), 1, null, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, String name) {
 		return buildItem(new MaterialData(material), 1, name, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, String name, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(new MaterialData(material), 1, name, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount) {
 		return buildItem(new MaterialData(material), amount, null, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(new MaterialData(material), amount, null, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount, String name) {
 		return buildItem(new MaterialData(material), amount, name, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount, String name, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(new MaterialData(material), amount, name, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount, List<String> lore) {
 		return buildItem(new MaterialData(material), amount, null, lore, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(new MaterialData(material), amount, null, lore, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, String name, List<String> lore) {
 		return buildItem(new MaterialData(material), 1, name, lore, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, String name, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(new MaterialData(material), 1, name, lore, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount, String name, List<String> lore) {
 		return buildItem(new MaterialData(material), amount, name, lore, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(Material material, int amount, String name, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(new MaterialData(material), amount, name, lore, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData) {
 		return buildItem(materialData, 1, null, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(materialData, 1, null, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, String name) {
 		return buildItem(materialData, 1, name, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, String name, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(materialData, 1, name, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount) {
 		return buildItem(materialData, amount, null, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(materialData, amount, null, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount, String name) {
 		return buildItem(materialData, amount, name, null, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount, String name, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(materialData, amount, name, null, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount, List<String> lore) {
 		return buildItem(materialData, amount, null, lore, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(materialData, amount, null, lore, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, String name, List<String> lore) {
 		return buildItem(materialData, 1, name, lore, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, String name, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(materialData, 1, name, lore, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount, String name, List<String> lore) {
 		return buildItem(materialData, amount, name, lore, null);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder} instead
+	 */
+	@Deprecated
 	public static ItemStack createItem(MaterialData materialData, int amount, String name, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		return buildItem(materialData, amount, name, lore, enchantsMap, flags);
 	}
 
+	/**
+	 * @deprecated use {@link ItemBuilder#ItemBuilder(SkullType)} instead
+	 */
+	@Deprecated
 	public static ItemStack skull(String player, String name, List<String> lore) {
 		ItemStack skullItem = new ItemStack(Material.SKULL_ITEM, 1, (short) SkullType.PLAYER.ordinal());
 		SkullMeta meta = (SkullMeta) skullItem.getItemMeta();
@@ -311,7 +427,10 @@ public class ItemUtil {
 		return skullItem;
 	}
 
-	@SuppressWarnings("deprecation")
+	/**
+	 * @deprecated use {@link PlayerUtil#getAmountInInventory(Player, ItemStack)} instead
+	 */
+	@Deprecated
 	public static int getAmountOf(ItemStack itm, Player player) {
 		int amount = 0;
 		for (ItemStack tItem : player.getInventory().all(itm.getType()).values()) {

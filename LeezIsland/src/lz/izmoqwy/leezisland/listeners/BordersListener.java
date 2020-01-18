@@ -7,7 +7,7 @@
 
 package lz.izmoqwy.leezisland.listeners;
 
-import lz.izmoqwy.core.helpers.PluginHelper;
+import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.leezisland.BorderAPI;
 import lz.izmoqwy.leezisland.LeezIsland;
 import lz.izmoqwy.leezisland.grid.GridManager;
@@ -62,7 +62,7 @@ public class BordersListener implements Listener {
 						skyblockPlayer.bukkit().teleport(skyblockPlayer.getIsland().getHome());
 					}
 					else
-						PluginHelper.performCommand("spawn " + skyblockPlayer.bukkit().getName());
+						ServerUtil.performCommand("spawn " + skyblockPlayer.bukkit().getName());
 				}
 				skyblockPlayer.sendMessage(ChatColor.RED + "Vous êtiez dans un endroit inconnu lors de votre reconnexion, vous avez été téléporté ailleur.");
 			}

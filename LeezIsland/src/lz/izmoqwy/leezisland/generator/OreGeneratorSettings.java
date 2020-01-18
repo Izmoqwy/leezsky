@@ -32,4 +32,5 @@ public class OreGeneratorSettings {
 		});
 		this.ores = Maps.immutableEnumMap(newMap);
 	}
+
 }

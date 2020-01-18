@@ -3,8 +3,8 @@ package me.izmoqwy.leezsky.challenges;
 import com.google.common.collect.Lists;
 import lz.izmoqwy.core.Economy;
 import lz.izmoqwy.core.PlayerDataStorage;
-import lz.izmoqwy.core.helpers.PluginHelper;
 import lz.izmoqwy.core.utils.ItemUtil;
+import lz.izmoqwy.core.utils.ServerUtil;
 import me.izmoqwy.leezsky.LeezSky;
 import me.izmoqwy.leezsky.challenges.obj.Categorie;
 import me.izmoqwy.leezsky.challenges.obj.Challenge;
@@ -28,8 +28,8 @@ public class ChallengePlugin {
 	private static File dataFolder;
 
 	public static void load(Plugin from) {
-		PluginHelper.loadCommand("challenges", new ChallengeCommand());
-		PluginHelper.loadListener(from, new ChallengesListener(instance));
+		ServerUtil.registerCommand("challenges", new ChallengeCommand());
+		ServerUtil.registerListeners(from, new ChallengesListener(instance));
 	}
 
 	public boolean canAccess(Player player, Categorie categorie) {

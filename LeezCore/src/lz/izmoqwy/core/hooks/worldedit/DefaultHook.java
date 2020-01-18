@@ -1,7 +1,7 @@
 package lz.izmoqwy.core.hooks.worldedit;
 
 import lz.izmoqwy.core.hooks.interfaces.WorldEditHook;
-import lz.izmoqwy.core.objects.Cuboid;
+import lz.izmoqwy.core.world.Cuboid;
 import net.minecraft.server.v1_12_R1.NBTCompressedStreamTools;
 import org.bukkit.Chunk;
 import org.bukkit.Location;

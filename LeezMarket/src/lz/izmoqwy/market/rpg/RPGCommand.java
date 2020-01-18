@@ -1,7 +1,7 @@
 package lz.izmoqwy.market.rpg;
 
-import lz.izmoqwy.core.api.CommandOptions;
-import lz.izmoqwy.core.api.CoreCommand;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.command.CoreCommand;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.core.utils.TextUtil;
 import lz.izmoqwy.market.Locale;
@@ -54,7 +54,7 @@ public abstract class RPGCommand extends CoreCommand {
 	protected abstract void execute(RPGPlayer player, String usedCommand, String[] args);
 
 	protected static String readbleNumber(long amount) {
-		return TextUtil.readbleNumber(amount);
+		return TextUtil.humanReadableNumber(amount);
 	}
 
 	protected static void calcLevelUp(RPGPlayer player, int amount) {

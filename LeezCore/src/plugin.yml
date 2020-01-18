@@ -1,15 +1,17 @@
 name: LeezCore
-version: 2.0.1-SNAPSHOT
+version: 2.1.0
 author: Izmoqwy
 
-depend: [Vault]
-softdepend: [LiteBans, NametagEdit, FastAsyncWorldEdit, WorldEdit]
-main: lz.izmoqwy.core.LeezCore
+main: lz.izmoqwy.core.self.LeezCore
+depend:
+  - Vaulty
+softdepend:
+  - LiteBans
+  - NametagEdit
+  - FastAsyncWorldEdit
+  - WorldEdit
 
 commands:
-  tellraw:
-    description: Overrided tellraw command
-    permission: minecraft.tellraw
   leezcore:
     aliases: [leez]
     description: Manage low-level LeezSky settings

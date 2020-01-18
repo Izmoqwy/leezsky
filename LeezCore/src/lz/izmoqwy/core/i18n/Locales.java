@@ -1,17 +1,17 @@
 package lz.izmoqwy.core.i18n;
 
+import lombok.AllArgsConstructor;
+
+@AllArgsConstructor
 public enum Locales {
 
 	FRENCH("fr"), ENGLISH("en");
 
-	final String langCode;
-
-	Locales(String langCode) {
-		this.langCode = langCode;
-	}
+	private final String langCode;
 
 	@Override
 	public String toString() {
 		return this.langCode;
 	}
+
 }

@@ -1,6 +1,6 @@
 package lz.izmoqwy.core.api.database;
 
-import lz.izmoqwy.core.CorePrinter;
+import lz.izmoqwy.core.self.CorePrinter;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;

@@ -1,8 +1,9 @@
 package lz.izmoqwy.market.rpg.commands;
 
-import lz.izmoqwy.core.CorePrinter;
-import lz.izmoqwy.core.api.CommandOptions;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
+import lz.izmoqwy.core.command.CommandOptions;
+import lz.izmoqwy.core.self.CorePrinter;
+import lz.izmoqwy.core.utils.MathUtil;
 import lz.izmoqwy.market.Locale;
 import lz.izmoqwy.market.MarketPlugin;
 import lz.izmoqwy.market.rpg.RPGCommand;
@@ -15,17 +16,20 @@ import static lz.izmoqwy.market.rpg.RPGStorage.PLAYERS;
 
 public class FishCommand extends RPGCommand {
 
-	private static final Random random = new Random();
-	private static final int cooldown = 120 * 1000;
+	private static final int COOLDOWN = 120 * 1000;
+
+	private final Random random = new Random();
 
 	public FishCommand(String commandName) {
-		super(commandName, new CommandOptions().playerOnly(), true);
+		super(commandName, CommandOptions.builder()
+				.playerOnly(true)
+				.build(), true);
 	}
 
 	@Override
 	protected void execute(RPGPlayer player, String usedCommand, String[] args) {
 		long elasped = System.currentTimeMillis() - player.getLast_fish();
-		if (player.getLast_fish() == 0 || elasped >= cooldown) {
+		if (player.getLast_fish() == 0 || elasped >= COOLDOWN) {
 			final String uuid = player.getBase().getUniqueId().toString();
 			try {
 				PLAYERS.decrease("energy", 1, "uuid", uuid);
@@ -111,7 +115,7 @@ public class FishCommand extends RPGCommand {
 			}, (random.nextInt(15) + 5) * 20);
 		}
 		else {
-			player.sendMessage(Locale.RPG_PREFIX + "§6Votre canne à pêche ne sera prête que dans §e" + (Math.floor((cooldown - elasped) / 100) / 10) + " secondes§6.");
+			player.sendMessage(Locale.RPG_PREFIX + "§6Votre canne à pêche ne sera prête que dans §e" + MathUtil.roundDecimal(COOLDOWN - elasped, 1) + " secondes§6.");
 		}
 	}
 
