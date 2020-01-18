@@ -1,4 +1,10 @@
-.idea/
 out/
-EventMaker/
-LeezStaff/
+_.*
+
+.idea/*
+!.idea/artifacts
+!.idea/.name
+!.idea/misc.xml
+!.idea/modules.xml
+!.idea/vcs.xml
+!.idea/compiler.xml

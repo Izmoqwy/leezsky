@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="LeezMarket:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/all_jars</output-path>
+    <root id="archive" name="LeezMarket.jar">
+      <element id="module-output" name="LeezMarket" />
+    </root>
+  </artifact>
+</component>

@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="LeezCore:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/all_jars</output-path>
+    <root id="archive" name="LeezCore.jar">
+      <element id="module-output" name="LeezCore" />
+    </root>
+  </artifact>
+</component>
