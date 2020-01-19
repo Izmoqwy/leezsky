@@ -1,22 +1,18 @@
-package lz.izmoqwy.leezcrates.objects;
+package lz.izmoqwy.crates.objects;
 
 import lombok.Getter;
 import org.bukkit.Location;
 import org.bukkit.inventory.ItemStack;
 
+@Getter
 public class Crate {
 
-	@Getter
 	private String id;
-	@Getter
 	private CrateType type;
 
-	@Getter
 	private Location location;
-	@Getter
 	private String displayName;
 
-	@Getter
 	private Hologram hologram;
 
 	public Crate(String id, CrateType type, Location location, String displayName, Hologram hologram) {
@@ -30,4 +26,5 @@ public class Crate {
 	public ItemStack getRandomReward() {
 		return type.getRandomReward();
 	}
+
 }

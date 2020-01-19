@@ -11,13 +11,12 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Contract;
 
 import java.util.Map;
 import java.util.UUID;
 
 public abstract class CoreCommand implements CommandExecutor {
-
-	protected static final String PREFIX = LeezCore.PREFIX;
 
 	private final String name;
 
@@ -40,7 +39,7 @@ public abstract class CoreCommand implements CommandExecutor {
 	}
 
 	protected void send(CommandSender commandSender, String... message) {
-		commandSender.sendMessage(message != null ? PREFIX + ChatColor.translateAlternateColorCodes('&', String.join(" ", message)) : " ");
+		commandSender.sendMessage(message != null ? getPrefix() + ChatColor.translateAlternateColorCodes('&', String.join(" ", message)) : " ");
 	}
 
 	@Override
@@ -73,7 +72,7 @@ public abstract class CoreCommand implements CommandExecutor {
 			}
 
 			if (needsArg && args.length < 1) {
-				send(commandSender, "&cCette commande requiert au minimum un argument.");
+				send(commandSender, "&cCette commande requiert au minimum 1 argument.");
 				return true;
 			}
 
@@ -90,6 +89,10 @@ public abstract class CoreCommand implements CommandExecutor {
 
 	protected abstract void execute(CommandSender commandSender, String usedCommand, String[] args);
 
+	protected String getPrefix() {
+		return LeezCore.PREFIX;
+	}
+
 	/*
 	Utils
 	 */
@@ -104,8 +107,15 @@ public abstract class CoreCommand implements CommandExecutor {
 		return false;
 	}
 
-	protected void checkArgument(boolean valid, String message) {
+	@Contract("false, _ -> fail")
+	protected void checkValid(boolean valid, String message) {
 		if (!valid)
+			throw new CommandException(message);
+	}
+
+	@Contract("null, _ -> fail")
+	protected void checkNotNull(Object object, String message) {
+		if (object == null)
 			throw new CommandException(message);
 	}
 

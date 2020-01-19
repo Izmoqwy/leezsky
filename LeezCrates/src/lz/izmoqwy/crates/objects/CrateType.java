@@ -1,30 +1,27 @@
-package lz.izmoqwy.leezcrates.objects;
+package lz.izmoqwy.crates.objects;
 
 import lombok.Getter;
-import lz.izmoqwy.leezcrates.LeezCrates;
+import lz.izmoqwy.crates.LeezCrates;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.material.MaterialData;
 
 import java.util.List;
 
+@Getter
 public class CrateType {
 
-	@Getter
 	private String name, displayName, lore;
 
-	@Getter
-	private boolean broadcasted;
+	private boolean broadcast;
 
-	@Getter
 	private MaterialData materialData;
-	@Getter
 	private List<Reward> rewards;
 
 	public CrateType(String name, String displayName, String lore, boolean broadcast, MaterialData materialData, List<Reward> rewards) {
 		this.name = name;
 		this.displayName = displayName;
 		this.lore = lore;
-		this.broadcasted = broadcast;
+		this.broadcast = broadcast;
 		this.materialData = materialData;
 		this.rewards = rewards;
 	}
@@ -45,4 +42,5 @@ public class CrateType {
 		// Should be reached only if there is less than 100% in total
 		return rewards.get(0).getItem();
 	}
+
 }

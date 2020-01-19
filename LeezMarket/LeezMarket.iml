@@ -19,5 +19,6 @@
     <orderEntry type="library" name="Spigot 1.12.2 (NMS v1_12_R1)" level="project" />
     <orderEntry type="module" module-name="LeezCore" />
     <orderEntry type="library" name="lombok" level="project" />
+    <orderEntry type="library" name="org.jetbrains:annotations:16.0.2" level="project" />
   </component>
 </module>

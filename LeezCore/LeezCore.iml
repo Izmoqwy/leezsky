@@ -23,5 +23,6 @@
     <orderEntry type="library" name="Vault" level="project" />
     <orderEntry type="library" name="FastAsyncWorldEdit-bukkit-19.07.06-e994c76-1276-22.2.2" level="project" />
     <orderEntry type="library" name="worldedit-bukkit-6.1.9" level="project" />
+    <orderEntry type="library" name="org.jetbrains:annotations:16.0.2" level="project" />
   </component>
 </module>

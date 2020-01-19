@@ -1,10 +1,10 @@
-package lz.izmoqwy.leezcrates;
+package lz.izmoqwy.crates;
 
 import lz.izmoqwy.core.command.CommandOptions;
 import lz.izmoqwy.core.command.CoreCommand;
 import lz.izmoqwy.core.utils.TextUtil;
-import lz.izmoqwy.leezcrates.objects.Crate;
-import lz.izmoqwy.leezcrates.objects.CrateType;
+import lz.izmoqwy.crates.objects.Crate;
+import lz.izmoqwy.crates.objects.CrateType;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
@@ -15,11 +15,9 @@ import java.io.IOException;
 
 public class CratesCommand extends CoreCommand {
 
-	final String PREFIX = LeezCrates.PREFIX;
-
 	public CratesCommand() {
 		super("leezcrates", CommandOptions.builder()
-				.permission("leezcrates.admin").playerOnly(true).needsArg(true)
+				.permission("leezcrates.command").playerOnly(true).needsArg(true)
 				.build());
 	}
 
@@ -29,23 +27,24 @@ public class CratesCommand extends CoreCommand {
 		switch (args[0].toLowerCase()) {
 			case "types":
 				checkPermission(commandSender, "types");
-				player.sendMessage(PREFIX + "§3Types de box disponibles: §b" + TextUtil.iterate(LeezCrates.getCrateTypes(), CrateType::getDisplayName, "§b", "§3, ") + "§3.");
+
+				send(player, "§3Types de box disponibles: §b" +
+						TextUtil.iterate(LeezCrates.getCrateTypes(), CrateType::getDisplayName, "§b", "§3, ")
+						+ "§3.");
 				break;
 			case "create":
 				checkPermission(commandSender, "create");
+
 				if (args.length < 2) {
-					player.sendMessage(PREFIX + "§cArgument requis: Type.");
+					player.sendMessage(getPrefix() + "§cArgument requis: Type.");
 					return;
 				}
 
 				CrateType crateType = LeezCrates.fromStringType(args[1]);
-				if (crateType == null) {
-					player.sendMessage(PREFIX + "§cType de box invalide !");
-					return;
-				}
+				checkNotNull(crateType, "Type de box invalide !");
 
 				LeezCrates.createCrate(null, crateType, player.getLocation(), true);
-				player.sendMessage(PREFIX + "§aUne box §2" + crateType.getName() + " §aa été ajoutée.");
+				send(player, "§aLa box §2" + crateType.getName() + " §aa été créée.");
 				break;
 			case "remove":
 				checkPermission(commandSender, "remove");
@@ -62,21 +61,26 @@ public class CratesCommand extends CoreCommand {
 					yaml.set(crate.getId(), null);
 					try {
 						yaml.save(LeezCrates.getCratesFile());
-						player.sendMessage(PREFIX + "§aLa box §2#" + crate.getId() + " §avient d'être §2supprimée§a.");
+						player.sendMessage(getPrefix() + "§aLa box §2#" + crate.getId() + " §avient d'être §2supprimée§a.");
 					}
 					catch (IOException e) {
 						e.printStackTrace();
 					}
 				}
 				else {
-					player.sendMessage(PREFIX + "§cVouz devez regarder une box (A 10 blocs de vous maximum) !");
+					player.sendMessage(getPrefix() + "§cVous devez regarder une box (à 10 blocs de vous maximum) !");
 				}
 
 				break;
 			default:
-				commandSender.sendMessage(PREFIX + "§cArgument invalide. §7[types, create, remove]");
+				commandSender.sendMessage(getPrefix() + "§cArgument invalide. §7(types, create, remove)");
 				break;
 		}
+	}
+
+	@Override
+	protected String getPrefix() {
+		return LeezCrates.PREFIX;
 	}
 
 }

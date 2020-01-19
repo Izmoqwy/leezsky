@@ -1,6 +1,6 @@
-package lz.izmoqwy.leezcrates.listeners;
+package lz.izmoqwy.crates.listeners;
 
-import lz.izmoqwy.leezcrates.LeezCrates;
+import lz.izmoqwy.crates.LeezCrates;
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -49,10 +49,8 @@ public class CrateListener implements Listener {
 	@EventHandler
 	public void onClick(InventoryClickEvent event) {
 		//noinspection SuspiciousMethodCalls
-		if (LeezCrates.getOpeningPlayers().contains(event.getWhoClicked())) {
-			event.setCancelled(true);
-		}
-		else if (event.getInventory() != null && event.getInventory().getName().startsWith(LeezCrates.PREVIEW_TITLE)) {
+		if (LeezCrates.getOpeningPlayers().contains(event.getWhoClicked()) ||
+				(event.getInventory() != null && event.getInventory().getName().startsWith(LeezCrates.PREVIEW_TITLE))) {
 			event.setCancelled(true);
 		}
 	}

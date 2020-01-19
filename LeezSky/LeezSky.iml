@@ -20,5 +20,6 @@
     <orderEntry type="module" module-name="LeezCore" />
     <orderEntry type="library" name="lombok" level="project" />
     <orderEntry type="module" module-name="LeezPermissions" />
+    <orderEntry type="library" name="org.jetbrains:annotations:16.0.2" level="project" />
   </component>
 </module>

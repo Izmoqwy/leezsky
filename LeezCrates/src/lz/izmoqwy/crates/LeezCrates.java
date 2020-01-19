@@ -1,4 +1,4 @@
-package lz.izmoqwy.leezcrates;
+package lz.izmoqwy.crates;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -7,11 +7,11 @@ import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.utils.ItemUtil;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.core.utils.ServerUtil;
-import lz.izmoqwy.leezcrates.listeners.CrateListener;
-import lz.izmoqwy.leezcrates.objects.Crate;
-import lz.izmoqwy.leezcrates.objects.CrateType;
-import lz.izmoqwy.leezcrates.objects.Hologram;
-import lz.izmoqwy.leezcrates.objects.Reward;
+import lz.izmoqwy.crates.listeners.CrateListener;
+import lz.izmoqwy.crates.objects.Crate;
+import lz.izmoqwy.crates.objects.CrateType;
+import lz.izmoqwy.crates.objects.Hologram;
+import lz.izmoqwy.crates.objects.Reward;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -300,7 +300,7 @@ public class LeezCrates extends JavaPlugin {
 						Reward reward = crate.getType().getRewards().stream().filter(r -> r.getItem().isSimilar(rewardIcon)).collect(Collectors.toList()).get(0);
 						if (reward.getCommand() != null)
 							ServerUtil.performCommand(reward.getCommand().replace("%p", player.getName()).replace("%r", reward.getDisplayName()));
-						if (crate.getType().isBroadcasted()) {
+						if (crate.getType().isBroadcast()) {
 							Bukkit.broadcastMessage(PREFIX + "§e" + player.getName() + " §7a ouvert une box §6" + (crate.getType().getDisplayName() != null ? crate.getType().getDisplayName() : crate.getType().getName()));
 						}
 

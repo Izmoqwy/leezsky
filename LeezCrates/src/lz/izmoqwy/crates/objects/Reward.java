@@ -1,4 +1,4 @@
-package lz.izmoqwy.leezcrates.objects;
+package lz.izmoqwy.crates.objects;
 
 import lombok.Getter;
 import lz.izmoqwy.core.utils.ItemUtil;
@@ -23,4 +23,5 @@ public class Reward {
 
 		this.item = ItemUtil.createItem(icon, displayName, Collections.singletonList("§3Chance: §b" + percent + "%"));
 	}
+
 }

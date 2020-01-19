@@ -1,4 +1,4 @@
-package lz.izmoqwy.leezcrates.objects;
+package lz.izmoqwy.crates.objects;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
@@ -9,15 +9,13 @@ import org.bukkit.entity.EntityType;
 
 import java.util.List;
 
+@Getter
 public class Hologram {
 
 	// Not storing the ArmorStand object directly for "bug prevention"
-	@Getter
 	private List<Integer> armorStandId = Lists.newArrayList();
 
-	@Getter
 	private Location location;
-	@Getter
 	private String[] text;
 
 	public Hologram(Location location, String[] text) {
@@ -31,7 +29,7 @@ public class Hologram {
 
 	public void removeCurrentAS() {
 		location.getWorld().getChunkAt(location);
-		for (Entity entity : location.getWorld().getNearbyEntities(location, 2, 2 + .5D  * (text.length - 1), 2)) {
+		for (Entity entity : location.getWorld().getNearbyEntities(location, 2, 2 + .5D * (text.length - 1), 2)) {
 			if (entity.getType() == EntityType.ARMOR_STAND) {
 				ArmorStand as = (ArmorStand) entity;
 				if (as.isCustomNameVisible() && !as.hasGravity() && !as.isVisible()) {
@@ -81,4 +79,5 @@ public class Hologram {
 		this.location = location;
 		spawn();
 	}
+
 }
