@@ -1,0 +1,47 @@
+categories:
+  beginner:
+    name: "D\xE9butant"
+    difficulty: EASY
+    list:
+      '1':
+        name: Nourriture primaire
+        description: "Fa\xEEtes 21 pains"
+        icon:
+          material: BREAD
+        needed:
+          '1':
+            material: BREAD
+            amount: 32
+        rewards:
+          '1':
+            material: POTATO_ITEM
+            amount: 8
+      '2':
+        name: Un gros test
+        description: Manger du foin c'est nourrissant
+        icon:
+          material: HAY
+          amount: 50
+        needed:
+          '1':
+            material: HAY
+            amount: 50
+          '2':
+            material: STAINED_GLASS_PANE
+            amount: 40
+            data: 8
+        rewardMoney: 582.58
+  test:
+    name: Categorie test
+    difficulty: MEDIUM
+    list:
+      '1':
+        name: Cactus
+        description: Ramassez 48 cactus
+        icon:
+          material: CACTUS
+        needed:
+          '1':
+            material: CACTUS
+            amount: 8
+        rewardMoney: 152.0

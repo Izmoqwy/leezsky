@@ -1,0 +1,13 @@
+> EASY beginner "Débutant"
++ "Nourriture primaire", "Faîtes 21 pains", bread
+need bread*32
+give potato_item*8
++ "Un gros test", "Manger du foin c'est nourrissant", hay*50
+need hay*50
+need stained glass pane:8*40
+money 582.58
+
+> MEDIUM test "Categorie test"
++ "Cactus", "Ramassez 48 cactus", cactus
+need cactus*8
+money 152
