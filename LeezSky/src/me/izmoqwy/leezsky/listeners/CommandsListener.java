@@ -12,6 +12,7 @@ import me.izmoqwy.leezsky.LeezSky;
 import me.izmoqwy.leezsky.commands.management.DeopCommand;
 import me.izmoqwy.leezsky.commands.management.OpCommand;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -21,17 +22,19 @@ import org.bukkit.plugin.Plugin;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class CommandsListener implements Listener {
 
-	private final List<String> AUTHORS = Arrays.asList("Izmoqwy", "_V4SC0", "Vasco", "zXeweii_XXV", "Leezsky");
+	private final List<String> PLUGIN_AUTHORS = Arrays.asList("Izmoqwy", "_V4SC0", "Vasco", "Leezsky");
 
-	private boolean checkAuthor(Plugin plugin) {
-		for (String author : AUTHORS) {
+	private boolean isPublic(Plugin plugin) {
+		for (String author : PLUGIN_AUTHORS) {
 			if (plugin.getDescription().getAuthors().contains(author))
-				return true;
+				return false;
 		}
-		return false;
+		return true;
 	}
 
 	@EventHandler
@@ -71,21 +74,17 @@ public class CommandsListener implements Listener {
 			case "plugins":
 			case "pl":
 				player.sendMessage(" ");
-				player.sendMessage(LeezSky.PREFIX + "§eNous utilisons majoritairement des plugins faits maisons et donc §nprivés§e.");
-				player.sendMessage(LeezSky.PREFIX + "§6Nous ne donnerons/venderons en aucun cas un plugin privé.");
+				player.sendMessage(LeezSky.PREFIX + "§eNous utilisons principalement des plugins §nprivés§e mais nous utilisons également des plugins publics qui conviennent à " +
+						"nos besoins.");
+				player.sendMessage(LeezSky.PREFIX + "§6Nous ne donnerons/vendrons en aucun cas un plugin privé.");
 				player.sendMessage(" ");
-				StringBuilder bldr = new StringBuilder();
-				int count = 0;
-				for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
-					if (plugin.getDescription().getAuthors().isEmpty() || !checkAuthor(plugin)) {
-						if (count == 0)
-							bldr.append(plugin.isEnabled() ? "§a" + plugin.getName() : "§c" + plugin.getName());
-						else
-							bldr.append("§6, ").append(plugin.isEnabled() ? "§a" : "§c").append(plugin.getName());
-						count++;
-					}
-				}
-				player.sendMessage(LeezSky.PREFIX + "§eVoici la liste des plugins §npublics§e présents (" + count + "): " + bldr.toString());
+
+				Stream<String> publicPlugins = Arrays.stream(Bukkit.getPluginManager().getPlugins())
+						.filter(plugin -> plugin.getDescription().getAuthors().isEmpty() || isPublic(plugin))
+						.map(plugin -> (plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED) + plugin.getName());
+				player.sendMessage(LeezSky.PREFIX + "§eVoici la liste des plugins §npublics§e présents (" + publicPlugins.count() + "): " +
+						publicPlugins.collect(Collectors.joining("§6, ")));
+
 				player.sendMessage(" ");
 				break;
 
@@ -94,7 +93,7 @@ public class CommandsListener implements Listener {
 			case "about":
 			case "?":
 				player.sendMessage(" ");
-				player.sendMessage(LeezSky.PREFIX + "§eLe serveur est en 1.12.2 mais est peut-être rejoint avec des versions supérieurs également.");
+				player.sendMessage(LeezSky.PREFIX + "§eLe serveur est en 1.12.2 mais est peut-être rejoint avec des versions supérieures également.");
 				player.sendMessage(" ");
 				break;
 

@@ -2,6 +2,6 @@ package me.izmoqwy.leezsky.objectives;
 
 public enum MobType {
 
-	HOSTILE, FRIENDLY
+	HOSTILE, FRIENDLY, PLAYER
 
 }

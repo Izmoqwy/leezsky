@@ -441,4 +441,16 @@ public class ItemUtil {
 		return amount;
 	}
 
+	public static ItemStack quickItem(Material material) {
+		return new ItemStack(material);
+	}
+
+	public static ItemStack quickItem(Material material, int amount) {
+		return new ItemStack(material, amount);
+	}
+
+	public static ItemStack quickItem(Material material, int amount, byte data) {
+		return new ItemStack(material, amount, data);
+	}
+
 }

@@ -1,4 +1,6 @@
 actionbar
+automessages
+bldr
 bossbar
 bukkit
 cooldown
@@ -12,6 +14,10 @@ leezop
 leezpermissions
 leezsky
 minecraft
+motd
+navbar
+playerdata
 skyblock
 spigot
 tablist
+topvalue

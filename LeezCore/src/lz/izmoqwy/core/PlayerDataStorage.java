@@ -2,6 +2,7 @@ package lz.izmoqwy.core;
 
 import com.google.common.collect.Maps;
 import lombok.SneakyThrows;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.self.LeezCore;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -9,6 +10,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 public class PlayerDataStorage {
@@ -16,43 +18,42 @@ public class PlayerDataStorage {
 	private static final File folder;
 
 	static {
-		folder = new File(LeezCore.instance.getDataFolder(), "playerdatas/");
-		folder.mkdirs();
+		folder = new File(LeezCore.instance.getDataFolder(), "playerdata/");
+		if (!folder.exists() && !folder.mkdirs())
+			CorePrinter.err("Player datas' dir doesn't exist");
 	}
 
-	private static Map<UUID, YamlConfiguration> yamls = Maps.newHashMap();
+	private static Map<UUID, YamlConfiguration> playersYaml = Maps.newHashMap();
 
-	public static File getFile(OfflinePlayer player) throws IOException {
-		final File file = new File(folder, player.getUniqueId().toString() + ".yml");
-		if (!file.exists()) {
-			file.createNewFile();
-		}
+	private static File getFile(OfflinePlayer player) throws IOException {
+		File file = new File(folder, player.getUniqueId().toString() + ".yml");
+
+		if (!file.exists() && !file.createNewFile())
+			return null;
 		return file;
 	}
 
-	public static YamlConfiguration yaml(OfflinePlayer player) throws IOException {
-		if (yamls.containsKey(player.getUniqueId())) {
-			YamlConfiguration yaml = yamls.get(player.getUniqueId());
+	@SneakyThrows(IOException.class)
+	public static YamlConfiguration yaml(OfflinePlayer player) {
+		if (playersYaml.containsKey(player.getUniqueId())) {
+			YamlConfiguration yaml = playersYaml.get(player.getUniqueId());
 			if (yaml == null) {
-				yamls.remove(player.getUniqueId());
+				playersYaml.remove(player.getUniqueId());
 				return yaml(player);
 			}
 			return yaml;
 		}
 		else {
-			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(getFile(player));
-			yamls.put(player.getUniqueId(), yaml);
+			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(Objects.requireNonNull(getFile(player)));
+			playersYaml.put(player.getUniqueId(), yaml);
 			return yaml;
 		}
 	}
 
-	public static YamlConfiguration yamlNoThrow(OfflinePlayer player) {
-		try {
-			return yaml(player);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
+	@SneakyThrows(IOException.class)
+	public static void save(OfflinePlayer player) {
+		if (playersYaml.containsKey(player.getUniqueId())) {
+			playersYaml.get(player.getUniqueId()).save(Objects.requireNonNull(getFile(player)));
 		}
 	}
 
@@ -60,7 +61,17 @@ public class PlayerDataStorage {
 		try {
 			return yaml(player).get(path);
 		}
-		catch (IOException e) {
+		catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public static Object getObject(OfflinePlayer player, String path, Object def) {
+		try {
+			return yaml(player).get(path, def);
+		}
+		catch (Exception e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -71,44 +82,16 @@ public class PlayerDataStorage {
 		return obj != null ? (T) obj : null;
 	}
 
-	public static Object getObject(OfflinePlayer player, String path, Object def) {
-		try {
-			return yaml(player).get(path, def);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
 	public static <T> T get(OfflinePlayer player, String path, T def) {
+		if (def == null)
+			return get(player, path);
+
 		final Object obj = getObject(player, path, def);
-		return obj != null ? (T) obj : def;
+		return def.getClass().isInstance(obj) ? (T) obj : def;
 	}
 
 	public static <T> void set(OfflinePlayer player, String path, T value) {
-		try {
-			yaml(player).set(path, value);
-		}
-		catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	@SneakyThrows(IOException.class)
-	public static void save(OfflinePlayer player) {
-		if (yamls.containsKey(player.getUniqueId())) {
-			yamls.get(player.getUniqueId()).save(getFile(player));
-		}
-	}
-
-	public static void saveNoThrow(OfflinePlayer player) {
-		try {
-			save(player);
-		}
-		catch (Exception e) {
-			e.printStackTrace();
-		}
+		yaml(player).set(path, value);
 	}
 
 }

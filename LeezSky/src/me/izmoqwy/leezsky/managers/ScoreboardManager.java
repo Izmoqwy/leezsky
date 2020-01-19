@@ -22,12 +22,12 @@ import java.util.UUID;
 
 public class ScoreboardManager implements SettingsManager.SettingUser {
 
-	public static ScoreboardManager INSTANCE = new ScoreboardManager();
+	public static final ScoreboardManager INSTANCE = new ScoreboardManager();
 
-	private static Map<UUID, PlayerScoreboard> scoreboardMap = Maps.newHashMap();
+	private static final Map<UUID, PlayerScoreboard> scoreboardMap = Maps.newHashMap();
 
 	@Override
-	public void onSettingUpdate(Player player, SettingsManager.Setting setting, Enum value) {
+	public void onSettingUpdate(Player player, SettingsManager.Setting<?> setting, Enum<?> value) {
 		if (setting == SettingsManager.SCOREBOARD) {
 			if (value == SettingsManager.SimpleToggle.ON)
 				createScoreboard(player);
@@ -83,7 +83,6 @@ public class ScoreboardManager implements SettingsManager.SettingUser {
 	}
 
 	public static class PlayerScoreboard {
-		private static final short playerLine = 1;
 
 		private final NMSScoreboard scoreboard;
 		private short rankLine, moneyLine;
@@ -150,6 +149,7 @@ public class ScoreboardManager implements SettingsManager.SettingUser {
 		public void destroy() {
 			scoreboard.destroy();
 		}
+
 	}
 
 }

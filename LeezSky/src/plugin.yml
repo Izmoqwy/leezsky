@@ -45,6 +45,7 @@ permissions:
           leezsky.commands.worlds: false
           leezsky.commands.invest: true
           leezsky.commands.settings: true
+          leezsky.commands.challenges: true
       leezsky.chat.*:
         children:
           leezsky.chat.color: true

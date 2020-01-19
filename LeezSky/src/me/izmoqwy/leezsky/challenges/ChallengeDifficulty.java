@@ -8,31 +8,22 @@
 
 package me.izmoqwy.leezsky.challenges;
 
-public enum Difficulty {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
-	EASY("§aFacile", 1), MEDIUM("§eMoyen", 2), HARD("§cDifficile", 3), HARDCORE("§4Très dûr", 4);
-	
+@AllArgsConstructor
+public enum ChallengeDifficulty {
+
+	EASY("§aFacile", 1), MEDIUM("§eMoyen", 2), HARD("§cDifficile", 3), HARDCORE("§4Hardcore", 4);
+
 	private final String text;
+
+	@Getter
 	private final int power;
-	
-	Difficulty(String text, int power) {
-		
-		this.text = text;
-		this.power = power;
-		
-	}
-	
+
 	@Override
 	public String toString() {
-		
 		return text;
-		
 	}
-	
-	public int getPower() {
-		
-		return power;
-		
-	}
-	
+
 }

@@ -69,7 +69,7 @@ public class PlayersListener implements Listener {
 
 		Player player = event.getPlayer();
 		if (SettingsManager.CHAT_MESSAGES.getState(player) == SettingsManager.ChatSetting.OFF) {
-			player.sendMessage(LeezSky.PREFIX + "§cVous avez désactivé les messges du chat, vous devez les réactiver pour pouvoir y parler. §7(/settings)");
+			player.sendMessage(LeezSky.PREFIX + "§cVous avez désactivé les messages du chat, vous devez les réactiver pour pouvoir parler. §7(/settings)");
 			return;
 		}
 
@@ -135,7 +135,7 @@ public class PlayersListener implements Listener {
 		final BaseComponent[] finalMessage = componentBuilder.create();
 
 		for (Player online : Bukkit.getOnlinePlayers()) {
-			SettingsManager.ChatSetting chatSetting = (SettingsManager.ChatSetting) SettingsManager.CHAT_MESSAGES.getState(online);
+			SettingsManager.ChatSetting chatSetting = SettingsManager.CHAT_MESSAGES.getState(online);
 			if (chatSetting == SettingsManager.ChatSetting.EXTRA)
 				online.spigot().sendMessage(finalMessage);
 			else if (chatSetting == SettingsManager.ChatSetting.FLAT)

@@ -7,7 +7,8 @@ import lz.izmoqwy.core.api.database.SQLite;
 import lz.izmoqwy.core.nms.NMS;
 import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.utils.ServerUtil;
-import me.izmoqwy.leezsky.challenges.ChallengePlugin;
+import me.izmoqwy.leezsky.challenges.ChallengesCommand;
+import me.izmoqwy.leezsky.challenges.ChallengesManager;
 import me.izmoqwy.leezsky.commands.HelpCommand;
 import me.izmoqwy.leezsky.commands.InvestCommand;
 import me.izmoqwy.leezsky.commands.ObjectiveCommand;
@@ -23,8 +24,8 @@ import me.izmoqwy.leezsky.listeners.SpawnListener;
 import me.izmoqwy.leezsky.managers.InvestManager;
 import me.izmoqwy.leezsky.managers.ScoreboardManager;
 import me.izmoqwy.leezsky.objectives.ObjectiveManager;
-import me.izmoqwy.leezsky.tasks.AutoMessage;
-import me.izmoqwy.leezsky.tasks.Rebooter;
+import me.izmoqwy.leezsky.tasks.AutomatedMessages;
+import me.izmoqwy.leezsky.tasks.AutomatedRestart;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
@@ -40,7 +41,7 @@ public class LeezSky extends JavaPlugin {
 
 	@Getter
 	private static LeezSky instance;
-	public boolean rebooting = false;
+	public boolean restarting = false;
 
 	public static final boolean CLUSTER_HOST = false;
 	public static final String PREFIX = LeezCore.PREFIX;
@@ -100,6 +101,8 @@ public class LeezSky extends JavaPlugin {
 		ScoreboardManager.load(this);
 
 		ServerUtil.registerCommand("objective", new ObjectiveCommand());
+		ServerUtil.registerCommand("challenges", new ChallengesCommand());
+		ChallengesManager.get.load(this);
 
 		ServerUtil.registerCommand("help", new HelpCommand());
 		ServerUtil.registerCommand("announce", new AnnounceCommand());
@@ -114,19 +117,17 @@ public class LeezSky extends JavaPlugin {
 				new MotdListener()
 		);
 
-		ChallengePlugin.load(this);
-
 		if (Bukkit.getOnlinePlayers().size() >= 1) {
 			NMS.packet.sendGlobalTablist(TAB_HEADER, TAB_FOOTER);
 		}
 
-		new AutoMessage();
+		new AutomatedMessages();
 		if (CLUSTER_HOST)
-			new Rebooter().start();
+			new AutomatedRestart().start(this);
 
 		final boolean useScoreboard = NMS.scoreboard != null;
-		if (useScoreboard)
-			getLogger().info("Able to use scoreboards!");
+		if (!useScoreboard)
+			getLogger().warning("Unable to use scoreboards.");
 
 		ObjectiveManager.load(this);
 		for (Player player : Bukkit.getOnlinePlayers()) {
@@ -145,7 +146,7 @@ public class LeezSky extends JavaPlugin {
 		}
 		ScoreboardManager.clear();
 
-		if (!rebooting)
+		if (!restarting)
 			Bukkit.broadcastMessage(PREFIX + "§4Un élément majeur du serveur vient d'être désactivé.. Merci de contacter un administrateur au plus vite !");
 	}
 
