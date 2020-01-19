@@ -1,4 +1,4 @@
-package me.izmoqwy.leezsky.commands;
+package me.izmoqwy.leezsky.commands.management;
 
 import lz.izmoqwy.core.command.CommandOptions;
 import lz.izmoqwy.core.command.CoreCommand;

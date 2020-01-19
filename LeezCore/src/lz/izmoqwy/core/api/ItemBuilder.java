@@ -1,11 +1,7 @@
 package lz.izmoqwy.core.api;
 
 import com.google.common.collect.Lists;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.SkullType;
-import org.bukkit.craftbukkit.v1_12_R1.block.CraftSkull;
+import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
@@ -22,19 +18,19 @@ public class ItemBuilder {
 	private ItemMeta itemMeta;
 
 	public ItemBuilder(Material material) {
-		itemStack = new ItemStack(material);
+		this.itemStack = new ItemStack(material);
 		meta();
 	}
 
 	public ItemBuilder(MaterialData materialData) {
-		itemStack = new ItemStack(materialData.getItemType());
-		itemStack.setData(materialData);
+		this.itemStack = new ItemStack(materialData.getItemType());
+		this.itemStack.setData(materialData);
 		meta();
 	}
 
 	public ItemBuilder(SkullType skullType) {
-		itemStack = new ItemStack(Material.SKULL_ITEM);
-		itemStack.setDurability((short) skullType.ordinal());
+		this.itemStack = new ItemStack(Material.SKULL_ITEM);
+		this.itemStack.setDurability((short) skullType.ordinal());
 		meta();
 	}
 
@@ -179,6 +175,13 @@ public class ItemBuilder {
 	public ItemBuilder setSkullOwner(String owner) {
 		if (itemMeta instanceof SkullMeta) {
 			((SkullMeta) itemMeta).setOwner(owner);
+		}
+		return this;
+	}
+
+	public ItemBuilder setSkullOwner(OfflinePlayer owner) {
+		if (itemMeta instanceof SkullMeta) {
+			((SkullMeta) itemMeta).setOwningPlayer(owner);
 		}
 		return this;
 	}

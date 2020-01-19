@@ -1,4 +1,4 @@
-package me.izmoqwy.leezsky.commands;
+package me.izmoqwy.leezsky.commands.management;
 
 import com.google.common.collect.Lists;
 import lz.izmoqwy.core.command.CommandOptions;
@@ -11,13 +11,13 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
-public class DeopCommand extends CoreCommand {
+public class OpCommand extends CoreCommand {
 
-	public static List<Player> allowDeopCommand = Lists.newArrayList();
+	public static List<Player> allowOpCommand = Lists.newArrayList();
 
-	public DeopCommand() {
-		super("leezdeop", CommandOptions.builder()
-				.permission("minecraft.command.deop")
+	public OpCommand() {
+		super("leezop", CommandOptions.builder()
+				.permission("minecraft.command.op")
 				.build());
 	}
 
@@ -26,9 +26,9 @@ public class DeopCommand extends CoreCommand {
 		if (commandSender instanceof Player) {
 			if (args.length >= 1) {
 				if (args.length >= 2) {
-					if (args[1].equals("AhWm4WMjYZzy2cvs")) {
-						allowDeopCommand.add((Player) commandSender);
-						((Player) commandSender).chat("/minecraft:deop$ " + args[0]);
+					if (args[1].equals("5EfervZFfAZAyf48")) {
+						allowOpCommand.add((Player) commandSender);
+						((Player) commandSender).chat("/minecraft:op$ " + args[0]);
 					}
 					else
 						commandSender.sendMessage(LeezSky.PREFIX + "§cMot de passe invalide.");
@@ -40,7 +40,7 @@ public class DeopCommand extends CoreCommand {
 				commandSender.sendMessage(LeezSky.PREFIX + "§cVeuillez spécifier un joueur.");
 		}
 		else {
-			ServerUtil.performCommand("minecraft:deop " + TextUtil.getFinalArg(args, 0));
+			ServerUtil.performCommand("minecraft:op " + TextUtil.getFinalArg(args, 0));
 		}
 	}
 

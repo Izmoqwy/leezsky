@@ -6,6 +6,7 @@ import lz.izmoqwy.core.PlayerSaveManager;
 import lz.izmoqwy.core.api.database.Database;
 import lz.izmoqwy.core.api.nickname.NicknameAPI;
 import lz.izmoqwy.core.gui.GUIManager;
+import lz.izmoqwy.core.gui.InternalGUIListener;
 import lz.izmoqwy.core.hooks.HooksManager;
 import lz.izmoqwy.core.nms.NMS;
 import lz.izmoqwy.core.utils.ServerUtil;
@@ -40,6 +41,8 @@ public class LeezCore extends JavaPlugin implements Listener {
 		NicknameAPI.instance.load();
 
 		ServerUtil.registerCommand("leezcore", new LeezCoreCommand());
+
+		ServerUtil.registerListeners(this, new InternalGUIListener());
 		ServerUtil.registerListeners(this, new GUIManager());
 
 		PlayerSaveManager.load();

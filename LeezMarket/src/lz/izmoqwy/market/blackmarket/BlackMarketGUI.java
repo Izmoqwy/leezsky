@@ -24,7 +24,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.material.MaterialData;
 
-import java.io.IOException;
 import java.sql.SQLException;
 import java.util.*;
 
@@ -152,7 +151,7 @@ public class BlackMarketGUI implements Listener {
 								PlayerDataStorage.save(player);
 								player.sendMessage(Locale.RPG_PREFIX + "§aVous avez débloqué l'accès du PNJ du marché noir. Attention à ne pas vous faire remarquer dans le coin !");
 							}
-							catch (SQLActionImpossibleException | IOException e) {
+							catch (SQLActionImpossibleException e) {
 								e.printStackTrace();
 								player.sendMessage(Locale.PREFIX + "§4Une erreur est survenue !");
 							}

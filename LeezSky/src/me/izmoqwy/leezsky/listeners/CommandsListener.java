@@ -9,8 +9,8 @@ package me.izmoqwy.leezsky.listeners;
 
 import lz.izmoqwy.core.utils.TextUtil;
 import me.izmoqwy.leezsky.LeezSky;
-import me.izmoqwy.leezsky.commands.DeopCommand;
-import me.izmoqwy.leezsky.commands.OpCommand;
+import me.izmoqwy.leezsky.commands.management.DeopCommand;
+import me.izmoqwy.leezsky.commands.management.OpCommand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;

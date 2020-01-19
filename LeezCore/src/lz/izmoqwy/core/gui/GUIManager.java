@@ -1,6 +1,7 @@
 package lz.izmoqwy.core.gui;
 
 import com.google.common.collect.Maps;
+import io.netty.util.internal.UnstableApi;
 import lombok.Getter;
 import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.api.ItemBuilder;
@@ -23,6 +24,10 @@ import org.bukkit.inventory.ItemStack;
 import java.util.Collections;
 import java.util.Map;
 
+/**
+ * @deprecated use {@link MinecraftGUI} instead
+ */
+@Deprecated
 public class GUIManager implements Listener {
 
 	private static final ItemStack GO_BACK = ItemUtil.createItem(Material.ARROW, "§cRetour", Collections.singletonList("§7Retourner a la page precedente"));

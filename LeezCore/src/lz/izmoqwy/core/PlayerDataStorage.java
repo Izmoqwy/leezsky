@@ -1,6 +1,7 @@
 package lz.izmoqwy.core;
 
 import com.google.common.collect.Maps;
+import lombok.SneakyThrows;
 import lz.izmoqwy.core.self.LeezCore;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -94,7 +95,8 @@ public class PlayerDataStorage {
 		}
 	}
 
-	public static void save(OfflinePlayer player) throws IOException {
+	@SneakyThrows(IOException.class)
+	public static void save(OfflinePlayer player) {
 		if (yamls.containsKey(player.getUniqueId())) {
 			yamls.get(player.getUniqueId()).save(getFile(player));
 		}
@@ -104,7 +106,7 @@ public class PlayerDataStorage {
 		try {
 			save(player);
 		}
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

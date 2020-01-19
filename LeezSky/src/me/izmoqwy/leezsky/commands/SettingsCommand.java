@@ -17,8 +17,7 @@ public class SettingsCommand extends CoreCommand {
 
 	@Override
 	protected void execute(CommandSender commandSender, String usedCommand, String[] args) {
-		Player player = ((Player) commandSender);
-		player.openInventory(SettingsManager.bakeInventory(player));
+		SettingsManager.openSettings((Player) commandSender);
 	}
 
 }

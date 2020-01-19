@@ -1,20 +1,27 @@
 package me.izmoqwy.leezsky;
 
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.self.LeezCore;
+import lombok.Getter;
 import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.api.database.SQLite;
 import lz.izmoqwy.core.nms.NMS;
+import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.utils.ServerUtil;
 import me.izmoqwy.leezsky.challenges.ChallengePlugin;
-import me.izmoqwy.leezsky.commands.*;
+import me.izmoqwy.leezsky.commands.HelpCommand;
+import me.izmoqwy.leezsky.commands.InvestCommand;
+import me.izmoqwy.leezsky.commands.ObjectiveCommand;
+import me.izmoqwy.leezsky.commands.SettingsCommand;
+import me.izmoqwy.leezsky.commands.management.AnnounceCommand;
+import me.izmoqwy.leezsky.commands.management.DeopCommand;
+import me.izmoqwy.leezsky.commands.management.OpCommand;
+import me.izmoqwy.leezsky.commands.management.WorldsCommand;
 import me.izmoqwy.leezsky.listeners.CommandsListener;
 import me.izmoqwy.leezsky.listeners.MotdListener;
 import me.izmoqwy.leezsky.listeners.PlayersListener;
 import me.izmoqwy.leezsky.listeners.SpawnListener;
 import me.izmoqwy.leezsky.managers.InvestManager;
 import me.izmoqwy.leezsky.managers.ScoreboardManager;
-import me.izmoqwy.leezsky.managers.SettingsManager;
 import me.izmoqwy.leezsky.objectives.ObjectiveManager;
 import me.izmoqwy.leezsky.tasks.AutoMessage;
 import me.izmoqwy.leezsky.tasks.Rebooter;
@@ -29,14 +36,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.UUID;
 
-public class LeezSky extends JavaPlugin{
+public class LeezSky extends JavaPlugin {
 
+	@Getter
 	private static LeezSky instance;
 	public boolean rebooting = false;
 
 	public static final boolean CLUSTER_HOST = false;
 	public static final String PREFIX = LeezCore.PREFIX;
-	public static final String TAB_HEADER = "§8┅⊰ §6PLAY.LEEZSKY.FR §8⊱┅\n",
+	public static final String
+			TAB_HEADER = "§8┅⊰ §6PLAY.LEEZSKY.FR §8⊱┅\n",
 			TAB_FOOTER = "\n§8┅⊰ §ediscord.gg/X78wMsE §8⊱┅";
 
 	public static SQLDatabase DB;
@@ -87,25 +96,23 @@ public class LeezSky extends JavaPlugin{
 		InvestManager.load();
 		ServerUtil.registerCommand("invest", new InvestCommand());
 
-		SettingsManager.load();
 		ServerUtil.registerCommand("settings", new SettingsCommand());
 		ScoreboardManager.load(this);
 
 		ServerUtil.registerCommand("objective", new ObjectiveCommand());
 
-		/*
-			Internal staff security
-		 */
-		ServerUtil.registerCommand("leezop", new OpCommand());
-		ServerUtil.registerCommand("leezdeop", new DeopCommand());
-
 		ServerUtil.registerCommand("help", new HelpCommand());
 		ServerUtil.registerCommand("announce", new AnnounceCommand());
 		ServerUtil.registerCommand("worlds", new WorldsCommand());
 
-		ServerUtil.registerListeners(this, new PlayersListener());
-		ServerUtil.registerListeners(this, new CommandsListener());
-		ServerUtil.registerListeners(this, new MotdListener());
+		ServerUtil.registerCommand("leezop", new OpCommand());
+		ServerUtil.registerCommand("leezdeop", new DeopCommand());
+
+		ServerUtil.registerListeners(this,
+				new PlayersListener(),
+				new CommandsListener(),
+				new MotdListener()
+		);
 
 		ChallengePlugin.load(this);
 
@@ -131,19 +138,15 @@ public class LeezSky extends JavaPlugin{
 		}
 	}
 
-	public static LeezSky getInstance() {
-		return LeezSky.instance;
-	}
-
 	@Override
 	public void onDisable() {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			ObjectiveManager.removeFromBB(player);
 		}
-
 		ScoreboardManager.clear();
 
 		if (!rebooting)
 			Bukkit.broadcastMessage(PREFIX + "§4Un élément majeur du serveur vient d'être désactivé.. Merci de contacter un administrateur au plus vite !");
 	}
+
 }
