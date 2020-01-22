@@ -2,7 +2,7 @@ name: LeezCrates
 author: Izmoqwy
 version: 1.0.1
 
-main: lz.izmoqwy.leezcrates.LeezCrates
+main: lz.izmoqwy.crates.LeezCrates
 depend:
   - LeezCore
 

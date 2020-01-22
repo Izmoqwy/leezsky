@@ -2,8 +2,8 @@ package lz.izmoqwy.market.blackmarket;
 
 import com.google.common.collect.Lists;
 import com.sun.istack.internal.NotNull;
-import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.PlayerDataStorage;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.market.MarketPlugin;
@@ -70,7 +70,7 @@ public class BlackMarket implements Listener {
 		List<Location> points = Lists.newArrayList();
 		ConfigurationSection section = config.getConfigurationSection(path + "points");
 		if (section != null) {
-			for(String strPoint : section.getKeys(false)) {
+			for (String strPoint : section.getKeys(false)) {
 				Location location = LocationUtil.loadFromYaml(config, path + "points." + strPoint);
 				if (location != null)
 					points.add(location);
@@ -143,6 +143,9 @@ public class BlackMarket implements Listener {
 	}
 
 	protected static void spawnArmorStands(@NotNull Location location) {
+		if (location.getWorld() == null)
+			return;
+
 		Location[] locations = getASLocations(location);
 		if (armorStands != null) {
 			for (int i = 0; i < 4; i++) {
@@ -173,6 +176,9 @@ public class BlackMarket implements Listener {
 	}
 
 	private static Location[] getASLocations(@NotNull Location middle) {
+		if (middle.getWorld() == null)
+			return new Location[0];
+
 		return new Location[]{add(middle, 0.25, 0.25), add(middle, -0.25, 0.25), add(middle, 0.25, -0.25), add(middle, -0.25, -0.25)};
 	}
 
@@ -230,4 +236,5 @@ public class BlackMarket implements Listener {
 			}
 		}
 	}
+
 }

@@ -25,6 +25,7 @@ import org.bukkit.material.DirectionalContainer;
 import org.bukkit.material.MaterialData;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -190,7 +191,10 @@ public class LeezCrates extends JavaPlugin {
 	private static final byte[] axis = { 3, 4, 2, 5 }; // Reminder: reversed
 
 	@SuppressWarnings("deprecation")
-	protected static void createCrate(String id, CrateType type, Location location, boolean save) {
+	protected static void createCrate(String id, CrateType type, @NotNull Location location, boolean save) {
+		if (location.getWorld() == null)
+			return;
+
 		location.getWorld().getChunkAt(location);
 
 		Block block = location.getBlock();

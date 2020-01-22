@@ -16,12 +16,12 @@ public class MotdListener implements Listener {
 		String line1 = "§eLeezsky §f§l═§3 Skyblock";
 		String line2 = "§cLe serveur n'est pas encore ouvert";
 
-		this.fullMotd = centerMOTD(line1, line1) + "\n" + centerMOTD("A_" + line2, "§f▚ " + line2);
+		this.fullMotd = centerMOTD(line1.replace("═", "-7"), line1) + "\n" + centerMOTD("A_" + line2, "§f▚ " + line2);
 	}
 
 	@EventHandler
 	public void onPing(ServerListPingEvent event) {
-		event.setMaxPlayers(Bukkit.getOnlinePlayers().size() + 3);
+		event.setMaxPlayers(Math.min(Bukkit.getOnlinePlayers().size() + 3, Bukkit.getServer().getMaxPlayers()));
 		event.setMotd(fullMotd);
 	}
 
