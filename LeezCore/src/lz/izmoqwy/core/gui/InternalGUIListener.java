@@ -1,5 +1,6 @@
 package lz.izmoqwy.core.gui;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -52,16 +53,18 @@ public class InternalGUIListener implements Listener {
 
 		if (handledGUI.isCancelClicks())
 			event.setCancelled(true);
-		if (!event.getInventory().equals(event.getClickedInventory()) || event.getCurrentItem() == null)
+		if (!event.getInventory().equals(event.getClickedInventory()))
 			return;
 
 		Player player = (Player) event.getWhoClicked();
 		ItemStack currentItem = event.getCurrentItem();
 		int slot = event.getSlot();
 
+		boolean pointless = currentItem == null || currentItem.getType() == Material.AIR;
 		for (MinecraftGUIListener listener : handledGUI.getListeners()) {
-			listener.onClick(player, currentItem, slot);
-			listener.changeItem(player, currentItem, slot, event);
+			if (!pointless)
+				listener.onClick(player, currentItem, slot);
+			listener.onRichClick(player, currentItem, slot, event);
 		}
 	}
 

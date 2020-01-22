@@ -4,8 +4,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lz.izmoqwy.core.api.ItemBuilder;
 import org.apache.commons.lang.ArrayUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -17,6 +20,15 @@ import java.util.Objects;
 
 @Getter
 public abstract class MinecraftGUI {
+
+	protected static final ItemStack CLOSE_GUI = new ItemBuilder(Material.DARK_OAK_DOOR_ITEM)
+			.name(ChatColor.DARK_RED + "Fermer")
+			.appendLore(ChatColor.GRAY, "Fermer cette interface")
+			.toItemStack();
+	protected static final ItemStack GO_BACK = new ItemBuilder(Material.ARROW)
+			.name(ChatColor.RED + "Retour")
+			.appendLore(ChatColor.GRAY, "Retourner à l'interface précédente")
+			.toItemStack();
 
 	private static int lastInternalId;
 
@@ -49,6 +61,25 @@ public abstract class MinecraftGUI {
 		this.slots = Maps.newHashMap();
 	}
 
+	public void addActionItems(int close, int goBack) {
+		if (close >= 0)
+			setItem(close, CLOSE_GUI, true);
+		if (goBack >= 0)
+			setItem(goBack, GO_BACK, true);
+
+		addListener(new MinecraftGUIListener() {
+			@Override
+			public void onClick(Player player, ItemStack clickedItem, int slot) {
+				if (slot == close)
+					player.closeInventory();
+				else if (slot == goBack) {
+					if (parent != null)
+						parent.open(player);
+				}
+			}
+		});
+	}
+
 	public void setRows(int rows) {
 		Preconditions.checkArgument(rows > 0 && rows < 7);
 
@@ -74,7 +105,7 @@ public abstract class MinecraftGUI {
 	}
 
 	public void setItem(int slot, ItemStack itemStack) {
-		if (inventoryType == InventoryType.CHEST && slot >= getRows() * 9) {
+		if (inventoryType == InventoryType.CHEST && slot >= (getRows() + 1) * 9) {
 			Bukkit.getLogger().warning("Setting slot before setting current amount of rows !");
 		}
 
@@ -103,8 +134,10 @@ public abstract class MinecraftGUI {
 
 	public Inventory toBukkitInventory() {
 		if (bukkitInventory == null) {
-			if (inventoryType == InventoryType.CHEST) bukkitInventory = Bukkit.createInventory(holder, rows * 9, title);
-			else bukkitInventory = Bukkit.createInventory(holder, inventoryType, title);
+			if (inventoryType == InventoryType.CHEST)
+				bukkitInventory = Bukkit.createInventory(holder, rows * 9, title);
+			else
+				bukkitInventory = Bukkit.createInventory(holder, inventoryType, title);
 			slots.forEach(bukkitInventory::setItem);
 		}
 
@@ -121,6 +154,7 @@ public abstract class MinecraftGUI {
 		Inventory inventory = toBukkitInventory();
 		if (inventory == null)
 			return;
+
 		player.openInventory(inventory);
 	}
 

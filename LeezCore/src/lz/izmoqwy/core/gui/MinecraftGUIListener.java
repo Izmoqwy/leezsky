@@ -13,7 +13,7 @@ public interface MinecraftGUIListener {
 	default void onClick(Player player, ItemStack clickedItem, int slot) {
 	}
 
-	default void changeItem(Player player, ItemStack clickedItem, int slot, InventoryClickEvent event) {
+	default void onRichClick(Player player, ItemStack clickedItem, int slot, InventoryClickEvent event) {
 	}
 
 	default void onClose(Player player) {

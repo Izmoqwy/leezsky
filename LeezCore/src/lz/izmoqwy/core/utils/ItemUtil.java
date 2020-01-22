@@ -170,6 +170,24 @@ public class ItemUtil {
 		return remaining;
 	}
 
+	/**
+	 * @return if items were dropped
+	 */
+	public static boolean giveOrDrop(Player player, ItemStack... items) {
+		List<ItemStack> leftover = give(player, items);
+		if (leftover.isEmpty())
+			return false;
+
+		dropAtPlayer(player, items);
+		return true;
+	}
+
+	public static void dropAtPlayer(Player player, ItemStack... items) {
+		for (ItemStack item : items) {
+			player.getWorld().dropItem(player.getLocation(), item);
+		}
+	}
+
 	private static ItemStack buildItem(MaterialData materialData, int amount, String name, List<String> lore, Map<Enchantment, Integer> enchantsMap, ItemFlag... flags) {
 		ItemStack item = new ItemStack(materialData.getItemType(), amount, materialData.getData());
 		ItemMeta meta = item.getItemMeta();

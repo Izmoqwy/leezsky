@@ -1,9 +1,12 @@
 name: LeezShop
 author: Izmoqwy
-version: 1.0.1
-main: lz.izmoqwy.leezshop.LeezShop
-depend: [LeezCore]
-commands: 
+version: 2.0.0
+
+main: lz.izmoqwy.shop.LeezShop
+depend:
+  - LeezCore
+
+commands:
   shop:
-    description: Open server's shop
-    aliases: [servershop, shops, sshop, ss]
+    description: Buy & sell items to the server
+    aliases: [servershop, ss]

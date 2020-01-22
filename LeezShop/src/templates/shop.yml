@@ -1,0 +1,51 @@
+categories:
+  blocks:
+    slot: 2
+    name: Blocs
+    description: Blocs en tout genre
+    icon:
+      material: BRICK
+    list:
+      '1':
+        name: Pierre
+        item:
+          material: STONE
+        price:
+          buy: 875.2
+          sell: 1.7
+  vegetals:
+    slot: 7
+    name: "V\xE9g\xE9taux"
+    description: De la bonne herbe
+    icon:
+      material: DEAD_BUSH
+    list:
+      '1':
+        name: Cactus
+        item:
+          material: CACTUS
+        price:
+          sell: 7.8
+      '2':
+        name: Canne a sucre
+        item:
+          material: SUGAR_CANE
+        price:
+          buy: 3993.0
+          sell: 3.33
+  spawners:
+    slot: 6
+    name: Spawners
+    description: Oh les jolis monstres
+    icon:
+      material: MOB_SPAWNER
+    list:
+      '1':
+        name: Spanwer a vache
+        item:
+          material: MOB_SPAWNER
+        price:
+          buy: 833333333.0
+        shine: true
+        commands:
+        - leezspawners give $player cow

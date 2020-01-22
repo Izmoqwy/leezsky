@@ -3,6 +3,7 @@ automessages
 bldr
 bossbar
 bukkit
+buyable
 cooldown
 deop
 izmoqwy
@@ -17,6 +18,7 @@ minecraft
 motd
 navbar
 playerdata
+sellable
 skyblock
 spigot
 tablist

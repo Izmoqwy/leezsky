@@ -1,6 +1,8 @@
 package lz.izmoqwy.core.api;
 
 import com.google.common.collect.Lists;
+import com.mojang.authlib.GameProfile;
+import com.mojang.authlib.properties.Property;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.ItemFlag;
@@ -9,8 +11,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.material.MaterialData;
 
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 public class ItemBuilder {
 
@@ -186,6 +190,25 @@ public class ItemBuilder {
 		return this;
 	}
 
+	public ItemBuilder setSkullTexture(String url) {
+		if (itemMeta instanceof SkullMeta) {
+			SkullMeta skullMeta = (SkullMeta) itemMeta;
+			GameProfile profile = new GameProfile(UUID.randomUUID(), null);
+
+			profile.getProperties().put("textures", new Property("textures", url));
+			try {
+				Field profileField = skullMeta.getClass().getDeclaredField("profile");
+				profileField.setAccessible(true);
+				profileField.set(skullMeta, profile);
+
+			}
+			catch (IllegalArgumentException | NoSuchFieldException | SecurityException | IllegalAccessException error) {
+				error.printStackTrace();
+			}
+		}
+		return this;
+	}
+
 	public ItemBuilder copy() {
 		return new ItemBuilder(toItemStack());
 	}
@@ -194,5 +217,4 @@ public class ItemBuilder {
 		itemStack.setItemMeta(itemMeta);
 		return itemStack;
 	}
-
 }

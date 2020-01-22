@@ -2,6 +2,7 @@ package lz.izmoqwy.core.gui;
 
 import io.netty.util.internal.UnstableApi;
 import lombok.Getter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @Getter
@@ -19,6 +20,10 @@ public abstract class UniqueMinecraftGUI extends MinecraftGUI {
 	@UnstableApi
 	@Override
 	public void open(Player player) {
+		if (this.player.equals(player)) {
+			open();
+			return;
+		}
 		throw new UnsupportedOperationException("Trying to open inventory for player in unique GUI.");
 	}
 

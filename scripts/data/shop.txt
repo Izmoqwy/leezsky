@@ -1,0 +1,17 @@
+> blocks 2 "Blocs" "Blocs en tout genre" brick
++ "Pierre", stone
+buy 875.2
+sell 1.7
+
+> vegetals 7 "Végétaux" "De la bonne herbe" "dead bush"
++ "Cactus", cactus
+sell 7.8
++ "Canne a sucre", "sugar cane"
+buy 3 993
+sell 3.33
+
+> spawners 6 "Spawners" "Oh les jolis monstres" "mob spawner"
++ "Spanwer a vache", "mob spawner"
+buy 833 333 333
+shine
+command leezspawners give $player cow

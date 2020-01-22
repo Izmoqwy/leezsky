@@ -86,7 +86,7 @@ public class StoreUtil {
 		if (file.exists())
 			return true;
 
-		if (file.getParentFile().mkdirs())
+		if (file.getParentFile().exists() || file.getParentFile().mkdirs())
 			return file.createNewFile();
 		return false;
 	}
