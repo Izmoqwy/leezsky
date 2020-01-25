@@ -8,6 +8,9 @@ import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.leezisland.Storage;
 import lz.izmoqwy.leezisland.grid.*;
 import lz.izmoqwy.leezisland.island.*;
+import lz.izmoqwy.leezisland.island.permissions.CoopPermission;
+import lz.izmoqwy.leezisland.island.permissions.GeneralPermission;
+import lz.izmoqwy.leezisland.island.permissions.VisitorPermission;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
@@ -128,14 +131,14 @@ public class Wrapper {
 			if (perms2parse.length >= 2) {
 				String tp = perms2parse[1];
 				for (GeneralPermission all : GeneralPermission.values()) {
-					if (tp.contains(all.val + ""))
+					if (tp.contains(all.getVal() + ""))
 						generalPermissions.add(all);
 				}
 			}
 			if (perms2parse.length >= 3) {
 				String tp = perms2parse[2];
 				for (CoopPermission all : CoopPermission.values()) {
-					if (tp.contains(all.val + ""))
+					if (tp.contains(all.getVal() + ""))
 						coopPermissions.add(all);
 				}
 			}

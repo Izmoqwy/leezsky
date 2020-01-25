@@ -8,6 +8,9 @@ import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.leezisland.Storage;
 import lz.izmoqwy.leezisland.grid.*;
+import lz.izmoqwy.leezisland.island.permissions.CoopPermission;
+import lz.izmoqwy.leezisland.island.permissions.GeneralPermission;
+import lz.izmoqwy.leezisland.island.permissions.VisitorPermission;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -100,11 +103,11 @@ public class Island {
 		}
 		bldr.append("|");
 		for (GeneralPermission perm : generalPermissions) {
-			bldr.append(perm.val);
+			bldr.append(perm.getVal());
 		}
 		bldr.append("|");
 		for (CoopPermission perm : coopPermissions) {
-			bldr.append(perm.val);
+			bldr.append(perm.getVal());
 		}
 		return bldr.toString();
 	}

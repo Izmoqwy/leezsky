@@ -5,10 +5,10 @@ import lz.izmoqwy.leezisland.commands.AdminCommand;
 import lz.izmoqwy.leezisland.generator.OreGenerator;
 import lz.izmoqwy.leezisland.grid.CoopsManager;
 import lz.izmoqwy.leezisland.grid.GridManager;
-import lz.izmoqwy.leezisland.island.CoopPermission;
-import lz.izmoqwy.leezisland.island.GeneralPermission;
+import lz.izmoqwy.leezisland.island.permissions.CoopPermission;
+import lz.izmoqwy.leezisland.island.permissions.GeneralPermission;
 import lz.izmoqwy.leezisland.island.Island;
-import lz.izmoqwy.leezisland.island.VisitorPermission;
+import lz.izmoqwy.leezisland.island.permissions.VisitorPermission;
 import lz.izmoqwy.leezisland.spawners.SpawnersManager;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -184,7 +184,7 @@ public class IslandGuard implements Listener {
 		if (notInWorld(event.getLocation()) || !(event.getEntity() instanceof Monster))
 			return;
 
-		event.setCancelled(!testGeneralPermission(event.getLocation(), GeneralPermission.MOBSPAWNING));
+		event.setCancelled(!testGeneralPermission(event.getLocation(), GeneralPermission.MOB_SPAWN));
 	}
 
 	@SuppressWarnings("deprecation")
@@ -199,12 +199,12 @@ public class IslandGuard implements Listener {
 
 		Island island = GridManager.getIslandAtSafe(toBlock.getLocation());
 		if (island != null) {
-			if (!island.hasGeneralPermission(GeneralPermission.FLUIDFLOWING)) {
+			if (!island.hasGeneralPermission(GeneralPermission.FLUID_FLOW)) {
 				event.setCancelled(true);
 				return;
 			}
 
-			if (!island.hasGeneralPermission(GeneralPermission.GENENABLED))
+			if (!island.hasGeneralPermission(GeneralPermission.CUSTOM_GENERATOR))
 				return;
 
 			int flowId = event.getBlock().getTypeId();
@@ -342,7 +342,7 @@ public class IslandGuard implements Listener {
 					case IRON_PLATE:
 					case STONE_PLATE:
 					case WOOD_PLATE:
-						canDo(player, player.getLocation(), event, VisitorPermission.PLATES, CoopPermission.ACTIONNERS);
+						canDo(player, player.getLocation(), event, VisitorPermission.PLATES, CoopPermission.ACTIVATORS);
 						return;
 				}
 			}
@@ -384,11 +384,11 @@ public class IslandGuard implements Listener {
 					canDo(player, clicked, event, null, CoopPermission.CHEST);
 					break;
 				case LEVER:
-					canDo(player, clicked, event, VisitorPermission.LEVERS, CoopPermission.ACTIONNERS);
+					canDo(player, clicked, event, VisitorPermission.LEVERS, CoopPermission.ACTIVATORS);
 					break;
 				case STONE_BUTTON:
 				case WOOD_BUTTON:
-					canDo(player, clicked, event, VisitorPermission.BUTTONS, CoopPermission.ACTIONNERS);
+					canDo(player, clicked, event, VisitorPermission.BUTTONS, CoopPermission.ACTIVATORS);
 					break;
 				case FENCE_GATE:
 				case ACACIA_FENCE_GATE:

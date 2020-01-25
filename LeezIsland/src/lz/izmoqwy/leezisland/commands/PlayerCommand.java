@@ -2,12 +2,12 @@ package lz.izmoqwy.leezisland.commands;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
-import lz.izmoqwy.core.world.Cuboid;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.core.utils.TextUtil;
+import lz.izmoqwy.core.world.Cuboid;
 import lz.izmoqwy.leezisland.BorderAPI;
 import lz.izmoqwy.leezisland.LeezIsland;
 import lz.izmoqwy.leezisland.Locale;
@@ -15,11 +15,11 @@ import lz.izmoqwy.leezisland.Storage;
 import lz.izmoqwy.leezisland.grid.CoopsManager;
 import lz.izmoqwy.leezisland.grid.IslandManager;
 import lz.izmoqwy.leezisland.grid.IslandPreset;
+import lz.izmoqwy.leezisland.gui.IslandSettingsMenuGUI;
 import lz.izmoqwy.leezisland.island.Island;
 import lz.izmoqwy.leezisland.island.IslandMember;
 import lz.izmoqwy.leezisland.island.IslandRole;
 import lz.izmoqwy.leezisland.island.LevelCalculator;
-import lz.izmoqwy.leezisland.listeners.SettingsMenuListener;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
 import lz.izmoqwy.leezisland.players.Wrapper;
 import org.bukkit.Bukkit;
@@ -213,7 +213,7 @@ public class PlayerCommand implements CommandExecutor {
 					if (player.hasIsland()) {
 						Island island = player.getIsland();
 						if (island.hasRoleOrAbove(player, IslandRole.OFFICIER)) {
-							player.bukkit().openInventory(SettingsMenuListener.GUI);
+							IslandSettingsMenuGUI.INSTANCE.open(player.bukkit());
 						}
 						else
 							Locale.PLAYER_ISLAND_RANK_TOOLOW.send(player, IslandRole.OFFICIER);

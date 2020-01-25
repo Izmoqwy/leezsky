@@ -1,9 +1,10 @@
-package lz.izmoqwy.leezisland.island;
+package lz.izmoqwy.leezisland.island.permissions;
 
 import lombok.Getter;
 import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
+@Getter
 public enum CoopPermission {
 
 	PLACE('P', Material.COBBLESTONE, "Poser des blocs"),
@@ -15,12 +16,10 @@ public enum CoopPermission {
 	FIRE('F', Material.FLINT_AND_STEEL, "Mettre le feu"),
 
 	REDSTONE('R', Material.DIODE, "Utiliser la redstone", "Modifier les répéteurs et comparateurs"),
-	ACTIONNERS('A', Material.LEVER, "Actionneurs", "Utiliser les boutons et leviers");
+	ACTIVATORS('A', Material.LEVER, "Actionneurs", "Utiliser les boutons et leviers");
 
-	public char val;
-	@Getter
+	private char val;
 	private String title, description;
-	@Getter
 	private MaterialData icon;
 
 	CoopPermission(char val, Material icon, String title) {
@@ -29,10 +28,6 @@ public enum CoopPermission {
 
 	CoopPermission(char val, Material icon, String title, String description) {
 		this(val, new MaterialData(icon), title, description);
-	}
-
-	CoopPermission(char val, MaterialData icon, String title) {
-		this(val, icon, title, null);
 	}
 
 	CoopPermission(char val, MaterialData icon, String title, String description) {

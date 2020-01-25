@@ -1,4 +1,4 @@
-package lz.izmoqwy.leezisland.island;
+package lz.izmoqwy.leezisland.island.permissions;
 
 import lombok.Getter;
 import org.bukkit.Material;

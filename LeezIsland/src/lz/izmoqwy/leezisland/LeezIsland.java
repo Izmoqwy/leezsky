@@ -53,7 +53,6 @@ public class LeezIsland extends JavaPlugin implements Listener {
 		ServerUtil.registerListeners(this, new GenerationListener());
 		ServerUtil.registerListeners(this, new BordersListener());
 		ServerUtil.registerListeners(this, new IslandGuard());
-		ServerUtil.registerListeners(this, new SettingsMenuListener());
 
 		ServerUtil.registerCommand("island", new PlayerCommand());
 		ServerUtil.setCommandTabCompleter("island", new PlayerCommandTabCompleter());

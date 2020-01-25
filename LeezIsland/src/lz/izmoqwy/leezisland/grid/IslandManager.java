@@ -14,6 +14,9 @@ import lz.izmoqwy.leezisland.Locale;
 import lz.izmoqwy.leezisland.Storage;
 import lz.izmoqwy.leezisland.commands.AdminCommand;
 import lz.izmoqwy.leezisland.island.*;
+import lz.izmoqwy.leezisland.island.permissions.CoopPermission;
+import lz.izmoqwy.leezisland.island.permissions.GeneralPermission;
+import lz.izmoqwy.leezisland.island.permissions.VisitorPermission;
 import lz.izmoqwy.leezisland.players.LeezIslandPlayer;
 import lz.izmoqwy.leezisland.players.OfflineSkyblockPlayer;
 import lz.izmoqwy.leezisland.players.SkyblockPlayer;
@@ -235,8 +238,8 @@ public class IslandManager {
 				home != null ? home : GridManager.getWorld().getHighestBlockAt(bedrock).getLocation(), mx, mz, (short) 50, false, Lists.newArrayList(), Lists.newArrayList(),
 				Lists.newArrayList(VisitorPermission.DOORS, VisitorPermission.GATES, VisitorPermission.BUTTONS, VisitorPermission.LEVERS, VisitorPermission.DROP, VisitorPermission.PICKUP,
 						VisitorPermission.PLATES, VisitorPermission.VILLAGERS, VisitorPermission.FLY),
-				Lists.newArrayList(GeneralPermission.SPAWNERS, GeneralPermission.MOBSPAWNING, GeneralPermission.FLUIDFLOWING, GeneralPermission.GENENABLED),
-				Lists.newArrayList(CoopPermission.BREAK, CoopPermission.PLACE, CoopPermission.CONTAINERS, CoopPermission.BUCKETS, CoopPermission.ACTIONNERS, CoopPermission.REDSTONE));
+				Lists.newArrayList(GeneralPermission.SPAWNERS, GeneralPermission.MOB_SPAWN, GeneralPermission.FLUID_FLOW, GeneralPermission.CUSTOM_GENERATOR),
+				Lists.newArrayList(CoopPermission.BREAK, CoopPermission.PLACE, CoopPermission.CONTAINERS, CoopPermission.BUCKETS, CoopPermission.ACTIVATORS, CoopPermission.REDSTONE));
 		creator.teleport(island.getHome());
 
 		creator.setFlying(false);
