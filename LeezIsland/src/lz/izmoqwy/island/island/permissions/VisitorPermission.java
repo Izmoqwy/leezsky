@@ -29,24 +29,24 @@ public enum VisitorPermission {
 	USE_BOW('b', Material.BOW, "Utiliser l'arc", "Envoyer des flèches"),
 	FISH('f', Material.FISHING_ROD, "Pêcher");
 
-	private char val;
-	private String title, description;
-	private MaterialData icon;
+	private final char identifier;
+	private final String title, description;
+	private final MaterialData icon;
 
-	VisitorPermission(char val, Material icon, String title) {
-		this(val, icon, title, null);
+	VisitorPermission(char identifier, Material icon, String title) {
+		this(identifier, icon, title, null);
 	}
 
-	VisitorPermission(char val, Material icon, String title, String description) {
-		this(val, new MaterialData(icon), title, description);
+	VisitorPermission(char identifier, Material icon, String title, String description) {
+		this(identifier, new MaterialData(icon), title, description);
 	}
 
-	VisitorPermission(char val, MaterialData icon, String title) {
-		this(val, icon, title, null);
+	VisitorPermission(char identifier, MaterialData icon, String title) {
+		this(identifier, icon, title, null);
 	}
 
-	VisitorPermission(char val, MaterialData icon, String title, String description) {
-		this.val = val;
+	VisitorPermission(char identifier, MaterialData icon, String title, String description) {
+		this.identifier = identifier;
 		this.icon = icon;
 		this.title = title;
 		this.description = description;

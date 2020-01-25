@@ -1,8 +1,8 @@
 package lz.izmoqwy.island.spawners;
 
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.core.api.ItemBuilder;
+import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.core.utils.ItemUtil;
 import lz.izmoqwy.core.world.LiteLocation;
 import lz.izmoqwy.island.Storage;
@@ -120,18 +120,18 @@ public class SpawnersManager {
 				}
 				SpawnerData spawnerData = getSpawner(event.getBlockAgainst().getLocation());
 				if (spawnerData == null) {
-					player.sendMessage(PREFIX + "§cUn probleme d'ordre interne est survenu.");
+					player.sendMessage(PREFIX + "§cUn problème d'ordre interne est survenu.");
 					return;
 				}
 
 				final int max = 50;
 				if (spawnerData.getAmount() + 1 > max) {
-					player.sendMessage(PREFIX + "§cCe spawner est déjà amelioré au maximum (§e§lx" + spawnerData.getAmount() + "§c), visitez le /is shop pour pouvoir amliorer votre capaciter d'amelioration des spawners.");
+					player.sendMessage(PREFIX + "§cCe spawner est déjà amélioré au maximum (§e§lx" + spawnerData.getAmount() + "§c), visitez le /is shop pour pouvoir amliorer votre capaciter d'amelioration des spawners.");
 					return;
 				}
 
 				spawnerData.setAmount(spawnerData.getAmount() + 1);
-				player.sendMessage(PREFIX + "§aSpawner à §2" + entityType.getName().toUpperCase() + " §aamélioré en §e§lx" + spawnerData.getAmount() + " §a!");
+				player.sendMessage(PREFIX + "§aSpawner à §2" + entityType.getName().toUpperCase() + "§a amélioré en §e§lx" + spawnerData.getAmount() + " §a!");
 
 				if (player.getGameMode() != GameMode.CREATIVE)
 					ItemUtil.take(player, new ItemBuilder(event.getItemInHand()).amount(1).toItemStack());
@@ -180,12 +180,12 @@ public class SpawnersManager {
 					}
 					if (remaining == 0) {
 						delete(event.getBlock().getLocation());
-						player.sendMessage(PREFIX + "§aVous avez récupéré §e§l" + initialAmount + " §aspawners à §2" + creatureSpawner.getSpawnedType().getName().toUpperCase() + "§a.");
+						player.sendMessage(PREFIX + "§aVous avez récupéré §e§l" + initialAmount + "§a spawners à §2" + creatureSpawner.getSpawnedType().getName().toUpperCase() + "§a.");
 					}
 					else {
 						spawnerData.setAmount(remaining);
 						event.setCancelled(true);
-						player.sendMessage(PREFIX + "§aVous avez récupéré §e§l" + (initialAmount - remaining) + " §aspawners à §2" + creatureSpawner.getSpawnedType().getName().toUpperCase() + "§a. Restant: §e§lx" + spawnerData.getAmount());
+						player.sendMessage(PREFIX + "§aVous avez récupéré §e§l" + (initialAmount - remaining) + "§a spawners à §2" + creatureSpawner.getSpawnedType().getName().toUpperCase() + "§a. Restant: §e§lx" + spawnerData.getAmount());
 					}
 				}
 				else {
@@ -210,4 +210,5 @@ public class SpawnersManager {
 			}
 		}
 	}
+
 }

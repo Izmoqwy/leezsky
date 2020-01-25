@@ -18,20 +18,20 @@ public enum CoopPermission {
 	REDSTONE('R', Material.DIODE, "Utiliser la redstone", "Modifier les répéteurs et comparateurs"),
 	ACTIVATORS('A', Material.LEVER, "Actionneurs", "Utiliser les boutons et leviers");
 
-	private char val;
-	private String title, description;
-	private MaterialData icon;
+	private final char identifier;
+	private final String title, description;
+	private final MaterialData icon;
 
-	CoopPermission(char val, Material icon, String title) {
-		this(val, icon, title, null);
+	CoopPermission(char identifier, Material icon, String title) {
+		this(identifier, icon, title, null);
 	}
 
-	CoopPermission(char val, Material icon, String title, String description) {
-		this(val, new MaterialData(icon), title, description);
+	CoopPermission(char identifier, Material icon, String title, String description) {
+		this(identifier, new MaterialData(icon), title, description);
 	}
 
-	CoopPermission(char val, MaterialData icon, String title, String description) {
-		this.val = val;
+	CoopPermission(char identifier, MaterialData icon, String title, String description) {
+		this.identifier = identifier;
 		this.icon = icon;
 		this.title = title;
 		this.description = description;

@@ -1,10 +1,3 @@
-/*
- * That file is a part of [Leezsky] LeezIsland
- * Copyright Izmoqwy
- * You can edit for your personal use.
- * You're not allowed to redistribute it at your own.
- */
-
 package lz.izmoqwy.island.listeners;
 
 import lz.izmoqwy.core.utils.ServerUtil;
@@ -25,8 +18,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class BordersListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
-	public void onTeleport(PlayerTeleportEvent event) {
-		if (event.getTo().getWorld() != GridManager.getWorld())
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if (GridManager.notOnGrid(event.getTo().getWorld()))
 			return;
 
 		Island island = GridManager.getIslandAt(event.getTo());
@@ -41,8 +34,8 @@ public class BordersListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
-	public void onConnect(PlayerJoinEvent event) {
-		if (event.getPlayer().getLocation().getWorld() != GridManager.getWorld())
+	public void onPlayerJoin(PlayerJoinEvent event) {
+		if (GridManager.notOnGrid(event.getPlayer().getWorld()))
 			return;
 
 		Island island = GridManager.getIslandAt(event.getPlayer().getLocation());
@@ -59,12 +52,12 @@ public class BordersListener implements Listener {
 			if (skyblockPlayer != null) {
 				if (skyblockPlayer.hasIsland()) {
 					if (skyblockPlayer.hasIsland()) {
-						skyblockPlayer.bukkit().teleport(skyblockPlayer.getIsland().getHome());
+						skyblockPlayer.bukkit().teleport(skyblockPlayer.getIsland().getHomeLocation());
 					}
 					else
 						ServerUtil.performCommand("spawn " + skyblockPlayer.bukkit().getName());
 				}
-				skyblockPlayer.sendMessage(ChatColor.RED + "Vous êtiez dans un endroit inconnu lors de votre reconnexion, vous avez été téléporté ailleur.");
+				skyblockPlayer.sendMessage(ChatColor.RED + "Vous étiez dans un endroit inconnu lors de votre re-connexion, vous avez été téléporté ailleurs.");
 			}
 		}
 	}

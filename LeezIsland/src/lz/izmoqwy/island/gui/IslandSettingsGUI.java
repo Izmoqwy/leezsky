@@ -5,8 +5,8 @@ import lz.izmoqwy.core.api.ItemBuilder;
 import lz.izmoqwy.core.gui.MinecraftGUI;
 import lz.izmoqwy.core.gui.MinecraftGUIListener;
 import lz.izmoqwy.island.Locale;
-import lz.izmoqwy.island.grid.IslandManager;
-import lz.izmoqwy.island.island.*;
+import lz.izmoqwy.island.island.Island;
+import lz.izmoqwy.island.island.IslandRole;
 import lz.izmoqwy.island.island.permissions.CoopPermission;
 import lz.izmoqwy.island.island.permissions.GeneralPermission;
 import lz.izmoqwy.island.island.permissions.PermissionType;
@@ -120,11 +120,11 @@ class IslandSettingsGUI extends MinecraftGUI implements MinecraftGUIListener {
 				if (!island.getGeneralPermissions().remove(generalPermission)) {
 					island.getGeneralPermissions().add(generalPermission);
 				}
-				island.updatePermissions();
+				island.savePermissions();
 
 				setItem(slot, boolVal(generalPermission.getIcon(), generalPermission.getTitle(), generalPermission.getDescription(), island.hasGeneralPermission(generalPermission)));
 				if (generalPermission == GeneralPermission.FLUID_FLOW && island.hasGeneralPermission(GeneralPermission.FLUID_FLOW)) {
-					IslandManager.broadcast(island, "§6L'écoulement des fluides à été réactivé sur votre île. les liquides déjà présents ne sont pas mis à jour automatiquement. " +
+					island.broadcast("§6L'écoulement des fluides à été réactivé sur votre île. les liquides déjà présents ne sont pas mis à jour automatiquement. " +
 							"Si vous voulez faire coulez un liquide déjà présent, posez un bloc à côté ou casser en un pour mettre à jour le liquide.");
 				}
 				break;
@@ -137,7 +137,7 @@ class IslandSettingsGUI extends MinecraftGUI implements MinecraftGUIListener {
 				if (!island.getCoopPermissions().remove(coopPermission)) {
 					island.getCoopPermissions().add(coopPermission);
 				}
-				island.updatePermissions();
+				island.savePermissions();
 
 				setItem(slot, boolVal(coopPermission.getIcon(), coopPermission.getTitle(), coopPermission.getDescription(), island.hasCoopPermission(coopPermission)));
 				break;
@@ -150,7 +150,7 @@ class IslandSettingsGUI extends MinecraftGUI implements MinecraftGUIListener {
 				if (!island.getVisitorsPermissions().remove(visitorPermission)) {
 					island.getVisitorsPermissions().add(visitorPermission);
 				}
-				island.updatePermissions();
+				island.savePermissions();
 
 				setItem(slot, boolVal(visitorPermission.getIcon(), visitorPermission.getTitle(), visitorPermission.getDescription(), island.hasVisitorPermission(visitorPermission)));
 				break;

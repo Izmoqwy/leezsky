@@ -1,8 +1,8 @@
 package lz.izmoqwy.island;
 
-import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.api.database.SQLDatabase;
 import lz.izmoqwy.core.api.database.SQLite;
+import lz.izmoqwy.core.self.CorePrinter;
 
 import java.io.File;
 
@@ -12,7 +12,7 @@ public class Storage {
 	public static final SQLDatabase.Table ISLANDS, PLAYERS, SETTINGS, BANKS, SPAWNERS;
 
 	static {
-		DB = new SQLite("LeezIsland", LeezIsland.getInstance(), new File(LeezIsland.getInstance().getDataFolder(), "datas.db"));
+		DB = new SQLite("LeezIsland", LeezIsland.getInstance(), new File(LeezIsland.getInstance().getDataFolder(), "storage.db"));
 		DB.connect();
 		try {
 

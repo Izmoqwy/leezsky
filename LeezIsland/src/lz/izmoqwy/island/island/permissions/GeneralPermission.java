@@ -13,20 +13,20 @@ public enum GeneralPermission {
 	FLUID_FLOW('F', Material.WATER_BUCKET, "Écoulement des fluides", "Si désactivé, les fluides ne couleront plus"),
 	CUSTOM_GENERATOR('G', Material.COBBLESTONE, "Générateur modifié");
 
-	private char val;
-	private String title, description;
-	private MaterialData icon;
+	private final char identifier;
+	private final String title, description;
+	private final MaterialData icon;
 
-	GeneralPermission(char val, Material icon, String title) {
-		this(val, icon, title, null);
+	GeneralPermission(char identifier, Material icon, String title) {
+		this(identifier, icon, title, null);
 	}
 
-	GeneralPermission(char val, Material icon, String title, String description) {
-		this(val, new MaterialData(icon), title, description);
+	GeneralPermission(char identifier, Material icon, String title, String description) {
+		this(identifier, new MaterialData(icon), title, description);
 	}
 
-	GeneralPermission(char val, MaterialData icon, String title, String description) {
-		this.val = val;
+	GeneralPermission(char identifier, MaterialData icon, String title, String description) {
+		this.identifier = identifier;
 		this.icon = icon;
 		this.title = title;
 		this.description = description;

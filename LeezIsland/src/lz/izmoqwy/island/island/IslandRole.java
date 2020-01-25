@@ -2,19 +2,17 @@ package lz.izmoqwy.island.island;
 
 import lombok.Getter;
 
+@Getter
 public enum IslandRole {
 
-	MEMBER("Membre", '7',1), RECRUTER("Recruteur", 'e', 2), OFFICIER("Officier", '6', 3),
+	MEMBER("Membre", '7', 1), RECRUTER("Recruteur", 'e', 2), OFFICIER("Officier", '6', 3),
 
-	// owner role here just for /is team
-	// should not be used elsewhere
+	// Meant only for '/is team' and should not be used elsewhere
 	OWNER("Chef", 'c', -1);
 
-	public String name;
-	public int id;
-
-	@Getter
+	private String name;
 	private char colorChat;
+	private int id;
 
 	IslandRole(String name, char color, int id) {
 		this.name = name;
@@ -24,7 +22,7 @@ public enum IslandRole {
 
 	@Override
 	public String toString() {
-		return this.name;
+		return getName();
 	}
 
 	public static IslandRole fromID(int id) {
@@ -39,7 +37,5 @@ public enum IslandRole {
 				return null;
 		}
 	}
-
-
 
 }

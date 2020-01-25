@@ -1,152 +1,95 @@
 package lz.izmoqwy.island.island;
 
 import com.google.common.collect.Maps;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
-import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.utils.LocationUtil;
+import lz.izmoqwy.island.LeezIsland;
 import lz.izmoqwy.island.Storage;
-import lz.izmoqwy.island.grid.*;
+import lz.izmoqwy.island.grid.CoopsManager;
+import lz.izmoqwy.island.grid.GridManager;
 import lz.izmoqwy.island.island.permissions.CoopPermission;
 import lz.izmoqwy.island.island.permissions.GeneralPermission;
 import lz.izmoqwy.island.island.permissions.VisitorPermission;
 import lz.izmoqwy.island.players.SkyblockPlayer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
+@Getter
 public class Island {
 
+	@Getter(AccessLevel.NONE)
 	public String ID;
-	private String owner;
-	private int midX, midZ;
 
-	@Getter @Setter
+	private UUID ownerId;
+	private int middleX, middleZ;
+
+	@Setter
 	private String name;
-	@Getter @Setter
+	@Setter
 	private int level;
 
-	/*
-	 * Maximum avec les paramètres actuels, 125 (Espace de 300 si deux îles "proches" font 250 chacune).
-	 */
-	@Getter
+	// Maximum avec les paramètres actuels : 125 (Espace de 300 si deux îles "proches" font 250 chacune).
 	private short range;
-	@Getter
 	private boolean locked;
-	@Getter
-	private Location home;
+	private Location homeLocation;
 
-	@Getter
 	private Map<UUID, IslandMember> membersMap;
-	@Getter
-	private List<UUID> banneds;
+	private List<UUID> banList;
 
-	@Getter
 	private List<VisitorPermission> visitorsPermissions;
-	@Getter
 	private List<GeneralPermission> generalPermissions;
-	@Getter
 	private List<CoopPermission> coopPermissions;
 
-	public Island(String ID, String owner, String name, int level, Location home, int midX, int midZ, short range, boolean locked,
-				  List<IslandMember> members, List<UUID> banneds,
+	public Island(String ID, UUID ownerId, String name, int level, Location homeLocation, int middleX, int middleZ, short range, boolean locked,
+				  List<IslandMember> members, List<UUID> banList,
 				  List<VisitorPermission> visitorsPermissions, List<GeneralPermission> generalPermissions, List<CoopPermission> coopPermissions) {
 		this.ID = ID;
-		this.owner = owner;
+		this.ownerId = ownerId;
 		this.name = name;
 		this.level = level;
-		this.home = home;
+		this.homeLocation = homeLocation;
 
-		this.midX = midX;
-		this.midZ = midZ;
+		this.middleX = middleX;
+		this.middleZ = middleZ;
 		this.range = range;
 		calcBounds();
 
 		this.locked = locked;
 
 		Map<UUID, IslandMember> membersMap = Maps.newHashMap();
-		members.forEach(member -> membersMap.put(member.getUniqueId(), member));
+		members.forEach(member -> membersMap.put(member.getPlayerId(), member));
 		this.membersMap = membersMap;
-		this.banneds = banneds;
+		this.banList = banList;
 
 		this.visitorsPermissions = visitorsPermissions;
 		this.generalPermissions = generalPermissions;
 		this.coopPermissions = coopPermissions;
 	}
 
-	@Override
-	public String toString() {
-		return LocationUtil.inlineSerialize(home, false, true) + "|" + midX + "|" + midZ + "|" + range + "|" + locked;
-	}
-
-	public String toString_members() {
-		StringBuilder bldr = new StringBuilder();
-
-		membersMap.values().forEach(member -> bldr.append(member.getUniqueId().toString()).append("|").append(member.getRole().id).append(";"));
-		if (!banneds.isEmpty()) {
-			bldr.append("+");
-			banneds.forEach(banned -> bldr.append(banned.toString()).append(";"));
-		}
-
-		return bldr.toString();
-	}
-
-	public String toString_permissions() {
-		StringBuilder bldr = new StringBuilder();
-		for (VisitorPermission perm : visitorsPermissions) {
-			bldr.append(perm.getVal());
-		}
-		bldr.append("|");
-		for (GeneralPermission perm : generalPermissions) {
-			bldr.append(perm.getVal());
-		}
-		bldr.append("|");
-		for (CoopPermission perm : coopPermissions) {
-			bldr.append(perm.getVal());
-		}
-		return bldr.toString();
-	}
-
-	public OfflinePlayer getOwner() {
-		return Bukkit.getOfflinePlayer(UUID.fromString(owner));
-	}
-
-	public String getDisplayName() {
-		if (name == null)
-			return "de " +  getOwner().getName();
-		return name;
-	}
-
-	public void setHome(Location location) {
-		this.home = location;
-		save();
-	}
-
-	protected void setHomeWithoutSaving(Location location) {
-		this.home = location;
-	}
-
-	public int getMiddleX() {
-		return this.midX;
-	}
-
-	public int getMiddleZ() {
-		return this.midZ;
-	}
-
+	/*
+	Bounds
+	 */
 	private int minX, maxX;
 	private int minZ, maxZ;
 
 	private void calcBounds() {
-		this.minX = this.midX - this.range;
-		this.minZ = this.midZ - this.range;
-		this.maxX = this.midX + this.range;
-		this.maxZ = this.midZ + this.range;
+		this.minX = this.middleX - this.range;
+		this.minZ = this.middleZ - this.range;
+		this.maxX = this.middleX + this.range;
+		this.maxZ = this.middleZ + this.range;
 	}
 
 	public Location getLowerNE() {
@@ -160,7 +103,7 @@ public class Island {
 	public void setRange(short range) {
 		this.range = range;
 		calcBounds();
-		save();
+		saveGeneral();
 	}
 
 	public boolean isInBounds(int x, int z) {
@@ -171,13 +114,30 @@ public class Island {
 		return isInBounds(location.getBlockX(), location.getBlockZ());
 	}
 
-	public void setLocked(boolean locked) {
-		this.locked = locked;
-		save();
+	/*
+	Other
+	 */
+	public String getDisplayName() {
+		if (name == null)
+			return "de " + getOwner().getName();
+		return name;
 	}
 
+	public void setLocked(boolean locked) {
+		this.locked = locked;
+		saveGeneral();
+	}
+
+	public void setHomeLocation(Location location) {
+		this.homeLocation = location;
+		saveGeneral();
+	}
+
+	/*
+	Members
+	 */
 	public boolean hasAccess(OfflinePlayer player) {
-		return hasFullAccess(player) || CoopsManager.isCooped(player.getUniqueId(), ID);
+		return hasFullAccess(player) || isCooped(player);
 	}
 
 	/**
@@ -185,13 +145,13 @@ public class Island {
 	 * @return if the player is in this island (Full access means not a visitor nor a coop)
 	 */
 	public boolean hasFullAccess(OfflinePlayer player) {
-		return player.getUniqueId().equals(getOwner().getUniqueId()) || membersMap.containsKey(player.getUniqueId());
+		return isOwner(player.getUniqueId()) || membersMap.containsKey(player.getUniqueId());
 	}
 
-	public boolean hasRoleOrAbove(IslandMember member, IslandRole role) {
+	private boolean hasRoleOrAbove(IslandMember member, IslandRole role) {
 		if (member == null)
 			return false;
-		return isOwner(member.getUniqueId()) || member.getRole().ordinal() >= role.ordinal();
+		return isOwner(member.getPlayerId()) || member.getRole().ordinal() >= role.ordinal();
 	}
 
 	public boolean hasRoleOrAbove(SkyblockPlayer player, IslandRole role) {
@@ -206,19 +166,23 @@ public class Island {
 		return hasRoleOrAbove(membersMap.get(player.getUniqueId()), role);
 	}
 
-	public boolean isOwner(UUID uuid) {
-		return uuid.equals(getOwner().getUniqueId());
+	public OfflinePlayer getOwner() {
+		return Bukkit.getOfflinePlayer(ownerId);
+	}
+
+	public boolean isOwner(UUID playerId) {
+		return ownerId.equals(playerId);
 	}
 
 	public boolean isOwner(SkyblockPlayer player) {
-		return player.getBaseId().equals(getOwner().getUniqueId());
+		return ownerId.equals(player.getBaseId());
 	}
 
-	public IslandRole getRole(UUID player) {
-		if (player.equals(getOwner().getUniqueId()))
+	public IslandRole getRole(UUID playerId) {
+		if (isOwner(playerId))
 			return IslandRole.OWNER;
 
-		return membersMap.get(player).getRole();
+		return membersMap.get(playerId).getRole();
 	}
 
 	public IslandRole getRole(SkyblockPlayer player) {
@@ -229,7 +193,7 @@ public class Island {
 		if (member == null)
 			return;
 
-		membersMap.put(member.getUniqueId(), new IslandMember(member.getUniqueId(), role));
+		membersMap.put(member.getPlayerId(), new IslandMember(member.getPlayerId(), role));
 		saveMembers();
 	}
 
@@ -238,36 +202,110 @@ public class Island {
 			CorePrinter.warn("Cannot change IslandRole of owner --> Is this a bug?");
 			return;
 		}
+
 		setRole(membersMap.get(player.getUniqueId()), role);
 	}
 
-	public void setRole(SkyblockPlayer player, IslandRole role) {
-		if (isOwner(player.getBaseId())) {
-			CorePrinter.warn("Cannot change IslandRole of owner --> Is this a bug?");
-			return;
-		}
-		setRole(membersMap.get(player.getBaseId()), role);
-	}
-
 	public boolean hasVisitorPermission(VisitorPermission permission) {
-		return this.visitorsPermissions.contains(permission);
+		return visitorsPermissions.contains(permission);
 	}
 
 	public boolean hasGeneralPermission(GeneralPermission permission) {
-		return this.generalPermissions.contains(permission);
+		return generalPermissions.contains(permission);
 	}
 
 	public boolean hasCoopPermission(CoopPermission permission) {
-		return this.coopPermissions.contains(permission);
+		return coopPermissions.contains(permission);
 	}
 
-	public void updatePermissions() {
-		savePermissions();
+	public boolean isCooped(OfflinePlayer player) {
+		return CoopsManager.manager.isCooped(player.getUniqueId(), this);
 	}
 
-	public void save() {
+	public List<UUID> getCoops() {
+		return CoopsManager.manager.getCoops(this);
+	}
+
+	public boolean isBanned(OfflinePlayer player) {
+		return banList.contains(player.getUniqueId());
+	}
+
+	public boolean banPlayer(OfflinePlayer player) {
+		UUID playerId = player.getUniqueId();
+		if (banList.contains(player.getUniqueId()))
+			return false;
+
+		if (isCooped(player))
+			CoopsManager.manager.unCoop(playerId, this, true);
+
+		banList.add(playerId);
+		saveMembers();
+		return true;
+
+		// todo: notify island's members
+	}
+
+	public void pardonPlayer(OfflinePlayer player) {
+		banList.remove(player.getUniqueId());
+		saveMembers();
+	}
+
+	public void broadcast(String message) {
+		Stream.concat(membersMap.values().stream(), Stream.of(new IslandMember(ownerId, IslandRole.OWNER))).forEach(member -> {
+			Player onlineMember = Bukkit.getPlayer(member.getPlayerId());
+			if (onlineMember != null)
+				onlineMember.sendMessage(message);
+		});
+	}
+
+	public void sendToTeam(SkyblockPlayer sender, String message) {
+		if (sender.getIsland() != this)
+			return;
+
+		IslandRole senderRole = getRole(sender);
+		String displayName = ChatColor.COLOR_CHAR + senderRole.getColorChat() + "(" + senderRole.toString() + ") " + sender.bukkit().getName(),
+				coloredMessage = senderRole.ordinal() >= IslandRole.OFFICIER.ordinal() ? message.replaceAll("&([\\da-f])", "§$1") : message;
+		if (!coloredMessage.startsWith(Character.toString(ChatColor.COLOR_CHAR)))
+			coloredMessage = "§d" + coloredMessage;
+
+		broadcast(ChatColor.DARK_PURPLE + "[Team] " + displayName + " §8➟ " + coloredMessage);
+		LeezIsland.logger.info("[Team] " + sender.bukkit().getName() + ": " + message);
+	}
+
+	/*
+	Serializing / saving
+	 */
+	public String serializeData() {
+		return LocationUtil.inlineSerialize(homeLocation, false, true) + "|" + middleX + "|" + middleZ + "|" + range + "|" + locked;
+	}
+
+	public String serializeMembers() {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		membersMap.values().forEach(member -> stringBuilder.append(member.getPlayerId().toString()).append("|").append(member.getRole().getId()).append(";"));
+		if (!banList.isEmpty()) {
+			stringBuilder.append("+");
+			banList.forEach(banned -> stringBuilder.append(banned.toString()).append(";"));
+		}
+
+		return stringBuilder.toString();
+	}
+
+	public String serializePermissions() {
+		StringBuilder stringBuilder = new StringBuilder();
+
+		visitorsPermissions.forEach(permission -> stringBuilder.append(permission.getIdentifier()));
+		stringBuilder.append("|");
+		generalPermissions.forEach(permission -> stringBuilder.append(permission.getIdentifier()));
+		stringBuilder.append("|");
+		coopPermissions.forEach(permission -> stringBuilder.append(permission.getIdentifier()));
+
+		return stringBuilder.toString();
+	}
+
+	public void saveGeneral() {
 		try {
-			Storage.ISLANDS.setString("toWrap", toString(), "island_id", ID);
+			Storage.ISLANDS.setString("general", serializeData(), "island_id", ID);
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
@@ -276,20 +314,36 @@ public class Island {
 
 	public void saveMembers() {
 		try {
-			Storage.ISLANDS.setString("members_toWrap", toString_members(), "island_id", ID);
+			Storage.ISLANDS.setString("members", serializeMembers(), "island_id", ID);
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
 		}
 	}
 
-	protected void savePermissions() {
+	public void savePermissions() {
 		try {
-			Storage.ISLANDS.setString("settings", toString_permissions(), "island_id", ID);
+			Storage.ISLANDS.setString("settings", serializePermissions(), "island_id", ID);
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
 		}
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof Island)) return false;
+		Island island = (Island) o;
+		return middleX == island.middleX &&
+				middleZ == island.middleZ &&
+				range == island.range &&
+				ID.equals(island.ID);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(ID, middleX, middleZ, range);
 	}
 
 }

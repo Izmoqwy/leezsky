@@ -17,12 +17,14 @@ import org.bukkit.entity.Player;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-import static lz.izmoqwy.island.LeezIsland.log;
+import static lz.izmoqwy.island.LeezIsland.logger;
 import static lz.izmoqwy.island.Storage.ISLANDS;
 import static lz.izmoqwy.island.Storage.PLAYERS;
 
@@ -34,9 +36,10 @@ public class Wrapper {
 	private static final Map<String, Island> islands = Maps.newHashMap();
 
 	public static SkyblockPlayer wrapPlayer(Player player) {
-		if (!players.containsKey(player.getUniqueId())) {
+		UUID playerId = player.getUniqueId();
+		if (!players.containsKey(playerId)) {
 			try {
-				players.put(player.getUniqueId(), loadPlayer(player));
+				players.put(playerId, loadPlayer(player));
 			}
 			catch (SQLActionImpossibleException e) {
 				e.printStackTrace();
@@ -44,11 +47,8 @@ public class Wrapper {
 				return null;
 			}
 		}
-		return players.get(player.getUniqueId());
-	}
 
-	public static OfflineSkyblockPlayer wrapOffPlayer(OfflinePlayer player) {
-		return new LeezOffIslandPlayer(player);
+		return players.get(playerId);
 	}
 
 	public static Island wrapIsland(String ID) throws SQLActionImpossibleException {
@@ -58,25 +58,25 @@ public class Wrapper {
 		if (islands.containsKey(ID))
 			return islands.get(ID);
 
-		String leader, name, settings, toWrap, members_toWrap;
+		String leader, name, settings, general, members;
 		int level;
+
 		try {
-			PreparedStatement statement = Storage.DB.prepare("SELECT `leader`, `name`, `level`, `settings`, `toWrap`, `members_toWrap` FROM Islands WHERE `island_id` = ?");
-			statement.setString(1, ID);
-			ResultSet rs = statement.executeQuery();
-			if (rs.next()) {
-				leader = rs.getString("leader");
-				name = rs.getString("name");
-				settings = rs.getString("settings");
-				toWrap = rs.getString("toWrap");
-				members_toWrap = rs.getString("members_toWrap");
+			PreparedStatement preparedStatement = Storage.DB.prepare("SELECT `leader`, `name`, `level`, `settings`, `general`, `members` FROM Islands WHERE `island_id` = ?");
+			preparedStatement.setString(1, ID);
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				leader = resultSet.getString("leader");
+				name = resultSet.getString("name");
+				settings = resultSet.getString("settings");
+				general = resultSet.getString("general");
+				members = resultSet.getString("members");
+				level = resultSet.getInt("level");
 
-				level = rs.getInt("level");
-
-				statement.close();
+				preparedStatement.close();
 			}
 			else {
-				statement.close();
+				preparedStatement.close();
 				return null;
 			}
 		}
@@ -85,80 +85,101 @@ public class Wrapper {
 			return null;
 		}
 
-		String[] content = toWrap.split(Pattern.quote("|"));
 		List<IslandMember> memberList = Lists.newArrayList();
-		List<UUID> bannedList = Lists.newArrayList();
-		if (!members_toWrap.isEmpty()) {
-			String[] parts = members_toWrap.replaceAll(" ", "").split("\\+");
+		List<UUID> banList = Lists.newArrayList();
+
+		if (!members.isEmpty()) {
+			String[] parts = members.replaceAll(" ", "").split("\\+");
+
 			if (parts.length >= 1) {
-				String[] members = parts[0].split(Pattern.quote(";"));
-				if (members.length > 0) {
-					for (String member : members) {
-						String[] memberParts = member.split(Pattern.quote("|"));
-						String uuid = memberParts[0];
-						if (uuid.isEmpty())
-							continue;
-						if (PLAYERS.getString("island_id", "player_id", uuid).equals(ID))
-							memberList.add(new IslandMember(UUID.fromString(uuid), IslandRole.fromID(Integer.parseInt(memberParts[1]))));
-						else {
-							log.warning("Warn when loading island #" + ID + " because " + uuid + " is counted in but in his datas, he's either in another island or he hasn't island.");
-						}
+				String[] _members = parts[0].split(Pattern.quote(";"));
+				for (String member : _members) {
+					String[] memberParts = member.split(Pattern.quote("|"));
+
+					String uuid = memberParts[0];
+					if (uuid.isEmpty())
+						continue;
+
+					if (PLAYERS.getString("island_id", "player_id", uuid).equals(ID))
+						memberList.add(new IslandMember(UUID.fromString(uuid), IslandRole.fromID(Integer.parseInt(memberParts[1]))));
+					else {
+						logger.warning("Warn when loading island #" + ID + " because " + uuid + " is counted in but in his datas, he's either in another island or he hasn't island.");
 					}
 				}
 			}
-
 			if (parts.length >= 2) {
-				String[] banneds = parts[1].split(Pattern.quote(";"));
-				if (banneds.length > 0) {
-					for (String banned : banneds) {
-						bannedList.add(UUID.fromString(banned));
-					}
+				String[] _banned = parts[1].split(Pattern.quote(";"));
+				for (String banned : _banned) {
+					banList.add(UUID.fromString(banned));
 				}
 			}
 		}
+
 		List<VisitorPermission> visitorsPermissions = Lists.newArrayList();
 		List<GeneralPermission> generalPermissions = Lists.newArrayList();
 		List<CoopPermission> coopPermissions = Lists.newArrayList();
+
 		if (settings != null && !settings.isEmpty()) {
-			String[] perms2parse = settings.split(Pattern.quote("|"));
-			if (perms2parse.length >= 1) {
-				String tp = perms2parse[0];
-				for (VisitorPermission all : VisitorPermission.values()) {
-					if (tp.contains(Character.toString(all.getVal())))
-						visitorsPermissions.add(all);
-				}
-			}
-			if (perms2parse.length >= 2) {
-				String tp = perms2parse[1];
-				for (GeneralPermission all : GeneralPermission.values()) {
-					if (tp.contains(all.getVal() + ""))
-						generalPermissions.add(all);
-				}
-			}
-			if (perms2parse.length >= 3) {
-				String tp = perms2parse[2];
-				for (CoopPermission all : CoopPermission.values()) {
-					if (tp.contains(all.getVal() + ""))
-						coopPermissions.add(all);
-				}
-			}
+			String[] _permissions = settings.split(Pattern.quote("|"));
+
+			final String _visitors = _permissions[0], _general = _permissions[1], _coops = _permissions[2];
+			visitorsPermissions =
+					Arrays.stream(VisitorPermission.values()).filter(permission -> _visitors.contains(Character.toString(permission.getIdentifier()))).collect(Collectors.toList());
+			generalPermissions =
+					Arrays.stream(GeneralPermission.values()).filter(permission -> _general.contains(Character.toString(permission.getIdentifier()))).collect(Collectors.toList());
+			coopPermissions =
+					Arrays.stream(CoopPermission.values()).filter(permission -> _coops.contains(Character.toString(permission.getIdentifier()))).collect(Collectors.toList());
 		}
+
+		String[] content = general.split(Pattern.quote("|"));
 		Island island = new Island(ID,
-				leader, name, level,
+				UUID.fromString(leader), name, level,
 				LocationUtil.inlineParse(content[0], GridManager.getWorld()),
 				Integer.parseInt(content[1]), Integer.parseInt(content[2]), Short.parseShort(content[3]),
-				Boolean.parseBoolean(content[4]), memberList, bannedList,
+				Boolean.parseBoolean(content[4]), memberList, banList,
 				visitorsPermissions, generalPermissions, coopPermissions);
 
 		islands.put(ID, island);
 		return island;
 	}
 
-	private static LeezIslandPlayer loadPlayer(Player player) throws SQLActionImpossibleException {
-		return new LeezIslandPlayer(player, wrapIsland(PLAYERS.getString("island_id", "player_id", player.getUniqueId().toString(), null)));
+	private static LeezSkyblockPlayer loadPlayer(Player player) throws SQLActionImpossibleException {
+		String islandId, personalHome;
+		long lastRestart;
+
+		try {
+			PreparedStatement preparedStatement = Storage.DB.prepare("SELECT `island_id`, `personalHome`, `lastRestart` FROM Players WHERE `player_id` = ?");
+			preparedStatement.setString(1, player.getUniqueId().toString());
+
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next()) {
+				islandId = resultSet.getString("island_id");
+				personalHome = resultSet.getString("personalHome");
+				lastRestart = resultSet.getLong("lastRestart");
+
+				preparedStatement.close();
+			}
+			else {
+				preparedStatement.close();
+				return new LeezSkyblockPlayer(player, null, null, -1);
+			}
+		}
+		catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+		return new LeezSkyblockPlayer(
+				player, wrapIsland(islandId),
+				LocationUtil.inlineParse(personalHome, GridManager.getWorld()), lastRestart
+		);
 	}
 
-	public static Island wrapOffPlayerIsland(OfflinePlayer player) {
+	public static OfflineSkyblockPlayer getOfflinePlayer(OfflinePlayer player) {
+		return new LeezOfflineSkyblockPlayer(player);
+	}
+
+	public static Island getOfflinePlayerIsland(OfflinePlayer player) {
 		try {
 			return wrapIsland(PLAYERS.getString("island_id", "player_id", player.getUniqueId().toString(), null));
 		}

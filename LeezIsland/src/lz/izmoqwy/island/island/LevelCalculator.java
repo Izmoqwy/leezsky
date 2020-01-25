@@ -5,7 +5,6 @@ import lz.izmoqwy.island.Storage;
 import org.bukkit.Chunk;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.material.MaterialData;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -14,29 +13,37 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static org.bukkit.Material.COBBLESTONE;
+
 public class LevelCalculator {
 
-	public static long calcXP(List<Chunk> chunks) {
-		long xp = 0;
+	private static final Map<Material, Integer> blockValues = new HashMap<Material, Integer>() {{
+		put(COBBLESTONE, 1);
+	}};
+
+	public static long calculateExperience(List<Chunk> chunks) {
+		long experience = 0;
+
 		for (Chunk chunk : chunks) {
-			int cx = chunk.getX() << 4;
-			int cz = chunk.getZ() << 4;
-			for (int x = cx; x < cx + 16; x++) {
-				for (int z = cz; z < cz + 16; z++) {
+			int chunkX = chunk.getX() << 4, chunkZ = chunk.getZ() << 4;
+			for (int x = chunkX; x < chunkX + 16; x++) {
+				for (int z = chunkZ; z < chunkZ + 16; z++) {
 					for (int y = 0; y < 256; y++) {
-						Block block = chunk.getBlock(x, y, z);
-						MaterialData data = new MaterialData(block.getType(), block.getData());
-						if (Values.blocks.containsKey(data))
-							xp += Values.blocks.get(data);
+						final Block block = chunk.getBlock(x, y, z);
+						if (block == null || block.getType() == Material.AIR)
+							continue;
+
+						experience += blockValues.getOrDefault(block.getType(), 0);
 					}
 				}
 			}
 		}
-		return xp;
+
+		return experience;
 	}
 
-	public static long update(Island island, long xp) {
-		int level = (int) Math.floor(xp / 100.D);
+	public static long update(Island island, long experience) {
+		int level = (int) Math.floor(experience / 100d);
 
 		island.setLevel(level);
 		try {
@@ -46,66 +53,26 @@ public class LevelCalculator {
 			e.printStackTrace();
 		}
 
-		return xp % 100;
+		return experience % 100;
 	}
 
-	/*
-		Ne marchera que en 1.13 et + à cause de la version de sqlite
-	 */
-	public static int getPosition(Island island, String sql) {
+	public static int getRank(Island island) {
+		int position = -1;
 		try {
-			PreparedStatement statement = Storage.DB.prepare("SELECT position FROM ( SELECT ROW_NUMBER() OVER ( ORDER BY level DESC ) AS position, island_id FROM " + Storage.ISLANDS + " ) WHERE island_id = ?");
-			statement.setString(1, island.ID);
-			ResultSet rs = statement.executeQuery();
+			PreparedStatement preparedStatement =
+					Storage.DB.prepare("SELECT position FROM ( SELECT ROW_NUMBER() OVER ( ORDER BY level DESC ) AS position, island_id FROM " + Storage.ISLANDS + " ) WHERE island_id = ?");
+			preparedStatement.setString(1, island.ID);
 
-			int position = -1;
-			if (rs.next()) {
-				position = rs.getInt("position");
-			}
-			statement.close();
-			return position;
+			ResultSet resultSet = preparedStatement.executeQuery();
+			if (resultSet.next())
+				position = resultSet.getInt("position");
+
+			preparedStatement.close();
 		}
 		catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return -1;
-	}
-
-	static class Values {
-
-		public static final Map<MaterialData, Integer> blocks;
-
-		static {
-			blocks = new HashMap<MaterialData, Integer>() {
-				{
-					/*
-						Basic blocks
-					 */
-					put(md(Material.COBBLESTONE), 1);
-
-					/*
-						Ores
-					 */
-
-					/*
-						Redstone
-					 */
-
-					/*
-						Other blocks
-					 */
-				}
-			};
-		}
-
-		private static MaterialData md(Material material) {
-			return new MaterialData(material);
-		}
-
-		private static MaterialData md(Material material, short data) {
-			return new MaterialData(material, (byte) data);
-		}
-
+		return position;
 	}
 
 }

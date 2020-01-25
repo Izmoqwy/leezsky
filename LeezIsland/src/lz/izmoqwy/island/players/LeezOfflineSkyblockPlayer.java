@@ -1,5 +1,7 @@
 package lz.izmoqwy.island.players;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.island.Storage;
@@ -10,13 +12,11 @@ import org.bukkit.OfflinePlayer;
 
 import java.util.UUID;
 
-public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
+@Getter
+@AllArgsConstructor
+public class LeezOfflineSkyblockPlayer implements OfflineSkyblockPlayer {
 
 	private OfflinePlayer base;
-
-	public LeezOffIslandPlayer(OfflinePlayer base) {
-		this.base = base;
-	}
 
 	@Override
 	public UUID getBaseId() {
@@ -35,9 +35,9 @@ public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
 	}
 
 	@Override
-	public void setLastRestart(long last) {
+	public void setLastRestart(long lastRestart) {
 		try {
-			Storage.PLAYERS.setLong("lastRestart", last, "player_id", base.getUniqueId().toString());
+			Storage.PLAYERS.setLong("lastRestart", lastRestart, "player_id", base.getUniqueId().toString());
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
@@ -52,9 +52,10 @@ public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
 	@Override
 	public Location getPersonalHome() {
 		try {
-			String loc = Storage.PLAYERS.getString("personalHome", "player_id", base.getUniqueId().toString());
-			if (loc == null) return null;
-			return LocationUtil.inlineParse(loc, GridManager.getWorld());
+			String personalHome = Storage.PLAYERS.getString("personalHome", "player_id", base.getUniqueId().toString());
+			if (personalHome == null)
+				return null;
+			return LocationUtil.inlineParse(personalHome, GridManager.getWorld());
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
@@ -63,9 +64,10 @@ public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
 	}
 
 	@Override
-	public void setPersonalHome(Location loc) {
+	public void setPersonalHome(Location personalHome) {
 		try {
-			Storage.PLAYERS.setString("personalHome", loc == null ? null : LocationUtil.inlineSerialize(loc, false, true), "player_id", base.getUniqueId().toString());
+			Storage.PLAYERS.setString("personalHome",
+					personalHome == null ? null : LocationUtil.inlineSerialize(personalHome, false, true), "player_id", base.getUniqueId().toString());
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
@@ -75,8 +77,7 @@ public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
 	@Override
 	public boolean hasIsland() {
 		try {
-			String island = Storage.PLAYERS.getString("island_id", "player_id", base.getUniqueId().toString());
-			return island != null;
+			return Storage.PLAYERS.getString("island_id", "player_id", base.getUniqueId().toString()) != null;
 		}
 		catch (SQLActionImpossibleException e) {
 			e.printStackTrace();
@@ -85,7 +86,7 @@ public class LeezOffIslandPlayer implements OfflineSkyblockPlayer {
 	}
 
 	public boolean isOwnerOf(Island island) {
-		return island != null && island.getOwner().getUniqueId().equals(base.getUniqueId());
+		return island != null && island.isOwner(base.getUniqueId());
 	}
 
 }

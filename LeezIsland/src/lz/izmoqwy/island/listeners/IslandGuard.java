@@ -3,11 +3,10 @@ package lz.izmoqwy.island.listeners;
 import lz.izmoqwy.island.Locale;
 import lz.izmoqwy.island.commands.AdminCommand;
 import lz.izmoqwy.island.generator.OreGenerator;
-import lz.izmoqwy.island.grid.CoopsManager;
 import lz.izmoqwy.island.grid.GridManager;
+import lz.izmoqwy.island.island.Island;
 import lz.izmoqwy.island.island.permissions.CoopPermission;
 import lz.izmoqwy.island.island.permissions.GeneralPermission;
-import lz.izmoqwy.island.island.Island;
 import lz.izmoqwy.island.island.permissions.VisitorPermission;
 import lz.izmoqwy.island.spawners.SpawnersManager;
 import org.bukkit.Location;
@@ -44,22 +43,21 @@ public class IslandGuard implements Listener {
 		}
 
 		boolean bool;
-		Island is = GridManager.getIslandAt(location);
-		if (is != null) {
-			// Check if player is in the island
-			if (is.hasFullAccess(player))
+		Island island = GridManager.getIslandAt(location);
+		if (island != null) {
+			if (island.hasFullAccess(player))
 				event.setCancelled(bool = false);
 			else {
-				if (CoopsManager.isCooped(player.getUniqueId(), is.ID)) {
+				if (island.isCooped(player)) {
 					if (ifCoop != null) {
-						event.setCancelled(bool = !is.hasCoopPermission(ifCoop));
+						event.setCancelled(bool = !island.hasCoopPermission(ifCoop));
 					}
 					else
 						event.setCancelled(bool = false);
 				}
 				else {
 					// Player can be only a visitor
-					if (ifVisitor != null && is.hasVisitorPermission(ifVisitor)) {
+					if (ifVisitor != null && island.hasVisitorPermission(ifVisitor)) {
 						event.setCancelled(bool = false);
 					}
 					else
@@ -84,11 +82,11 @@ public class IslandGuard implements Listener {
 
 	@SuppressWarnings("BooleanMethodIsAlwaysInverted")
 	private boolean testGeneralPermission(Location location, GeneralPermission setting) {
-		Island is = GridManager.getIslandAt(location);
-		if (is == null)
+		Island island = GridManager.getIslandAt(location);
+		if (island == null)
 			return false;
 
-		return is.hasGeneralPermission(setting);
+		return island.hasGeneralPermission(setting);
 	}
 
 	/*
@@ -137,30 +135,30 @@ public class IslandGuard implements Listener {
 		if (AdminCommand.BYPASSING.contains(player.getUniqueId()))
 			return;
 
-		Island is = GridManager.getIslandAt(event.getTo());
-		if (is != null) {
+		Island island = GridManager.getIslandAt(event.getTo());
+		if (island != null) {
 			Island from = GridManager.getIslandAt(event.getFrom());
-			if (from == is)
+			if (from == island)
 				return;
 
-			if (is.isLocked()) {
+			if (island.isLocked()) {
 				event.setCancelled(true);
 				Locale.GUARD_LOCKED.send(player);
 			}
-			else if (is.getBanneds().contains(player.getUniqueId())) {
+			else if (island.getBanList().contains(player.getUniqueId())) {
 				event.setCancelled(true);
 				Locale.GUARD_BANNED.send(player);
 			}
 			else {
-				if (is.hasFullAccess(player))
+				if (island.hasFullAccess(player))
 					return;
 
-				if (is.getName() != null)
-					Locale.GUARD_ENTER_NAMED.send(player, is.getName());
+				if (island.getName() != null)
+					Locale.GUARD_ENTER_NAMED.send(player, island.getName());
 				else
-					Locale.GUARD_ENTER_NONAME.send(player, is.getOwner().getName());
+					Locale.GUARD_ENTER_NONAME.send(player, island.getOwner().getName());
 
-				if (!is.hasVisitorPermission(VisitorPermission.FLY) && player.getAllowFlight()) {
+				if (!island.hasVisitorPermission(VisitorPermission.FLY) && player.getAllowFlight()) {
 					player.setAllowFlight(false);
 					Locale.GUARD_ISLAND_NOFLY.send(player);
 				}

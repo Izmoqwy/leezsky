@@ -155,6 +155,7 @@ public class GridManager {
 
 		return getIslandAt(location.getBlockX(), location.getBlockZ());
 	}
+
 	// get island at location without checking if the location is valid
 	public static Island getIslandAtSafe(Location location) {
 		return getIslandAt(location.getBlockX(), location.getBlockZ());

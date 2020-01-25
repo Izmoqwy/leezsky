@@ -44,7 +44,7 @@ public class AdminCommand implements CommandExecutor {
 				if (args.length >= 2) {
 					OfflinePlayer off = Bukkit.getOfflinePlayer(args[1]);
 					if (off.isOnline() || off.hasPlayedBefore()) {
-						Island island = Wrapper.wrapOffPlayerIsland(off);
+						Island island = Wrapper.getOfflinePlayerIsland(off);
 						if (island != null) {
 							sendIslandInfo(island, sender);
 						}
@@ -76,7 +76,7 @@ public class AdminCommand implements CommandExecutor {
 				if (args.length >= 3) {
 					OfflinePlayer player = Bukkit.getOfflinePlayer(args[1]);
 					if (player.isOnline() || player.hasPlayedBefore()) {
-						Island island = Wrapper.wrapOffPlayerIsland(player);
+						Island island = Wrapper.getOfflinePlayerIsland(player);
 						if (island != null) {
 							short newRange;
 							try {
@@ -123,20 +123,20 @@ public class AdminCommand implements CommandExecutor {
 		if (island.getName() != null)
 			sender.sendMessage(Locale.PREFIX + "§6Nom: §e" + island.getName());
 		sender.sendMessage(Locale.PREFIX + "§6Propriétaire: §e" + island.getOwner().getName());
-		sender.sendMessage("§8➟ §7" + island.getOwner().getUniqueId().toString());
+		sender.sendMessage("§8➟ §7" + island.getOwnerId().toString());
 
 		if (island.getMembersMap().size() > 0) {
 			sender.sendMessage(Locale.PREFIX + "§6Membres §7(" + island.getMembersMap().size() + ")§6:");
-			island.getMembersMap().values().forEach(member -> sender.sendMessage("§8- §e" + Bukkit.getOfflinePlayer(member.getUniqueId()).getName() + " §7(" + member.getRole().name + ")"));
+			island.getMembersMap().values().forEach(member -> sender.sendMessage("§8- §e" + Bukkit.getOfflinePlayer(member.getPlayerId()).getName() + " §7(" + member.getRole().getName() + ")"));
 		}
 
 		int range = island.getRange() * 2 + 1;
 		sender.sendMessage(Locale.PREFIX + "§6Niveau: §e" + island.getLevel());
 		sender.sendMessage(Locale.PREFIX + "§6Diamètre: §e" + range + "x" + range);
 
-		List<UUID> banneds = island.getBanneds();
-		if (banneds.size() > 0) {
-			sender.sendMessage(Locale.PREFIX + "§6Bannis: " + TextUtil.iterate(banneds, banned -> Bukkit.getOfflinePlayer(banned).getName(), "§c", "§6, "));
+		List<UUID> banList = island.getBanList();
+		if (banList.size() > 0) {
+			sender.sendMessage(Locale.PREFIX + "§6Bannis: " + TextUtil.iterate(banList, banned -> Bukkit.getOfflinePlayer(banned).getName(), "§c", "§6, "));
 		}
 		sender.sendMessage(Locale.PREFIX + "§6Fermée: §e" + (island.isLocked() ? "oui" : "non"));
 

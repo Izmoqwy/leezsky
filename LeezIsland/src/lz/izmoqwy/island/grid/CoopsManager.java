@@ -2,7 +2,10 @@ package lz.izmoqwy.island.grid;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.SneakyThrows;
 import lz.izmoqwy.core.utils.StoreUtil;
+import lz.izmoqwy.island.island.Island;
+import lz.izmoqwy.island.players.Wrapper;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -11,44 +14,45 @@ import java.util.UUID;
 
 public class CoopsManager {
 
-	private static Map<String, List<UUID>> coops = Maps.newHashMap();
-	private static Map<UUID, List<String>> coopedOn = Maps.newHashMap();
+	public static final CoopsManager manager = new CoopsManager();
 
-	public static void coop(UUID uuid, String islandId, Player initier) {
-		StoreUtil.addToMapList(coops, islandId, uuid);
-		StoreUtil.addToMapList(coopedOn, uuid, islandId);
+	private CoopsManager() {
+	}
+
+	private Map<String, List<UUID>> coopMap = Maps.newHashMap();
+	private Map<UUID, List<String>> reversedCoopMap = Maps.newHashMap();
+
+	public void coop(UUID uuid, Island island, Player initier) {
+		StoreUtil.addToMapList(coopMap, island.ID, uuid);
+		StoreUtil.addToMapList(reversedCoopMap, uuid, island.ID);
 
 		// Todo: Notify island's members
 	}
 
-	public static void unCoop(UUID uuid, String islandId, boolean notify) {
-		if (StoreUtil.removeFromMapList(coops, islandId, uuid) && StoreUtil.removeFromMapList(coopedOn, uuid, islandId) && notify) {
+	public void unCoop(UUID uuid, Island island, boolean notify) {
+		if (StoreUtil.removeFromMapList(coopMap, island.ID, uuid) && StoreUtil.removeFromMapList(reversedCoopMap, uuid, island.ID) && notify) {
 			// Todo: Notify island's members
 		}
 	}
 
-	public static boolean isCooped(UUID uuid, String islandId) {
-		return StoreUtil.isInMapList(coops, islandId, uuid);
+	public boolean isCooped(UUID uuid, Island island) {
+		return StoreUtil.isInMapList(coopMap, island.ID, uuid);
 	}
 
-	public static List<UUID> getCoops(String island_id) {
-		if (!coops.containsKey(island_id))
-			return null;
-
-		return coops.get(island_id);
+	public List<UUID> getCoops(Island island) {
+		return coopMap.get(island.ID);
 	}
 
-	public static void unregisterIsland(String islandId) {
-		List<UUID> _coops = coops.remove(islandId);
-		if (_coops == null)
-			return;
-
-		_coops.forEach(uuid -> unCoop(uuid, islandId, false));
+	public void unregisterIsland(Island island) {
+		List<UUID> coops = coopMap.remove(island.ID);
+		if (coops != null)
+			coops.forEach(uuid -> unCoop(uuid, island, false));
 	}
 
-	public static void handleDisconnect(Player player) {
-		for (String islandId : coopedOn.getOrDefault(player.getUniqueId(), Lists.newArrayList())) {
-			unCoop(player.getUniqueId(), islandId, true);
+	@SneakyThrows
+	public void handleDisconnect(Player player) {
+		for (String islandId : reversedCoopMap.getOrDefault(player.getUniqueId(), Lists.newArrayList())) {
+			unCoop(player.getUniqueId(), Wrapper.wrapIsland(islandId), true);
 		}
 	}
 

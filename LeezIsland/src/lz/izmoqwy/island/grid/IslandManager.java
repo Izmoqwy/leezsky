@@ -2,9 +2,10 @@ package lz.izmoqwy.island.grid;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lz.izmoqwy.core.self.CorePrinter;
+import lz.izmoqwy.core.api.ItemBuilder;
 import lz.izmoqwy.core.api.database.exceptions.SQLActionImpossibleException;
 import lz.izmoqwy.core.hooks.HooksManager;
+import lz.izmoqwy.core.self.CorePrinter;
 import lz.izmoqwy.core.utils.ItemUtil;
 import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.core.utils.TextUtil;
@@ -13,15 +14,20 @@ import lz.izmoqwy.island.LeezIsland;
 import lz.izmoqwy.island.Locale;
 import lz.izmoqwy.island.Storage;
 import lz.izmoqwy.island.commands.AdminCommand;
-import lz.izmoqwy.island.island.*;
+import lz.izmoqwy.island.island.Island;
+import lz.izmoqwy.island.island.IslandMember;
+import lz.izmoqwy.island.island.IslandRole;
 import lz.izmoqwy.island.island.permissions.CoopPermission;
 import lz.izmoqwy.island.island.permissions.GeneralPermission;
 import lz.izmoqwy.island.island.permissions.VisitorPermission;
-import lz.izmoqwy.island.players.LeezIslandPlayer;
+import lz.izmoqwy.island.players.LeezSkyblockPlayer;
 import lz.izmoqwy.island.players.OfflineSkyblockPlayer;
 import lz.izmoqwy.island.players.SkyblockPlayer;
 import lz.izmoqwy.island.players.Wrapper;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.block.Chest;
 import org.bukkit.block.ShulkerBox;
@@ -35,10 +41,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.File;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class IslandManager {
 
@@ -46,60 +53,63 @@ public class IslandManager {
 	private static int buffer = 0;
 
 	private static final ItemStack[] STARTING_CHEST_CONTENTS;
-	static {
-		Inventory inventory = Bukkit.createInventory(null, 3 * 9);
 
-		ItemStack starting_book = ItemUtil.createItem(Material.WRITTEN_BOOK);
-		BookMeta bookMeta = (BookMeta) starting_book.getItemMeta();
+	static {
+		Inventory chestContent = Bukkit.createInventory(null, 3 * 9);
+
+		/*
+		Starting book
+		 */
+		ItemStack startingBook = ItemUtil.quickItem(Material.WRITTEN_BOOK);
+		BookMeta bookMeta = (BookMeta) startingBook.getItemMeta();
 		bookMeta.setTitle("§eQuelques notes...");
 
 		List<String> pages = Lists.newArrayList(), lines = Lists.newArrayList();
 
-		/*
-			Explaination (1 page)
-		 */
 		lines.add("Bienvenue sur cette île jeune aventurier. Ce livre vous explique les bases du skyblock et de bons moyens pour bien commencer.");
 		lines.add("Si vous êtes déjà expérimenté en skyblock ou si vous voulez découvrir par vous même, je vous incite à ne pas lire ce livre.");
 		lines.add("\nVous pouvez obtenir l'intégralité de ce livre en message en faisant '/help book'");
 		pages.add(TextUtil.iterate(lines, String::new, "", "\n"));
 		lines.clear();
 
-		/*
-			Best ways to start
-		 */
-
-		/*
-			Farms
-		 */
 		lines.add("");
 		pages.add(TextUtil.iterate(lines, String::new, "", "\n"));
 		lines.clear();
 
 		bookMeta.setPages(pages);
+		bookMeta.setAuthor("Leezsky");
+		startingBook.setItemMeta(bookMeta);
+		chestContent.setItem(10, startingBook);
 
-		bookMeta.setAuthor("LeezSky");
-		starting_book.setItemMeta(bookMeta);
-		inventory.setItem(10, starting_book);
+		/*
+		Starting box
+		 */
+		Inventory shulkerContent = Bukkit.createInventory(null, 3 * 9);
 
-		Inventory starting_box_content = Bukkit.createInventory(null, 3 * 9);
-		starting_box_content.setItem(9, ItemUtil.createItem(Material.CACTUS, 32));
-		starting_box_content.setItem(10, ItemUtil.createItem(Material.WOOD_STEP, 32));
-		starting_box_content.setItem(11, ItemUtil.createItem(Material.FENCE, 16));
+		shulkerContent.setItem(9, ItemUtil.quickItem(Material.CACTUS, 32));
+		shulkerContent.setItem(10, ItemUtil.quickItem(Material.WOOD_STEP, 32));
+		shulkerContent.setItem(11, ItemUtil.quickItem(Material.FENCE, 16));
 
-		ItemStack starting_box = ItemUtil.createItem(Material.SILVER_SHULKER_BOX, "§7Un peu d'équipement...");
-		BlockStateMeta stateMeta = (BlockStateMeta) starting_box.getItemMeta();
+		ItemStack startingBox = new ItemBuilder(Material.SILVER_SHULKER_BOX)
+				.name("§7Un peu d'équipement...")
+				.toItemStack();
+		BlockStateMeta stateMeta = (BlockStateMeta) startingBox.getItemMeta();
 		ShulkerBox shulkerBox = (ShulkerBox) stateMeta.getBlockState();
-		shulkerBox.getInventory().setContents(starting_box_content.getContents());
+		shulkerBox.getInventory().setContents(shulkerContent.getContents());
 		stateMeta.setBlockState(shulkerBox);
 		shulkerBox.update();
-		starting_box.setItemMeta(stateMeta);
-		inventory.setItem(11, starting_box);
+		startingBox.setItemMeta(stateMeta);
 
-		inventory.setItem(14, ItemUtil.createItem(Material.SAPLING, 8));
-		inventory.setItem(15, ItemUtil.createItem(Material.LAVA_BUCKET));
-		inventory.setItem(16, ItemUtil.createItem(Material.ICE, 2));
+		/*
+		Chest content
+		 */
+		chestContent.setItem(11, startingBox);
 
-		STARTING_CHEST_CONTENTS = inventory.getContents();
+		chestContent.setItem(14, ItemUtil.quickItem(Material.SAPLING, 8));
+		chestContent.setItem(15, ItemUtil.quickItem(Material.LAVA_BUCKET));
+		chestContent.setItem(16, ItemUtil.quickItem(Material.ICE, 2));
+
+		STARTING_CHEST_CONTENTS = chestContent.getContents();
 	}
 
 	@SuppressWarnings("ResultOfMethodCallIgnored")
@@ -114,7 +124,7 @@ public class IslandManager {
 			if (file.exists())
 				schematics.put(preset, file);
 			else if (preset == IslandPreset.DEFAULT) {
-				CorePrinter.warn("No overriden default schematic found. Copying the default one.");
+				CorePrinter.warn("No overridden default schematic found. Copying the default one.");
 				LeezIsland.getInstance().saveResource("schematics/default.schematic", false);
 				if (!file.exists()) {
 					CorePrinter.err("The default schematic hasn't been copied. There is no default schematic for the default preset!");
@@ -138,30 +148,6 @@ public class IslandManager {
 		}.runTaskTimerAsynchronously(LeezIsland.getInstance(), 20 * 5, 20);
 	}
 
-	public static void teleportToSpawn(Player player) {
-		ServerUtil.performCommand("spawn " + player.getName());
-	}
-
-	public static int expelPlayers(Island island) {
-		int count = 0;
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (island.isInBounds(player.getLocation()) && !island.hasAccess(player) && !AdminCommand.BYPASSING.contains(player.getUniqueId())) {
-				teleportToSpawn(player);
-				count++;
-			}
-		}
-		return count;
-	}
-
-	private static void registerPlayerToIsland(UUID uuid, Island island) throws SQLActionImpossibleException, SQLException {
-		if (Storage.PLAYERS.hasResult("player_id", "player_id", uuid.toString())) {
-			Storage.PLAYERS.setString("island_id", island.ID, "player_id", uuid.toString());
-		}
-		else {
-			Storage.DB.execute("INSERT INTO " + Storage.PLAYERS + "(player_id, island_id) VALUES (\"" + uuid.toString() + "\", \"" + island.ID + "\")");
-		}
-	}
-
 	public static void createNewIsland(Player creator, IslandPreset preset, boolean force) {
 		if (!creator.isOnline())
 			return;
@@ -172,7 +158,7 @@ public class IslandManager {
 				Locale.PLAYER_ISLAND_CREATE_WAITING.send(creator);
 				Bukkit.getScheduler().runTaskLater(LeezIsland.getInstance(), () -> {
 					if (creator.isOnline())
-						createNewIsland(creator, preset,true);
+						createNewIsland(creator, preset, true);
 				}, buffer + 10);
 				return;
 			}
@@ -234,13 +220,13 @@ public class IslandManager {
 		}
 
 		Island island = new Island(
-				GridManager.getCurrentID(), creator.getUniqueId().toString(), null, 0,
+				GridManager.getCurrentID(), creator.getUniqueId(), null, 0,
 				home != null ? home : GridManager.getWorld().getHighestBlockAt(bedrock).getLocation(), mx, mz, (short) 50, false, Lists.newArrayList(), Lists.newArrayList(),
 				Lists.newArrayList(VisitorPermission.DOORS, VisitorPermission.GATES, VisitorPermission.BUTTONS, VisitorPermission.LEVERS, VisitorPermission.DROP, VisitorPermission.PICKUP,
 						VisitorPermission.PLATES, VisitorPermission.VILLAGERS, VisitorPermission.FLY),
 				Lists.newArrayList(GeneralPermission.SPAWNERS, GeneralPermission.MOB_SPAWN, GeneralPermission.FLUID_FLOW, GeneralPermission.CUSTOM_GENERATOR),
 				Lists.newArrayList(CoopPermission.BREAK, CoopPermission.PLACE, CoopPermission.CONTAINERS, CoopPermission.BUCKETS, CoopPermission.ACTIVATORS, CoopPermission.REDSTONE));
-		creator.teleport(island.getHome());
+		creator.teleport(island.getHomeLocation());
 
 		creator.setFlying(false);
 		creator.setAllowFlight(originalFlightState);
@@ -249,9 +235,9 @@ public class IslandManager {
 			PreparedStatement statement = Storage.DB.prepare("INSERT INTO " + Storage.ISLANDS + "(island_id, leader, settings, toWrap, members_toWrap) VALUES (?, ?, ?, ?, ?)");
 			statement.setString(1, island.ID);
 			statement.setString(2, creator.getUniqueId().toString());
-			statement.setString(3, island.toString_permissions());
-			statement.setString(4, island.toString());
-			statement.setString(5, island.toString_members());
+			statement.setString(3, island.serializePermissions());
+			statement.setString(4, island.serializeData());
+			statement.setString(5, island.serializeMembers());
 			statement.execute();
 
 			registerPlayerToIsland(creator.getUniqueId(), island);
@@ -265,7 +251,7 @@ public class IslandManager {
 			return;
 		}
 
-		Wrapper.getPlayers().put(creator.getUniqueId(), new LeezIslandPlayer(creator, island));
+		Wrapper.getPlayers().remove(creator.getUniqueId());
 		GridManager.addToGrid(island);
 
 		SkyblockPlayer wrappedPlayer = Wrapper.wrapPlayer(creator);
@@ -283,41 +269,31 @@ public class IslandManager {
 			return false;
 	}
 
+	private static void registerPlayerToIsland(UUID uuid, Island island) throws SQLActionImpossibleException, SQLException {
+		if (Storage.PLAYERS.hasResult("player_id", "player_id", uuid.toString())) {
+			Storage.PLAYERS.setString("island_id", island.ID, "player_id", uuid.toString());
+		}
+		else {
+			Storage.DB.execute("INSERT INTO " + Storage.PLAYERS + "(player_id, island_id) VALUES (\"" + uuid.toString() + "\", \"" + island.ID + "\")");
+		}
+	}
+
 	public static List<Player> getPlayersOnIsland(Island island) {
-		List<Player> players = Lists.newArrayList();
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (player.getLocation().getWorld() != GridManager.getWorld())
-				return Lists.newArrayList();
-
-			if (island.isInBounds(player.getLocation().getBlockX(), player.getLocation().getBlockZ()))
-				players.add(player);
-		}
-		return players;
+		return Bukkit.getOnlinePlayers().stream().filter(player -> island.isInBounds(player.getLocation())).collect(Collectors.toList());
 	}
 
-	public static List<Player> getOnlinePlayers(Island island) {
-		List<Player> players = Lists.newArrayList();
-		for (UUID uuid : island.getMembersMap().keySet()) {
-			Player player = Bukkit.getPlayer(uuid);
-			if (player != null)
-				players.add(player);
-		}
-		return players;
-	}
+	public static int expelEveryone(Island island) {
+		Stream<? extends Player> toTeleport =
+				Bukkit.getOnlinePlayers().stream().filter(player -> island.isInBounds(player.getLocation()) && !AdminCommand.BYPASSING.contains(player.getUniqueId()));
 
-	public static void broadcast(Island island, String message) {
-		ArrayList<IslandMember> members = Lists.newArrayList(island.getMembersMap().values());
-		members.add(new IslandMember(island.getOwner().getUniqueId(), IslandRole.OWNER));
-		for (IslandMember member : members) {
-			Player player = Bukkit.getPlayer(member.getUniqueId());
-			if (player != null)
-				player.sendMessage(message);
-		}
+		toTeleport.forEach(player -> ServerUtil.performCommand("spawn " + player.getName()));
+		return (int) toTeleport.count();
 	}
 
 	public static void setRange(Island island, short range) {
 		island.setRange(range);
-		island.save();
+		island.saveGeneral();
+
 		Wrapper.getIslands().replace(island.ID, island);
 		for (Player player : getPlayersOnIsland(island)) {
 			BorderAPI.setBorder(player, island);
@@ -337,22 +313,6 @@ public class IslandManager {
 		}
 	}
 
-	public static IslandMember getMemberFromPlayer(Island island, OfflinePlayer player) {
-		if (island == null) {
-			LeezIsland.log.warning("Cannot parse member because island is null.");
-			return null;
-		}
-		return island.getMembersMap().get(player.getUniqueId());
-	}
-
-	public static OfflinePlayer getPlayerFromMember(Island island, IslandMember member) {
-		if (island == null) {
-			LeezIsland.log.warning("Cannot parse player because island is null.");
-			return null;
-		}
-		return island.getMembersMap().containsKey(member.getUniqueId()) ? Bukkit.getOfflinePlayer(member.getUniqueId()) : null;
-	}
-
 	public static void clearPlayer(OfflineSkyblockPlayer player) {
 		if (player.hasPersonalHome()) {
 			player.setPersonalHome(null);
@@ -369,22 +329,17 @@ public class IslandManager {
 
 	public static void kickMember(Island island, OfflinePlayer player) {
 		if (island == null) {
-			LeezIsland.log.warning("Cannot kick member because island is null.");
+			LeezIsland.logger.warning("Cannot kick member because island is null.");
 			return;
 		}
 
-		OfflineSkyblockPlayer offPlayer = Wrapper.wrapOffPlayer(player);
-		if (island.getMembersMap().containsKey(player.getUniqueId())) {
-			island.getMembersMap().remove(player.getUniqueId());
+		OfflineSkyblockPlayer skyblockPlayer = Wrapper.getOfflinePlayer(player);
+		if (island.getMembersMap().remove(player.getUniqueId()) != null) {
 			island.saveMembers();
-			clearPlayer(offPlayer);
-
-			// Todo: Notify island's members
+			clearPlayer(skyblockPlayer);
 		}
-		else if (offPlayer.isOwnerOf(island)) {
-			for (IslandMember member : island.getMembersMap().values()) {
-				kickMember(island, getPlayerFromMember(island, member));
-			}
+		else if (skyblockPlayer.isOwnerOf(island)) {
+			island.getMembersMap().values().forEach(member -> kickMember(island, member.toPlayer(island)));
 
 			try {
 				Storage.ISLANDS.delete("island_id", island.ID);
@@ -392,69 +347,45 @@ public class IslandManager {
 			catch (SQLException e) {
 				e.printStackTrace();
 			}
+
 			GridManager.removeFromGrid(island);
-			CoopsManager.unregisterIsland(island.ID);
+			CoopsManager.manager.unregisterIsland(island);
 			Wrapper.getIslands().remove(island.ID);
-			clearPlayer(offPlayer);
+			clearPlayer(skyblockPlayer);
 		}
+
+		// Todo: Notify island's members
 	}
 
 	public static void addMember(Island island, OfflinePlayer player) {
 		if (island == null) {
-			LeezIsland.log.warning("Cannot add member because island is null.");
+			LeezIsland.logger.warning("Cannot add member because island is null.");
 			return;
 		}
-		if (Wrapper.wrapOffPlayerIsland(player) != null) {
-			LeezIsland.log.warning("Tried to add the player " + player.getName() + " to a team but he already has an island.");
+		if (Wrapper.getOfflinePlayerIsland(player) != null) {
+			LeezIsland.logger.warning("Tried to add the player " + player.getName() + " to a team but he already has an island.");
 			return;
 		}
 
-		// Todo: Notify island's members
-		UUID uuid = player.getUniqueId();
-		if (CoopsManager.isCooped(uuid, island.ID))
-			CoopsManager.unCoop(uuid, island.ID, false);
+		UUID playerId = player.getUniqueId();
+		if (island.isCooped(player))
+			CoopsManager.manager.unCoop(playerId, island, false);
 
-		if (island.getBanneds().contains(uuid))
+		island.getBanList().remove(playerId);
 
 		try {
-			registerPlayerToIsland(uuid, island);
+			registerPlayerToIsland(playerId, island);
 
-			island.getMembersMap().put(uuid, new IslandMember(uuid, IslandRole.MEMBER));
+			island.getMembersMap().put(playerId, new IslandMember(playerId, IslandRole.MEMBER));
 			island.saveMembers();
 
-			Wrapper.getPlayers().remove(uuid);
+			Wrapper.getPlayers().remove(playerId);
 		}
 		catch (SQLActionImpossibleException | SQLException e) {
 			e.printStackTrace();
 		}
-	}
-
-	public static void sendToTeamChat(SkyblockPlayer player, String message) {
-		final IslandRole role = player.getIsland().getRole(player);
-		final String displayName = "§" + role.getColorChat() + "(" + role.toString() + ") " + player.bukkit().getName();
-		String coloredMessage = role.ordinal() >= IslandRole.OFFICIER.ordinal() ? message.replaceAll("&([\\da-f])", "§$1") : message;
-		if (!coloredMessage.startsWith(ChatColor.COLOR_CHAR + ""))
-			coloredMessage = "§d" + coloredMessage;
-
-		IslandManager.broadcast(player.getIsland(), "§5[Team] §7" + displayName + " §8➟ " + coloredMessage);
-		LeezIsland.getInstance().getLogger().info("[Team] " + player.bukkit().getName() + ": " + message);
-	}
-
-	public static boolean banPlayer(Island island, UUID target) {
-		if (island.getBanneds().contains(target))
-			return false;
-
-		if (CoopsManager.isCooped(target, island.ID))
-			CoopsManager.unCoop(target, island.ID, false);
 
 		// Todo: Notify island's members
-		island.getBanneds().add(target);
-		island.saveMembers();
-		return true;
 	}
 
-	public static void unban(Island island, UUID target) {
-		island.getBanneds().remove(target);
-		island.saveMembers();
-	}
 }

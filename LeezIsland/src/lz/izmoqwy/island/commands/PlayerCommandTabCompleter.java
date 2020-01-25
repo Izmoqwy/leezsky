@@ -2,7 +2,6 @@ package lz.izmoqwy.island.commands;
 
 import com.google.common.collect.Lists;
 import lz.izmoqwy.core.command.CoreTabCompleter;
-import lz.izmoqwy.island.grid.CoopsManager;
 import lz.izmoqwy.island.island.IslandMember;
 import lz.izmoqwy.island.island.IslandRole;
 import lz.izmoqwy.island.players.SkyblockPlayer;
@@ -85,7 +84,7 @@ public class PlayerCommandTabCompleter extends CoreTabCompleter {
 					IslandRole role = player.getIsland().getRole(player);
 					for (IslandMember member : player.getIsland().getMembersMap().values()) {
 						if (member.getRole().ordinal() < role.ordinal())
-							members.add(Bukkit.getOfflinePlayer(member.getUniqueId()).getName());
+							members.add(Bukkit.getOfflinePlayer(member.getPlayerId()).getName());
 					}
 					return keepOnlyWhatMatches(members, args[1]);
 				case "uncoop":
@@ -93,7 +92,7 @@ public class PlayerCommandTabCompleter extends CoreTabCompleter {
 						return null;
 					}
 
-					List<UUID> coops = CoopsManager.getCoops(player.getIsland().ID);
+					List<UUID> coops = player.getIsland().getCoops();
 					if (coops == null)
 						return null;
 					return keepOnlyWhatMatches(coops.stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()), args[1]);
@@ -107,14 +106,14 @@ public class PlayerCommandTabCompleter extends CoreTabCompleter {
 					role = player.getIsland().getRole(player);
 					for (IslandMember member : player.getIsland().getMembersMap().values()) {
 						if (member.getRole().ordinal() < role.ordinal())
-							members.add(Bukkit.getOfflinePlayer(member.getUniqueId()).getName());
+							members.add(Bukkit.getOfflinePlayer(member.getPlayerId()).getName());
 					}
 					return keepOnlyWhatMatches(members, args[1]);
 				case "unban":
 					if (!player.getIsland().hasRoleOrAbove(player, IslandRole.RECRUTER)) {
 						return null;
 					}
-					return keepOnlyWhatMatches(player.getIsland().getBanneds().stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()), args[1]);
+					return keepOnlyWhatMatches(player.getIsland().getBanList().stream().map(uuid -> Bukkit.getOfflinePlayer(uuid).getName()).collect(Collectors.toList()), args[1]);
 			}
 
 		}
