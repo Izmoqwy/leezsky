@@ -96,7 +96,7 @@ public class Island {
 	public String toString_permissions() {
 		StringBuilder bldr = new StringBuilder();
 		for (VisitorPermission perm : visitorsPermissions) {
-			bldr.append(perm.val);
+			bldr.append(perm.getVal());
 		}
 		bldr.append("|");
 		for (GeneralPermission perm : generalPermissions) {

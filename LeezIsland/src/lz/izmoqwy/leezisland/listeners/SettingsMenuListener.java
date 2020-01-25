@@ -58,7 +58,7 @@ public class SettingsMenuListener implements Listener {
 				put(10, VisitorPermission.DOORS); // DONE
 				put(11, VisitorPermission.GATES); // DONE
 
-				put(13, VisitorPermission.VILLAGERS);
+				put(13, VisitorPermission.VILLAGERS); // DONE
 
 				put(15, VisitorPermission.DROP); // DONE
 				put(16, VisitorPermission.PICKUP); // DONE
@@ -74,14 +74,14 @@ public class SettingsMenuListener implements Listener {
 				put(28, VisitorPermission.HITMOBS); // DONE
 				put(29, VisitorPermission.HITGOLEMS); // DONE
 
-				put(31, VisitorPermission.RIDING);
+				put(31, VisitorPermission.RIDING); // DONE
 
 				put(33, VisitorPermission.HITANIMALS); // DONE
-				put(34, VisitorPermission.USE_LEASH);
+				put(34, VisitorPermission.USE_LEASH); // DONE
 
 				// Fourth row
-				put(38, VisitorPermission.USE_BOW);
-				put(39, VisitorPermission.FISH);
+				put(38, VisitorPermission.USE_BOW); // DONE
+				put(39, VisitorPermission.FISH); // DONE
 
 				put(41, VisitorPermission.FLY); // DONE
 				put(42, VisitorPermission.SETHOME); // DONE

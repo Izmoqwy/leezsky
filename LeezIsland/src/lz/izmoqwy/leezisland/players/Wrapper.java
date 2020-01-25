@@ -121,7 +121,7 @@ public class Wrapper {
 			if (perms2parse.length >= 1) {
 				String tp = perms2parse[0];
 				for (VisitorPermission all : VisitorPermission.values()) {
-					if (tp.contains(all.val + ""))
+					if (tp.contains(Character.toString(all.getVal())))
 						visitorsPermissions.add(all);
 				}
 			}

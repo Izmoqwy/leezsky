@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.material.MaterialData;
 
 @SuppressWarnings("deprecation")
+@Getter
 public enum VisitorPermission {
 
 	DOORS('D', Material.ACACIA_DOOR_ITEM, "Ouvrir les portes"),
@@ -12,9 +13,9 @@ public enum VisitorPermission {
 	BUTTONS('B', Material.STONE_BUTTON, "Utiliser les boutons"),
 	LEVERS('L', Material.LEVER, "Utiliser les leviers"),
 	PLATES('P', Material.STONE_PLATE, "Activer les plaques de pression"),
-	ARMORSTANDS('A', Material.ARMOR_STAND, "Intéragir avec les porte armures"),
+	ARMORSTANDS('A', Material.ARMOR_STAND, "Interagir avec les porte armures"),
 	REDSTONE('R', Material.DIODE, "Utiliser la redstone", "Modifier les répéteurs et comparateurs"),
-	VILLAGERS('V', new MaterialData(Material.MONSTER_EGG, (byte) 120), "Intéragir avec les villageois"),
+	VILLAGERS('V', new MaterialData(Material.MONSTER_EGG, (byte) 120), "Interagir avec les villageois"),
 	DROP('d', Material.STICK, "Jeter des objets"),
 	PICKUP('p', Material.GOLD_NUGGET, "Ramasser des objets"),
 	FLY('F', Material.FEATHER, "Voler"),
@@ -23,15 +24,13 @@ public enum VisitorPermission {
 	HITMOBS('H', new MaterialData(Material.MONSTER_EGG, (byte) 54), "Taper les monstres"),
 	HITANIMALS('h', new MaterialData(Material.MONSTER_EGG, (byte) 90), "Taper les animaux"),
 	HITGOLEMS('g', new MaterialData(Material.MONSTER_EGG), "Taper les golems"),
-	RIDING('r', Material.SADDLE, "Utiliser les selles"),
+	RIDING('r', Material.SADDLE, "Utiliser les selles", "Monter sur les chevaux/cochons"),
 	USE_LEASH('U', Material.LEASH, "Utiliser les laisses"),
-	USE_BOW('b', Material.BOW, "Envoyer des flèches"),
+	USE_BOW('b', Material.BOW, "Utiliser l'arc", "Envoyer des flèches"),
 	FISH('f', Material.FISHING_ROD, "Pêcher");
 
-	public char val;
-	@Getter
+	private char val;
 	private String title, description;
-	@Getter
 	private MaterialData icon;
 
 	VisitorPermission(char val, Material icon, String title) {

@@ -17,12 +17,13 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.event.*;
 import org.bukkit.event.block.*;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.entity.SpawnerSpawnEvent;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.inventory.InventoryOpenEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.*;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.spigotmc.event.entity.EntityMountEvent;
 
 import java.util.Arrays;
 import java.util.List;
@@ -295,6 +296,20 @@ public class IslandGuard implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onLeash(PlayerLeashEntityEvent event) {
+		if (notInWorld(event.getEntity().getWorld()))
+			return;
+		canDo(event.getPlayer(), event.getEntity().getLocation(), event, VisitorPermission.USE_LEASH, null);
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onUnleash(PlayerUnleashEntityEvent event) {
+		if (notInWorld(event.getEntity().getWorld()))
+			return;
+		canDo(event.getPlayer(), event.getEntity().getLocation(), event, VisitorPermission.USE_LEASH, null);
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onPickup(EntityPickupItemEvent event) {
 		if (notInWorld(event.getEntity().getWorld()))
 			return;
@@ -305,7 +320,7 @@ public class IslandGuard implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
 	public void onDrop(PlayerDropItemEvent event) {
-		if (notInWorld(event.getPlayer().getLocation()))
+		if (notInWorld(event.getPlayer().getWorld()))
 			return;
 		canDo(event.getPlayer(), event.getPlayer().getLocation(), event, VisitorPermission.DROP, null);
 	}
@@ -318,8 +333,8 @@ public class IslandGuard implements Listener {
 
 		if (event.getAction() == Action.PHYSICAL) {
 			if (event.hasBlock()) {
-				Block actionned = event.getClickedBlock();
-				switch (actionned.getType()) {
+				Block block = event.getClickedBlock();
+				switch (block.getType()) {
 					case SOIL:
 						event.setCancelled(true);
 						return;
@@ -414,7 +429,20 @@ public class IslandGuard implements Listener {
 					break;
 			}
 		}
+	}
 
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		Player player = (Player) event.getPlayer();
+		if (notInWorld(player.getWorld()))
+			return;
+
+		if (event.getInventory().getType() == InventoryType.MERCHANT) {
+			Inventory inventory = event.getInventory();
+			if (inventory.getHolder() != null && inventory.getHolder() instanceof LivingEntity) {
+				canDo(player, ((LivingEntity) inventory.getHolder()).getLocation(), event, VisitorPermission.VILLAGERS, null);
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
@@ -448,19 +476,31 @@ public class IslandGuard implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
-	public void onRod(PlayerFishEvent event) {
+	public void onShootBow(EntityShootBowEvent event) {
+		if (event.getEntity().getType() != EntityType.PLAYER || notInWorld(event.getEntity().getWorld()))
+			return;
+
+		Player shooter = (Player) event.getEntity();
+		if (!canDo(shooter, shooter.getLocation(), event, VisitorPermission.USE_BOW, null)) {
+			shooter.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas utiliser les arcs sur cette île !");
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onFish(PlayerFishEvent event) {
 		Entity victim = event.getCaught();
 		if (victim == null || notInWorld(victim.getWorld()))
 			return;
 
 		Player damager = event.getPlayer();
-		if (victim.getType() == EntityType.PLAYER) {
+		if (!canDo(damager, damager.getLocation(), event, VisitorPermission.FISH, null)) {
+			damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas utiliser de canne à pêche sur cette île !");
+		}
+		else if (victim.getType() == EntityType.PLAYER) {
 			if (victim.equals(damager))
 				return;
 
 			event.setCancelled(true);
-			event.getHook().remove();
-
 			damager.sendMessage(Locale.PREFIX + "§cLe PvP est désactivé dans ce monde !");
 		}
 		else if (victim.getType() == EntityType.ARMOR_STAND || victim.getType() == EntityType.ENDER_CRYSTAL) {
@@ -480,6 +520,21 @@ public class IslandGuard implements Listener {
 			if (!canDo(damager, victim.getLocation(), event, VisitorPermission.HITGOLEMS, null)) {
 				damager.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas taper les golems sur cette île !");
 			}
+		}
+
+		if (event.isCancelled()) {
+			event.getHook().remove();
+		}
+	}
+
+	@EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
+	public void onEntityMount(EntityMountEvent event) {
+		if (notInWorld(event.getMount().getWorld()) || event.getEntity().getType() != EntityType.PLAYER)
+			return;
+
+		Player rider = (Player) event.getEntity();
+		if (!canDo(rider, event.getMount().getLocation(), event, VisitorPermission.RIDING, null)) {
+			rider.sendMessage(Locale.PREFIX + "§cVous ne pouvez pas monter sur les animaux sur cette île !");
 		}
 	}
 
