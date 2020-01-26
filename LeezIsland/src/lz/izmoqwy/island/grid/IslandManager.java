@@ -232,7 +232,7 @@ public class IslandManager {
 		creator.setAllowFlight(originalFlightState);
 
 		try {
-			PreparedStatement statement = Storage.DB.prepare("INSERT INTO " + Storage.ISLANDS + "(island_id, leader, settings, toWrap, members_toWrap) VALUES (?, ?, ?, ?, ?)");
+			PreparedStatement statement = Storage.DB.prepare("INSERT INTO " + Storage.ISLANDS + "(island_id, leader, settings, general, members) VALUES (?, ?, ?, ?, ?)");
 			statement.setString(1, island.ID);
 			statement.setString(2, creator.getUniqueId().toString());
 			statement.setString(3, island.serializePermissions());

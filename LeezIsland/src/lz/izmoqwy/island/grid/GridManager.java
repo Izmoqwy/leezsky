@@ -66,16 +66,16 @@ public class GridManager {
 	}
 
 	public static void loadAllIslands() throws SQLException {
-		PreparedStatement statement = Storage.DB.prepare("SELECT island_id, toWrap FROM " + Storage.ISLANDS + " WHERE 1");
-		ResultSet rs = statement.executeQuery();
+		PreparedStatement preparedStatement = Storage.DB.prepare("SELECT island_id, general FROM " + Storage.ISLANDS + " WHERE 1");
+		ResultSet resultSet = preparedStatement.executeQuery();
 
-		while (rs.next()) {
-			String ID = rs.getString("island_id");
-			String[] splitted = rs.getString("toWrap").split(Pattern.quote("|"));
-			addToGrid(ID, Double.parseDouble(splitted[1]), Double.parseDouble(splitted[2]));
+		while (resultSet.next()) {
+			String[] general = resultSet.getString("general").split(Pattern.quote("|"));
+			addToGrid(resultSet.getString("island_id"),
+					Double.parseDouble(general[1]), Double.parseDouble(general[2]));
 		}
 
-		rs.close();
+		resultSet.close();
 	}
 
 	protected static Map.Entry<Integer, Integer> next() {

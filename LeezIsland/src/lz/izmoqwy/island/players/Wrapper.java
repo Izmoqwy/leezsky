@@ -51,19 +51,18 @@ public class Wrapper {
 		return players.get(playerId);
 	}
 
-	public static Island wrapIsland(String ID) throws SQLActionImpossibleException {
-		if (ID == null || !ISLANDS.hasResult("toWrap", "island_id", ID)) {
+	public static Island wrapIsland(String islandId) throws SQLActionImpossibleException {
+		if (islandId == null) {
 			return null;
 		}
-		if (islands.containsKey(ID))
-			return islands.get(ID);
+		if (islands.containsKey(islandId))
+			return islands.get(islandId);
 
 		String leader, name, settings, general, members;
 		int level;
-
 		try {
 			PreparedStatement preparedStatement = Storage.DB.prepare("SELECT `leader`, `name`, `level`, `settings`, `general`, `members` FROM Islands WHERE `island_id` = ?");
-			preparedStatement.setString(1, ID);
+			preparedStatement.setString(1, islandId);
 			ResultSet resultSet = preparedStatement.executeQuery();
 			if (resultSet.next()) {
 				leader = resultSet.getString("leader");
@@ -100,10 +99,10 @@ public class Wrapper {
 					if (uuid.isEmpty())
 						continue;
 
-					if (PLAYERS.getString("island_id", "player_id", uuid).equals(ID))
+					if (PLAYERS.getString("island_id", "player_id", uuid).equals(islandId))
 						memberList.add(new IslandMember(UUID.fromString(uuid), IslandRole.fromID(Integer.parseInt(memberParts[1]))));
 					else {
-						logger.warning("Warn when loading island #" + ID + " because " + uuid + " is counted in but in his datas, he's either in another island or he hasn't island.");
+						logger.warning("Warn when loading island #" + islandId + " because " + uuid + " is counted in but in his datas, he's either in another island or he hasn't island.");
 					}
 				}
 			}
@@ -132,14 +131,14 @@ public class Wrapper {
 		}
 
 		String[] content = general.split(Pattern.quote("|"));
-		Island island = new Island(ID,
+		Island island = new Island(islandId,
 				UUID.fromString(leader), name, level,
 				LocationUtil.inlineParse(content[0], GridManager.getWorld()),
 				Integer.parseInt(content[1]), Integer.parseInt(content[2]), Short.parseShort(content[3]),
 				Boolean.parseBoolean(content[4]), memberList, banList,
 				visitorsPermissions, generalPermissions, coopPermissions);
 
-		islands.put(ID, island);
+		islands.put(islandId, island);
 		return island;
 	}
 
@@ -171,7 +170,7 @@ public class Wrapper {
 
 		return new LeezSkyblockPlayer(
 				player, wrapIsland(islandId),
-				LocationUtil.inlineParse(personalHome, GridManager.getWorld()), lastRestart
+				personalHome != null ? LocationUtil.inlineParse(personalHome, GridManager.getWorld()) : null, lastRestart
 		);
 	}
 
