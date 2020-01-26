@@ -1,10 +1,3 @@
-/*
- * That file is a part of [Leezsky] LeezSky
- * Copyright Izmoqwy
- * You can edit for your personal use.
- * You're not allowed to redistribute it at your own.
- */
-
 package me.izmoqwy.leezsky.listeners;
 
 import lz.izmoqwy.core.utils.TextUtil;
@@ -21,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -79,11 +73,12 @@ public class CommandsListener implements Listener {
 				player.sendMessage(LeezSky.PREFIX + "§6Nous ne donnerons/vendrons en aucun cas un plugin privé.");
 				player.sendMessage(" ");
 
-				Stream<String> publicPlugins = Arrays.stream(Bukkit.getPluginManager().getPlugins())
+				Supplier<Stream<String>> publicPlugins = () -> Arrays.stream(Bukkit.getPluginManager().getPlugins())
 						.filter(plugin -> plugin.getDescription().getAuthors().isEmpty() || isPublic(plugin))
 						.map(plugin -> (plugin.isEnabled() ? ChatColor.GREEN : ChatColor.RED) + plugin.getName());
-				player.sendMessage(LeezSky.PREFIX + "§eVoici la liste des plugins §npublics§e présents (" + publicPlugins.count() + "): " +
-						publicPlugins.collect(Collectors.joining("§6, ")));
+
+				player.sendMessage(LeezSky.PREFIX + "§eVoici la liste des plugins §npublics§e présents (" + publicPlugins.get().count() + "): " +
+						publicPlugins.get().collect(Collectors.joining("§6, ")));
 
 				player.sendMessage(" ");
 				break;
