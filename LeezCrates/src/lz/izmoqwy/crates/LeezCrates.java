@@ -3,8 +3,8 @@ package lz.izmoqwy.crates;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.Getter;
+import lz.izmoqwy.core.api.ItemBuilder;
 import lz.izmoqwy.core.self.CorePrinter;
-import lz.izmoqwy.core.utils.ItemUtil;
 import lz.izmoqwy.core.utils.LocationUtil;
 import lz.izmoqwy.core.utils.ServerUtil;
 import lz.izmoqwy.crates.listeners.CrateListener;
@@ -188,7 +188,7 @@ public class LeezCrates extends JavaPlugin {
 		return null;
 	}
 
-	private static final byte[] axis = { 3, 4, 2, 5 }; // Reminder: reversed
+	private static final byte[] axis = {3, 4, 2, 5}; // Reminder: reversed
 
 	@SuppressWarnings("deprecation")
 	protected static void createCrate(String id, CrateType type, @NotNull Location location, boolean save) {
@@ -198,16 +198,18 @@ public class LeezCrates extends JavaPlugin {
 		location.getWorld().getChunkAt(location);
 
 		Block block = location.getBlock();
-		block.setTypeIdAndData(type.getMaterialData().getItemTypeId(), type.getMaterialData().getData(), true);
-		BlockState blockState = location.getBlock().getState();
-		MaterialData data;
-		if (blockState.getData() instanceof DirectionalContainer) {
-			data = new MaterialData(type.getMaterialData().getItemType(), axis[Math.round(location.getYaw() / 90) & 0x3]);
+		if (block.getType() != type.getMaterialData().getItemType()) {
+			block.setTypeIdAndData(type.getMaterialData().getItemTypeId(), type.getMaterialData().getData(), true);
+			BlockState blockState = location.getBlock().getState();
+			MaterialData data;
+			if (blockState.getData() instanceof DirectionalContainer) {
+				data = new MaterialData(type.getMaterialData().getItemType(), axis[Math.round(location.getYaw() / 90) & 0x3]);
+			}
+			else
+				data = type.getMaterialData();
+			blockState.setData(data);
+			blockState.update();
 		}
-		else
-			data = type.getMaterialData();
-		blockState.setData(data);
-		blockState.update();
 
 		if (id == null) {
 			if (save) {
@@ -221,11 +223,12 @@ public class LeezCrates extends JavaPlugin {
 				id = Integer.toString(crates.size());
 		}
 
-		List<String> text = Lists.newArrayList(type.getDisplayName().startsWith("§") ? type.getDisplayName() : "§5✱ §d" + type.getDisplayName() + " §5✱");
+		List<String> text = Lists.newArrayList(type.getDisplayName().startsWith("§") ? type.getDisplayName() : "§8✱ §7" + type.getDisplayName() + " §8✱");
 		if (type.getLore() != null) {
 			text.addAll(Arrays.asList(type.getLore().split("\\n")));
 		}
-		Hologram hologram = new Hologram(block.getLocation().add(.5D, -1.25D, .5D), text);
+		Hologram hologram = new Hologram(block.getLocation().add(.5,
+				type.getMaterialData().getItemType().name().toLowerCase().contains("chest") ? -1.25 : -1, .5), text);
 		Crate crate = new Crate(id, type, location, null, hologram);
 		hologram.spawn();
 		crates.put(block.getLocation(), crate);
@@ -246,11 +249,11 @@ public class LeezCrates extends JavaPlugin {
 	public static void preview(Crate crate, Player player) {
 		int size = (int) Math.ceil(crate.getType().getRewards().size() / 9D);
 		if (size > 6) {
-			player.sendMessage(PREFIX + "§cCette box contient trop de recompenses pour afficher un apercu!");
+			player.sendMessage(PREFIX + "§cCette box contient trop de recompenses pour afficher un aperçu !");
 			return;
 		}
 		if (size == 0) {
-			player.sendMessage(PREFIX + "§cCette box ne contient pas de recompenses!");
+			player.sendMessage(PREFIX + "§cCette box ne contient pas de recompenses !");
 			return;
 		}
 
@@ -353,20 +356,24 @@ public class LeezCrates extends JavaPlugin {
 			setBrand(inventory, 0, 9);
 			setBrand(inventory, 17, 21);
 			setBrand(inventory, 23, 26);
-			inventory.setItem(22, ItemUtil.createItem(Material.REDSTONE_TORCH_ON, "§e..."));
+			inventory.setItem(22, new ItemBuilder(Material.REDSTONE_TORCH_ON)
+					.name("§cooO")
+					.toItemStack());
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	private static void setBrandRandomGlass(Inventory inventory, int from, int to) {
 		for (int i = from; i <= to; i++) {
 			int random = RANDOM.nextInt(16);
-			inventory.setItem(i,  ItemUtil.createItem(new MaterialData(Material.STAINED_GLASS_PANE, (byte) random), getChatColor(random) + "◕‿◕"));
+			inventory.setItem(i, new ItemBuilder(Material.STAINED_GLASS_PANE)
+					.dyeColor(DyeColor.values()[random])
+					.name(getChatColor(random) + "◕‿◕")
+					.toItemStack());
 		}
 	}
 
 	private static ChatColor getChatColor(int color) {
-		switch(color) {
+		switch (color) {
 			case 1:
 				return ChatColor.GOLD;
 			case 2:
@@ -401,7 +408,9 @@ public class LeezCrates extends JavaPlugin {
 	}
 
 	private static void setBrand(Inventory inventory, int from, int to) {
-		setBrand(inventory, from, to, ItemUtil.createItem(Material.STAINED_GLASS_PANE, "§8◕‿◕"));
+		setBrand(inventory, from, to, new ItemBuilder(Material.STAINED_GLASS_PANE)
+				.name("§8◕‿◕")
+				.toItemStack());
 	}
 
 	private static void setBrand(Inventory inventory, int from, int to, ItemStack item) {
