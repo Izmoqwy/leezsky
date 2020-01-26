@@ -60,7 +60,7 @@ public class IslandSettingsMenuGUI extends MinecraftGUI implements MinecraftGUIL
 
 		switch (slot) {
 			case 11:
-				// todo : open generator GUI
+				OreGeneratorGUI.getGUIInstance(island).open(player);
 				break;
 
 			case 12:

@@ -1,6 +1,6 @@
 package lz.izmoqwy.island.generator;
 
-import com.google.common.collect.Maps;
+import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.bukkit.Material;
 
@@ -9,28 +9,26 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 public class OreGeneratorSettings {
 
-	@Getter
-	private Map<Material, Double> ores;
-
-	@Getter
+	private List<Ore> ores;
 	private int totalByte;
 
 	public OreGeneratorSettings(Map<Material, Byte> materialByteMap) {
-		totalByte = 0;
-		materialByteMap.values().forEach(b -> totalByte += b);
+		this.totalByte = materialByteMap.values().stream().mapToInt(Integer::valueOf).sum();
 
+		List<Ore> ores = Lists.newArrayList();
 		List<Material> keys = new ArrayList<>(materialByteMap.keySet());
 		Collections.shuffle(keys);
 
 		// Pass individual rate on over 100
-		Map<Material, Double> newMap = Maps.newHashMap();
 		keys.forEach(key -> {
 			double overPercentage = 100 * materialByteMap.get(key) / (totalByte * 1d);
-			newMap.put(key, overPercentage);
+			ores.add(new Ore(key, materialByteMap.get(key), overPercentage));
 		});
-		this.ores = Maps.immutableEnumMap(newMap);
+
+		this.ores = ores;
 	}
 
 }

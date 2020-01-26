@@ -1,6 +1,5 @@
 package lz.izmoqwy.island.generator;
 
-import com.google.common.collect.Maps;
 import lz.izmoqwy.island.island.Island;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -12,11 +11,7 @@ import java.util.Random;
 
 public class OreGenerator {
 
-	private final BlockFace[] faces = new BlockFace[]
-			{BlockFace.SELF, BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
-
-	@SuppressWarnings("UnstableApiUsage")
-	private static final Map<Material, Byte> DEFAULT_ORES = Maps.immutableEnumMap(new HashMap<Material, Byte>() {
+	private static final Map<Material, Byte> DEFAULT_ORES = new HashMap<Material, Byte>() {
 		{
 			put(Material.COBBLESTONE, 55); // 32.4%
 			put(Material.STONE, 45); // 26.5%
@@ -29,9 +24,12 @@ public class OreGenerator {
 		private void put(Material material, int value) {
 			super.put(material, (byte) value);
 		}
-	});
+	};
 
 	private static final OreGeneratorSettings DEFAULT_SETTINGS = new OreGeneratorSettings(DEFAULT_ORES);
+
+	private final BlockFace[] faces = new BlockFace[]
+			{BlockFace.SELF, BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST};
 
 	private final Random random = new Random();
 
@@ -39,13 +37,13 @@ public class OreGenerator {
 		final double luck = random.nextInt(10000) / 100.D;
 
 		Material material = Material.COBBLESTONE;
-		double others = 0;
-		for (Map.Entry<Material, Double> ore : settings.getOres().entrySet()) {
-			if (luck <= ore.getValue() + others) {
-				material = ore.getKey();
+		double sum = 0;
+		for (Ore ore : settings.getOres()) {
+			sum += ore.getChance();
+			if (luck <= sum) {
+				material = ore.getType();
 				break;
 			}
-			others += ore.getValue();
 		}
 
 		return material;
@@ -59,6 +57,7 @@ public class OreGenerator {
 		return randomize(fromIsland(island));
 	}
 
+	@SuppressWarnings("deprecation")
 	public boolean shouldGenerates(Block block, int flowingId) {
 		int mirrorID1 = (flowingId == 8 || flowingId == 9 ? 10 : 8);
 		int mirrorID2 = (flowingId == 8 || flowingId == 9 ? 11 : 9);
