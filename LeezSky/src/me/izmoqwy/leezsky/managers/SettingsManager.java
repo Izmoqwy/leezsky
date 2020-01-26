@@ -32,9 +32,9 @@ public class SettingsManager {
 			RECEIVE_AUTOMESSAGES = new Setting<>("receive_automessages", SimpleToggle.class, SimpleToggle.ON, Material.PAPER,
 					"Messages automatiques",
 					"Désactivez pour ne plus recevoir", "les messages et astuces automatiques"),
-			RECEIVE_CHALLENGES = new Setting<>("receive_challenges", SimpleToggle.class, SimpleToggle.ON, Material.LOG,
+			RECEIVE_CHALLENGES = new Setting<>("receive_challenges", SimpleToggle.class, SimpleToggle.ON, Material.DRAGON_EGG,
 					"Annonces de défis",
-					"Désactivez pour ne plus recevoir", "les annonces de défis des autres joueurs", "(vous verrez toujours les votre)");
+					"Désactivez pour ne plus recevoir les", "annonces de défis des autres joueurs", "(vous verrez toujours les votre)");
 
 	public static final Setting<ChatSetting>
 			CHAT_MESSAGES = new Setting<>("send_chat", ChatSetting.class, ChatSetting.EXTRA, Material.BOOK_AND_QUILL, "Messages du chat",
@@ -44,10 +44,9 @@ public class SettingsManager {
 		put(10, SCOREBOARD);
 		put(11, OBJECTIVE_BOSSBAR);
 
+		put(14, RECEIVE_CHALLENGES);
+		put(15, RECEIVE_AUTOMESSAGES);
 		put(16, CHAT_MESSAGES);
-
-		put(24, RECEIVE_AUTOMESSAGES);
-		put(25, RECEIVE_CHALLENGES);
 	}};
 
 	public static void openSettings(Player player) {
