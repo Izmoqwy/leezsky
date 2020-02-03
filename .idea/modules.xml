@@ -2,9 +2,11 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/DigitalBoxes/DigitalBoxes.iml" filepath="$PROJECT_DIR$/DigitalBoxes/DigitalBoxes.iml" />
       <module fileurl="file://$PROJECT_DIR$/LeezCore/LeezCore.iml" filepath="$PROJECT_DIR$/LeezCore/LeezCore.iml" />
       <module fileurl="file://$PROJECT_DIR$/LeezCrates/LeezCrates.iml" filepath="$PROJECT_DIR$/LeezCrates/LeezCrates.iml" />
       <module fileurl="file://$PROJECT_DIR$/LeezIsland/LeezIsland.iml" filepath="$PROJECT_DIR$/LeezIsland/LeezIsland.iml" />
+      <module fileurl="file://$PROJECT_DIR$/LeezLibs/LeezLibs.iml" filepath="$PROJECT_DIR$/LeezLibs/LeezLibs.iml" />
       <module fileurl="file://$PROJECT_DIR$/LeezMarket/LeezMarket.iml" filepath="$PROJECT_DIR$/LeezMarket/LeezMarket.iml" />
       <module fileurl="file://$PROJECT_DIR$/LeezPermissions/LeezPermissions.iml" filepath="$PROJECT_DIR$/LeezPermissions/LeezPermissions.iml" />
       <module fileurl="file://$PROJECT_DIR$/LeezShop/LeezShop.iml" filepath="$PROJECT_DIR$/LeezShop/LeezShop.iml" />

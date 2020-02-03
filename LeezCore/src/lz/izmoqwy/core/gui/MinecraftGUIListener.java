@@ -10,6 +10,9 @@ public interface MinecraftGUIListener {
 		return true;
 	}
 
+	default void onOpen(Player player) {
+	}
+
 	default void onClick(Player player, ItemStack clickedItem, int slot) {
 	}
 

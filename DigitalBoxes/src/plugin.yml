@@ -1,0 +1,11 @@
+name: DigitalBoxes
+version: 1.0.0
+author: Izmoqwy
+
+depend:
+  - LeezCore
+main: lz.izmoqwy.boxes.DigitalBoxes
+
+commands:
+  boxes:
+    aliases: [box]

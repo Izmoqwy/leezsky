@@ -30,6 +30,7 @@ public class InternalGUIListener implements Listener {
 		for (MinecraftGUIListener listener : handledGUI.getListeners()) {
 			if (!listener.canOpen(player))
 				event.setCancelled(true);
+			listener.onOpen(player);
 		}
 	}
 
