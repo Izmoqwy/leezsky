@@ -1,6 +1,7 @@
 package lz.izmoqwy.core.command;
 
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import lz.izmoqwy.core.self.LeezCore;
 import lz.izmoqwy.core.utils.MathUtil;
 import lz.izmoqwy.core.utils.PlayerUtil;
@@ -36,6 +37,10 @@ public abstract class CoreCommand implements CommandExecutor {
 		this.cooldown = options.getCooldown();
 		if (cooldown > 0)
 			this.cooldownMap = Maps.newHashMap();
+	}
+
+	public String getName() {
+		return name;
 	}
 
 	protected void send(CommandSender commandSender, String... message) {

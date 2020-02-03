@@ -3,6 +3,8 @@ version: 2.1.0
 author: Izmoqwy
 
 main: lz.izmoqwy.core.self.LeezCore
+depend:
+  - LeezLibs
 softdepend:
   - LiteBans
   - NametagEdit

@@ -2,8 +2,6 @@ package lz.izmoqwy.core.command;
 
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.Accessors;
 
 @Getter
 @Builder
